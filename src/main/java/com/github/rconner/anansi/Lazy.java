@@ -138,7 +138,7 @@ public class Lazy {
         public Traversal<V, E> apply(final V from) {
             return new Traversal<V, E>() {
                 public Iterator<Path<V, E>> iterator() {
-                    return Lazy.iterator( delegate.apply(from) );
+                    return Lazy.iterator(delegate.apply(from));
                 }
             };
         }
