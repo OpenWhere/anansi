@@ -22,6 +22,7 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 
 /**
@@ -32,6 +33,7 @@ import com.google.common.base.Function;
  * @param <E>
  * @author rconner
  */
+@Beta
 public interface Traverser<V, E> extends Function<V, Traversal<V, E>> {
     // No additional methods
 }

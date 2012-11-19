@@ -22,6 +22,8 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
+
 /**
  * A path from one vertex to another, optionally over some implementation-specific object. It is not uncommon for a Path
  * to be over an Iterable of (sub) Paths.
@@ -30,6 +32,7 @@ package com.github.rconner.anansi;
  * @param <E>
  * @author rconner
  */
+@Beta
 public abstract class Path<V, E> {
 
     /**

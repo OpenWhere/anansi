@@ -22,6 +22,8 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
+
 /**
  * An Iterable of {@link Path Paths}. Implementations should endeavor to return Iterables that are lazily evaluated, and
  * should document their behavior in any case.
@@ -30,6 +32,7 @@ package com.github.rconner.anansi;
  * @param <E>
  * @author rconner
  */
+@Beta
 public interface Traversal<V, E> extends Iterable<Path<V, E>> {
     // No additional methods
 }

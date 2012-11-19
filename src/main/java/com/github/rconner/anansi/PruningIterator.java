@@ -22,6 +22,8 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
+
 import java.util.Iterator;
 
 /**
@@ -30,6 +32,7 @@ import java.util.Iterator;
  * @param <T>
  * @author rconner
  */
+@Beta
 public interface PruningIterator<T> extends Iterator<T> {
 
     /**

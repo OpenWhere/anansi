@@ -22,6 +22,7 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 
@@ -32,6 +33,7 @@ import java.util.Iterator;
  *
  * @author rconner
  */
+@Beta
 public class Lazy {
 
     /**
