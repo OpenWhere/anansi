@@ -56,12 +56,20 @@ public class Lazy {
         return new LazyIterable<T>(iterable);
     }
 
-    public static <V, E> Traversal<V, E> traversal(final Function<V, Iterable<Path<V, E>>> traversal) {
+    public static <V, E> Traversal<V, E> traversal(final Traversal<V, E> traversal) {
         Preconditions.checkNotNull(traversal);
-        if (traversal instanceof LazyTraversal) {
-            return (LazyTraversal<V, E>) traversal;
+        if (traversal instanceof LazyIterable<?>) {
+            return traversal;
         }
         return new LazyTraversal<V, E>(traversal);
+    }
+
+    public static <V, E> Traverser<V, E> traverser(final Function<V, Traversal<V, E>> traverser) {
+        Preconditions.checkNotNull(traverser);
+        if (traverser instanceof LazyTraverser) {
+            return (LazyTraverser<V, E>) traverser;
+        }
+        return new LazyTraverser<V, E>(traverser);
     }
 
 
@@ -107,19 +115,31 @@ public class Lazy {
     }
 
     private static class LazyTraversal<V, E> implements Traversal<V, E> {
-        final Function<V, Iterable<Path<V, E>>> delegate;
+        final Traversal<V, E> delegate;
 
-        private LazyTraversal(Function<V, Iterable<Path<V, E>>> delegate) {
+        private LazyTraversal(Traversal<V, E> delegate) {
             this.delegate = delegate;
         }
 
-        public Iterable<Path<V, E>> apply(final V from) {
-            Iterable<Path<V, E>> iterable = new Iterable<Path<V, E>>() {
+        public Iterator<Path<V, E>> iterator() {
+            return Lazy.iterator(delegate);
+        }
+    }
+
+    private static class LazyTraverser<V, E> implements Traverser<V, E> {
+        final Function<V, Traversal<V, E>> delegate;
+
+        private LazyTraverser(Function<V, Traversal<V, E>> delegate) {
+            this.delegate = delegate;
+        }
+
+        public Traversal<V, E> apply(final V from) {
+            Traversal<V, E> traversal = new Traversal<V, E>() {
                 public Iterator<Path<V, E>> iterator() {
                     return delegate.apply(from).iterator();
                 }
             };
-            return Lazy.iterable(iterable);
+            return Lazy.traversal(traversal);
         }
     }
 
