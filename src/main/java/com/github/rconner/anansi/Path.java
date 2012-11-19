@@ -23,26 +23,29 @@
 package com.github.rconner.anansi;
 
 /**
+ * A path from one vertex to another, optionally over some implementation-specific object. It is not uncommon for a
+ * Path to be over an Iterable of (sub) Paths.
  *
  * @param <V>
  * @param <E>
+ *
+ * @author rconner
  */
-public interface Path< V, E > {
+public interface Path<V, E> {
+
     /**
-     *
      * @return
      */
     V from();
 
     /**
-     *
      * @return
      */
     V to();
 
     /**
-     *
      * @return
      */
     E over();
+
 }

@@ -25,10 +25,15 @@ package com.github.rconner.anansi;
 import com.google.common.base.Function;
 
 /**
+ * A Function which, when given a vertex, produces an Iterable of {@link Path Paths} originating from that vertex.
+ * Implementations should endeavor to return Iterables that are lazily evaluated, and should document their behavior in
+ * any case.
  *
  * @param <V>
  * @param <E>
+ *
+ * @author rconner
  */
-public interface Traversal< V, E > extends Function< V, Iterable< Path< V, E > > > {
+public interface Traversal<V, E> extends Function<V, Iterable<Path<V, E>>> {
     // No additional methods
 }
