@@ -26,7 +26,6 @@ package com.github.rconner.anansi;
  * An Iterator used in depth-first traversals.
  *
  * @param <T>
- *
  * @author rconner
  */
 public interface DepthFirstIterator<T> extends PruningIterator<T> {

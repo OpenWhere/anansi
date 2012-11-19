@@ -36,7 +36,6 @@ public class Paths {
     }
 
     /**
-     *
      * @param from
      * @param to
      * @param <V>
@@ -48,7 +47,6 @@ public class Paths {
     }
 
     /**
-     *
      * @param from
      * @param to
      * @param over

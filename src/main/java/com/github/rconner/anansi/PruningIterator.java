@@ -28,7 +28,6 @@ import java.util.Iterator;
  * An Iterator with a prune operation.
  *
  * @param <T>
- *
  * @author rconner
  */
 public interface PruningIterator<T> extends Iterator<T> {

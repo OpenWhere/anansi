@@ -31,7 +31,6 @@ import com.google.common.base.Function;
  *
  * @param <V>
  * @param <E>
- *
  * @author rconner
  */
 public interface Traversal<V, E> extends Function<V, Iterable<Path<V, E>>> {
