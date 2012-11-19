@@ -30,21 +30,71 @@ package com.github.rconner.anansi;
  * @param <E>
  * @author rconner
  */
-public interface Path<V, E> {
+public abstract class Path<V, E> {
 
     /**
      * @return
      */
-    V from();
+    public abstract V getFrom();
 
     /**
      * @return
      */
-    V to();
+    public abstract V getTo();
 
     /**
      * @return
      */
-    E over();
+    public abstract E getOver();
+
+    /**
+     * @param from
+     * @param to
+     * @param <V>
+     * @param <E>
+     * @return
+     */
+    public static <V, E> Path<V, E> newInstance(V from, V to) {
+        return new TrivialPath<V, E>(from, to, null);
+    }
+
+    /**
+     * @param from
+     * @param to
+     * @param over
+     * @param <V>
+     * @param <E>
+     * @return
+     */
+    public static <V, E> Path<V, E> newInstance(V from, V to, E over) {
+        return new TrivialPath<V, E>(from, to, over);
+    }
+
+    private static final class TrivialPath<V, E> extends Path<V, E> {
+        private final V from;
+        private final V to;
+        private final E over;
+
+        private TrivialPath(V from, V to, E over) {
+            this.from = from;
+            this.to = to;
+            this.over = over;
+        }
+
+        @Override
+        public V getFrom() {
+            return from;
+        }
+
+        @Override
+        public V getTo() {
+            return to;
+        }
+
+        @Override
+        public E getOver() {
+            return over;
+        }
+    }
 
 }
