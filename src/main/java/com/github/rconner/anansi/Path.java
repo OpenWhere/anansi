@@ -51,6 +51,8 @@ public abstract class Path<V, E> {
     public abstract E getOver();
 
     /**
+     * Creates a new immutable Path, with an over of null.
+     *
      * @param from
      * @param to
      * @param <V>
@@ -62,6 +64,8 @@ public abstract class Path<V, E> {
     }
 
     /**
+     * Creates a new immutable Path.
+     *
      * @param from
      * @param to
      * @param over
@@ -97,6 +101,45 @@ public abstract class Path<V, E> {
         @Override
         public E getOver() {
             return over;
+        }
+    }
+
+
+    public static <V, E> Builder<V, E> from(V from) {
+        return new Builder<V, E>(from);
+    }
+
+    // TODO: Explore having Builder be immutable, and therefore thread-safe.
+    // to( ... ) would have to return new instances, and pop() would be OBE,
+    // but you get the benefit of allowing concurrent traversals.
+
+    public static final class Builder<V, E> {
+        private final V from;
+        private Chain<Path<V, E>> chain;
+
+        private Builder(V from) {
+            this.from = from;
+        }
+
+        public Builder<V, E> to(V to) {
+            return to(to, null);
+        }
+
+        public Builder<V, E> to(V to, E over) {
+            if (chain == null) {
+                chain = Chain.of(Path.newInstance(from, to, over));
+            }
+            chain = chain.with(Path.newInstance(chain.head().getTo(), to, over));
+            return this;
+        }
+
+        public Builder<V, E> pop() {
+            chain = chain.tail();
+            return this;
+        }
+
+        public Path<V, ? extends Iterable<Path<V, E>>> build() {
+            return Path.newInstance(from, chain.head().getTo(), chain.reverse());
         }
     }
 
