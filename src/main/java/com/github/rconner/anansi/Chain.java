@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
  */
 final class Chain<E> implements Iterable<E> {
 
-    // FIXME: add (enum singleton) terminator instead of null?
+    // TODO: add (enum singleton) terminator instead of null?
     // That would allow representation of an empty chain.
 
     private final E head;
