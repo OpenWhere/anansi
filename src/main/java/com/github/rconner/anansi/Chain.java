@@ -22,6 +22,7 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import java.util.NoSuchElementException;
  * singly-linked allows unused paths to be garbage collected. This is roughly how LISP implements lists, and works very
  * nicely for building predecessor graphs.
  */
+@Beta
 final class Chain<E> implements Iterable<E> {
 
     // TODO: add (enum singleton) terminator instead of null?
