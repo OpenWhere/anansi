@@ -22,7 +22,10 @@
 
 package com.github.rconner.anansi;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.UnmodifiableIterator;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A special case immutable singly-linked list used for building Paths. This is singly-linked for a couple reasons. One
@@ -30,7 +33,10 @@ import com.google.common.collect.ImmutableList;
  * singly-linked allows unused paths to be garbage collected. This is roughly how LISP implements lists, and works very
  * nicely for building predecessor graphs.
  */
-final class Chain<E> {
+final class Chain<E> implements Iterable<E> {
+
+    // FIXME: add (enum singleton) terminator instead of null?
+    // That would allow representation of an empty chain.
 
     private final E head;
     private final Chain<E> tail;
@@ -86,18 +92,75 @@ final class Chain<E> {
         return new Chain<E>(element, this);
     }
 
-    public ImmutableList<E> toList() {
-        ImmutableList.Builder<E> builder = ImmutableList.builder();
-        Chain<E> chain = this;
-        for (int i = 0; i < size; i++) {
-            builder.add(chain.head());
-            chain = chain.tail();
-        }
-        return builder.build();
+    @Override
+    public Iterator<E> iterator() {
+        return new UnmodifiableIterator<E>() {
+            Chain<E> rest = Chain.this;
+
+            @Override
+            public boolean hasNext() {
+                return rest != null;
+            }
+
+            @Override
+            public E next() {
+                if (rest == null) {
+                    throw new NoSuchElementException();
+                }
+                E element = rest.head();
+                rest = rest.tail();
+                return element;
+            }
+        };
     }
 
-    public ImmutableList<E> toReverseList() {
-        return toList().reverse();
+    // This is a trade-off that probably needs some benchmarking.
+    // This implementation computes the backing array once, and then keeps it around forever.
+    // One alternative is to create a new backing array every time iterator() is called.
+    // Another is to keep a weak reference to the backing array and only recompute if it has been gc'd.
+
+    public Iterable<E> reverse() {
+        // There's no way to do this without saving all the elements, at least no way that isn't O(n^2).
+        // An ImmutableList would work, except they don't allow null elements.
+
+        return new Iterable<E>() {
+            // Lazily initialized
+            private Object[] array;
+
+            private synchronized Object[] getArray() {
+                if (array == null) {
+                    array = new Object[size];
+                    Chain<E> rest = Chain.this;
+                    for (int i = size() - 1; i >= 0; i--) {
+                        array[i] = rest.head();
+                        rest = rest.tail();
+                    }
+                }
+                return array;
+            }
+
+            @Override
+            public Iterator<E> iterator() {
+                // Arrays.asList( ... ).iterator() returns a ListIterator, which allows elements to be mutated.
+                final Object[] ref = getArray();
+                return new UnmodifiableIterator<E>() {
+                    private int i = 0;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i < ref.length;
+                    }
+
+                    @Override
+                    public E next() {
+                        if (i >= ref.length) {
+                            throw new NoSuchElementException();
+                        }
+                        return (E) ref[i++];
+                    }
+                };
+            }
+        };
     }
 
 }
