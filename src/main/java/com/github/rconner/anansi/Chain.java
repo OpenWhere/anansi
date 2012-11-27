@@ -37,27 +37,28 @@ import java.util.NoSuchElementException;
 @Beta
 final class Chain<E> implements Iterable<E> {
 
-    // TODO: add (enum singleton) terminator instead of null?
-    // That would allow representation of an empty chain.
+    // Should really be a singleton-enum pattern, but Chain would need to
+    // be an interface for that to happen.
+    private static final Chain<Object> EMPTY = new Chain<Object>();
 
     private final E head;
     private final Chain<E> tail;
     private final int size;
 
-    private Chain(E head, Chain<E> tail) {
-        this.head = head;
-        this.tail = tail;
-        size = (tail == null) ? 1 : tail.size + 1;
+    /**
+     * Used only to construct EMPTY.
+     */
+    private Chain() {
+        head = null;
+        tail = null;
+        size = 0;
     }
 
-    /**
-     * Creates a Chain with a single element.
-     *
-     * @param element
-     * @return
-     */
-    public static <T> Chain<T> of(T element) {
-        return new Chain<T>(element, null);
+    private Chain(E head, Chain<E> tail) {
+        // tail must be non-null
+        this.head = head;
+        this.tail = tail;
+        size = tail.size + 1;
     }
 
     /**
@@ -66,8 +67,8 @@ final class Chain<E> implements Iterable<E> {
      * @param elements
      * @return
      */
-    public static <T> Chain<T> copyOf(T... elements) {
-        Chain<T> chain = null;
+    public static <T> Chain<T> of(T... elements) {
+        Chain<T> chain = (Chain<T>) EMPTY;
         for (int i = elements.length - 1; i >= 0; i--) {
             chain = new Chain<T>(elements[i], chain);
         }
@@ -75,10 +76,16 @@ final class Chain<E> implements Iterable<E> {
     }
 
     public E head() {
+        if (this == EMPTY) {
+            throw new NoSuchElementException();
+        }
         return head;
     }
 
     public Chain<E> tail() {
+        if (this == EMPTY) {
+            throw new NoSuchElementException();
+        }
         return tail;
     }
 
@@ -101,12 +108,12 @@ final class Chain<E> implements Iterable<E> {
 
             @Override
             public boolean hasNext() {
-                return rest != null;
+                return rest != EMPTY;
             }
 
             @Override
             public E next() {
-                if (rest == null) {
+                if (rest == EMPTY) {
                     throw new NoSuchElementException();
                 }
                 E element = rest.head();
