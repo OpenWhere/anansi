@@ -68,8 +68,7 @@ final class Chain<E> implements Iterable<E> {
      * @return
      */
     public static <T> Chain<T> of(T... elements) {
-        @SuppressWarnings( "unchecked" )
-        Chain<T> chain = (Chain<T>) EMPTY;
+        @SuppressWarnings("unchecked") Chain<T> chain = (Chain<T>) EMPTY;
         for (int i = elements.length - 1; i >= 0; i--) {
             chain = new Chain<T>(elements[i], chain);
         }
@@ -162,7 +161,7 @@ final class Chain<E> implements Iterable<E> {
                     }
 
                     @Override
-                    @SuppressWarnings( "unchecked" )
+                    @SuppressWarnings("unchecked")
                     public E next() {
                         if (i >= ref.length) {
                             throw new NoSuchElementException();

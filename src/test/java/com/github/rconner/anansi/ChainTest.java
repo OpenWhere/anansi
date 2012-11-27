@@ -108,15 +108,15 @@ public class ChainTest {
     public void testEmpty() {
         Chain<Integer> chain = Chain.of();
         assertChainContains(chain);
-        assertChainContains(chain.with( 101 ).with( 102 ), 102, 101 );
+        assertChainContains(chain.with(101).with(102), 102, 101);
         assertChainContains(chain);
     }
 
     @Test
     public void testSingle() {
-        Chain<Integer> chain = Chain.of( 42 );
+        Chain<Integer> chain = Chain.of(42);
         assertChainContains(chain, 42);
-        assertChainContains(chain.with( 101 ).with( 102 ), 102, 101, 42 );
+        assertChainContains(chain.with(101).with(102), 102, 101, 42);
         assertChainContains(chain, 42);
     }
 
@@ -124,7 +124,7 @@ public class ChainTest {
     public void testMany() {
         Chain<Integer> chain = Chain.of(2, 3, 5, 7, 11);
         assertChainContains(chain, 2, 3, 5, 7, 11);
-        assertChainContains(chain.with( 101 ).with( 102 ), 102, 101, 2, 3, 5, 7, 11 );
+        assertChainContains(chain.with(101).with(102), 102, 101, 2, 3, 5, 7, 11);
         assertChainContains(chain, 2, 3, 5, 7, 11);
     }
 
