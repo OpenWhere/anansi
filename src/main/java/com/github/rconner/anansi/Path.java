@@ -104,43 +104,51 @@ public abstract class Path<V, E> {
         }
     }
 
-
+    /**
+     * Creates a builder used to create a Path with sub-paths. Note that Path.Builder instances are immutable.
+     *
+     * @param from
+     * @param <V>
+     * @param <E>
+     * @return
+     */
     public static <V, E> Builder<V, E> from(V from) {
         return new Builder<V, E>(from);
     }
 
-    // TODO: Explore having Builder be immutable, and therefore thread-safe.
-    // to( ... ) would have to return new instances, and pop() would be OBE,
-    // but you get the benefit of allowing concurrent traversals.
-
     public static final class Builder<V, E> {
         private final V from;
-        private Chain<Path<V, E>> chain = null;
+        private final V to;
+        private final Chain<Path<V, E>> chain;
 
+        @SuppressWarnings("unchecked")
         private Builder(V from) {
+            this(from, from, Chain.<Path<V, E>>of());
+        }
+
+        private Builder(V from, V to, Chain<Path<V, E>> chain) {
             this.from = from;
+            this.to = to;
+            this.chain = chain;
         }
 
         public Builder<V, E> to(V to) {
             return to(to, null);
         }
 
-        @SuppressWarnings( "unchecked" )
         public Builder<V, E> to(V to, E over) {
-            if (chain == null) {
-                chain = Chain.of(Path.newInstance(from, to, over));
-            }
-            chain = chain.with(Path.newInstance(chain.head().getTo(), to, over));
-            return this;
-        }
-
-        public Builder<V, E> pop() {
-            chain = chain.tail();
-            return this;
+            Path<V, E> step = Path.newInstance(this.to, to, over);
+            return new Builder<V, E>(from, to, chain.with(step));
         }
 
         public Path<V, ? extends Iterable<Path<V, E>>> build() {
-            return Path.newInstance(from, chain.head().getTo(), chain.reverse());
+            // if chain is empty, do not know from/to
+            // otherwise:
+            //   from := chain.last.from
+            //   to := chain.head.to
+            // FIXME: Instead, build a *really* lazy path? b/c often the caller will only
+            // be interested in path.to anyway. So just keep the chain around in the path.
+            return Path.newInstance(from, to, chain.reverse());
         }
     }
 
