@@ -41,9 +41,11 @@ public interface PruningIterator<T> extends Iterator<T> {
      * be called only once per call to {@code next()}. After calling this method (and before calling {@code next()}
      * again), {@link #remove()} will throw an {@code IllegalStateException}.
      *
-     * @throws IllegalStateException         if {@code next()} has not yet been called, or {@code remove()}, or {@code
-     *                                       prune()} has been called after the last call to {@code next()}.
-     * @throws UnsupportedOperationException if this method is not supported by this {@link Iterator}.
+     * @throws IllegalStateException
+     *         if {@code next()} has not yet been called, or {@code remove()}, or {@code prune()} has been called after
+     *         the last call to {@code next()}.
+     * @throws UnsupportedOperationException
+     *         if this method is not supported by this {@link Iterator}.
      */
     public void prune();
 
