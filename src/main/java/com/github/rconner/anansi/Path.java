@@ -115,7 +115,7 @@ public abstract class Path<V, E> {
 
     public static final class Builder<V, E> {
         private final V from;
-        private Chain<Path<V, E>> chain;
+        private Chain<Path<V, E>> chain = null;
 
         private Builder(V from) {
             this.from = from;
