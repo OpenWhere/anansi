@@ -125,6 +125,7 @@ public abstract class Path<V, E> {
             return to(to, null);
         }
 
+        @SuppressWarnings( "unchecked" )
         public Builder<V, E> to(V to, E over) {
             if (chain == null) {
                 chain = Chain.of(Path.newInstance(from, to, over));

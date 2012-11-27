@@ -105,6 +105,7 @@ public class ChainTest {
 
     @Test
     public void testEmpty() {
+        @SuppressWarnings("unchecked")
         Chain<Integer> chain = Chain.of();
         assertChainContains(chain);
         assertChainContains(chain.with( 101 ).with( 102 ), 102, 101 );
@@ -113,6 +114,7 @@ public class ChainTest {
 
     @Test
     public void testSingle() {
+        @SuppressWarnings("unchecked")
         Chain<Integer> chain = Chain.of( 42 );
         assertChainContains(chain, 42);
         assertChainContains(chain.with( 101 ).with( 102 ), 102, 101, 42 );
@@ -121,6 +123,7 @@ public class ChainTest {
 
     @Test
     public void testMany() {
+        @SuppressWarnings("unchecked")
         Chain<Integer> chain = Chain.of(2, 3, 5, 7, 11);
         assertChainContains(chain, 2, 3, 5, 7, 11);
         assertChainContains(chain.with( 101 ).with( 102 ), 102, 101, 2, 3, 5, 7, 11 );
