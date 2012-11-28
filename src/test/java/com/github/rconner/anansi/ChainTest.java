@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 
 public class ChainTest {
 
-    private static <E> void assertIteratorEmpty(Iterator<E> i) {
+    static <E> void assertIteratorEmpty(Iterator<E> i) {
         assertThat(i.hasNext(), is(false));
         try {
             i.next();
@@ -52,7 +52,7 @@ public class ChainTest {
         assertIteratorEmpty(Iterators.emptyIterator());
     }
 
-    private static <E> void assertIteratorContains(Iterator<E> i, Object... elements) {
+    static <E> void assertIteratorContains(Iterator<E> i, Object... elements) {
         assertThat(Lists.<Object>newArrayList(i), is(Arrays.asList(elements)));
         assertIteratorEmpty(i);
     }
