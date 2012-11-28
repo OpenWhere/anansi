@@ -142,7 +142,7 @@ public abstract class Path<V, E> {
             return new Builder<V, E>(from, to, chain.with(step));
         }
 
-        public Path<V, ? extends Iterable<Path<V, E>>> build() {
+        public Path<V, Iterable<Path<V, E>>> build() {
             // if chain is empty, do not know from/to
             // otherwise:
             //   from := chain.last.from
