@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.rconner.anansi;
+package com.github.rconner.util;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.UnmodifiableIterator;
@@ -36,7 +36,7 @@ import java.util.NoSuchElementException;
  * nicely for building predecessor graphs.
  */
 @Beta
-final class Chain<E> implements Iterable<E> {
+public final class Chain<E> implements Iterable<E> {
 
     // Should really be a singleton-enum pattern, but Chain would need to
     // be an interface for that to happen.
@@ -134,7 +134,7 @@ final class Chain<E> implements Iterable<E> {
     public Iterable<E> reverse() {
         // There's no way to do this without saving all the elements, at least no way that isn't O(n^2).
         // An ImmutableList would work, except they don't allow null elements.
-        return new ChainIterable<E>( this );
+        return new ChainIterable<E>(this);
     }
 
     // This has TWO levels of laziness:
@@ -152,7 +152,7 @@ final class Chain<E> implements Iterable<E> {
         // Lazily initialized
         private Object[] array;
 
-        private ChainIterable( Chain<E> chain ) {
+        private ChainIterable(Chain<E> chain) {
             this.chain = chain;
         }
 
@@ -170,7 +170,7 @@ final class Chain<E> implements Iterable<E> {
 
         @Override
         public Iterator<E> iterator() {
-            return new ArrayIterator<E>( getArray() );
+            return new ArrayIterator<E>(getArray());
         }
     }
 
@@ -178,7 +178,7 @@ final class Chain<E> implements Iterable<E> {
         private final Object[] array;
         private int i = 0;
 
-        private ArrayIterator( Object[] array ) {
+        private ArrayIterator(Object[] array) {
             this.array = array;
         }
 

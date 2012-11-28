@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.ChainTest;
 import org.junit.Test;
 
 import java.util.Iterator;

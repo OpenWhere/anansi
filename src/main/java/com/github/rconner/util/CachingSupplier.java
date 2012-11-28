@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.rconner.anansi;
+package com.github.rconner.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;

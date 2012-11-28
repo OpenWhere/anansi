@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.rconner.anansi;
+package com.github.rconner.util;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 
 public class ChainTest {
 
-    static <E> void assertIteratorEmpty(Iterator<E> i) {
+    public static <E> void assertIteratorEmpty(Iterator<E> i) {
         assertThat(i.hasNext(), is(false));
         try {
             i.next();
@@ -52,7 +52,7 @@ public class ChainTest {
         assertIteratorEmpty(Iterators.emptyIterator());
     }
 
-    static <E> void assertIteratorContains(Iterator<E> i, Object... elements) {
+    public static <E> void assertIteratorContains(Iterator<E> i, Object... elements) {
         assertThat(Lists.<Object>newArrayList(i), is(Arrays.asList(elements)));
         assertIteratorEmpty(i);
     }

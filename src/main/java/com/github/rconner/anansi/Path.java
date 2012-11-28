@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.Chain;
 import com.google.common.annotations.Beta;
 
 /**
