@@ -117,8 +117,8 @@ final class Chain<E> implements Iterable<E> {
                 if (rest == EMPTY) {
                     throw new NoSuchElementException();
                 }
-                E element = rest.head();
-                rest = rest.tail();
+                E element = rest.head;
+                rest = rest.tail;
                 return element;
             }
         };
@@ -129,49 +129,71 @@ final class Chain<E> implements Iterable<E> {
     // One alternative is to create a new backing array every time iterator() is called.
     // Another is to keep a weak reference to the backing array and only recompute if it has been gc'd.
 
+    // FIXME: Return a REUSED immutable iterable => keep a weak ref to the Iterable.
+
     public Iterable<E> reverse() {
         // There's no way to do this without saving all the elements, at least no way that isn't O(n^2).
         // An ImmutableList would work, except they don't allow null elements.
-
-        return new Iterable<E>() {
-            // Lazily initialized
-            private Object[] array;
-
-            private synchronized Object[] getArray() {
-                if (array == null) {
-                    array = new Object[size];
-                    Chain<E> rest = Chain.this;
-                    for (int i = size() - 1; i >= 0; i--) {
-                        array[i] = rest.head();
-                        rest = rest.tail();
-                    }
-                }
-                return array;
-            }
-
-            @Override
-            public Iterator<E> iterator() {
-                // Arrays.asList( ... ).iterator() returns a ListIterator, which allows elements to be mutated.
-                final Object[] ref = getArray();
-                return new UnmodifiableIterator<E>() {
-                    private int i = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return i < ref.length;
-                    }
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public E next() {
-                        if (i >= ref.length) {
-                            throw new NoSuchElementException();
-                        }
-                        return (E) ref[i++];
-                    }
-                };
-            }
-        };
+        return new ChainIterable<E>( this );
     }
 
+    // This has TWO levels of laziness:
+    // - Do not create the Iterable until asked by chain.reverse()
+    // - Do not traverse the chain to create the array until asked for Iterable.iterator()
+
+    // If we just return a LazyIterable around this, do we get all that without any explicit laziness here?
+
+    // The entire Iterable should be reused if someone else calls chain.reverse(), not just the array.
+    // If the iterator is traversed, it has the array and no longer needs the chain.
+
+
+    private static final class ChainIterable<E> implements Iterable<E> {
+        private final Chain<E> chain;
+        // Lazily initialized
+        private Object[] array;
+
+        private ChainIterable( Chain<E> chain ) {
+            this.chain = chain;
+        }
+
+        private synchronized Object[] getArray() {
+            if (array == null) {
+                array = new Object[chain.size];
+                Chain<E> rest = chain;
+                for (int i = chain.size - 1; i >= 0; i--) {
+                    array[i] = rest.head;
+                    rest = rest.tail;
+                }
+            }
+            return array;
+        }
+
+        @Override
+        public Iterator<E> iterator() {
+            return new ArrayIterator<E>( getArray() );
+        }
+    }
+
+    private static final class ArrayIterator<E> extends UnmodifiableIterator<E> {
+        private final Object[] array;
+        private int i = 0;
+
+        private ArrayIterator( Object[] array ) {
+            this.array = array;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return i < array.length;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public E next() {
+            if (i >= array.length) {
+                throw new NoSuchElementException();
+            }
+            return (E) array[i++];
+        }
+    }
 }
