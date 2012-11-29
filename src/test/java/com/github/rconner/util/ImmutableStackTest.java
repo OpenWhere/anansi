@@ -101,9 +101,9 @@ public class ImmutableStackTest {
 
     @Test
     public void testMany() {
-        ImmutableStack<Integer> stack = ImmutableStack.of( 11, 7, 5, 3, 2 );
-        assertStackContains( stack, 2, 3, 5, 7, 11 );
-        assertStackContains( stack.push( 101 ).push( 102 ), 102, 101, 2, 3, 5, 7, 11 );
-        assertStackContains( stack, 2, 3, 5, 7, 11 );
+        ImmutableStack<Integer> stack = ImmutableStack.of( 11, null, 5, 3, 2 );
+        assertStackContains( stack, 2, 3, 5, null, 11 );
+        assertStackContains( stack.push( 101 ).push( null ).push( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
+        assertStackContains( stack, 2, 3, 5, null, 11 );
     }
 }
