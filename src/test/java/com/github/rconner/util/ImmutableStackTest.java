@@ -34,13 +34,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class ImmutableStackTest {
+public final class ImmutableStackTest {
 
-    private static <E> void assertStackContains( ImmutableStack<E> stack, E... elements ) {
+    private static <E> void assertStackContains( final ImmutableStack<E> stack, final E... elements ) {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
-        for( E element : elements ) {
+        for( final E element : elements ) {
             assertThat( stack.contains( element ), is( true ) );
         }
         assertThat( stack.contains( new Object() ), is( false ) );
@@ -48,8 +48,8 @@ public class ImmutableStackTest {
         assertIteratorContains( stack.iterator(), elements );
         assertIteratorContains( stack.iterator(), elements );
 
-        Iterable<E> reverse = stack.reverse();
-        Object[] expectedReverse = Lists.reverse( Lists.newArrayList( elements ) ).toArray();
+        final Iterable<E> reverse = stack.reverse();
+        final Object[] expectedReverse = Lists.reverse( Lists.newArrayList( elements ) ).toArray();
         assertIteratorContains( reverse.iterator(), expectedReverse );
         assertIteratorContains( reverse.iterator(), expectedReverse );
 
@@ -85,7 +85,7 @@ public class ImmutableStackTest {
     @Test
     @SuppressWarnings( "unchecked" )
     public void testEmpty() {
-        ImmutableStack<Integer> stack = ImmutableStack.of();
+        final ImmutableStack<Integer> stack = ImmutableStack.of();
         assertStackContains( stack );
         assertStackContains( stack.push( 101 ).push( 102 ), 102, 101 );
         assertStackContains( stack );
@@ -93,7 +93,7 @@ public class ImmutableStackTest {
 
     @Test
     public void testSingle() {
-        ImmutableStack<Integer> stack = ImmutableStack.of( 42 );
+        final ImmutableStack<Integer> stack = ImmutableStack.of( 42 );
         assertStackContains( stack, 42 );
         assertStackContains( stack.push( 101 ).push( 102 ), 102, 101, 42 );
         assertStackContains( stack, 42 );
@@ -101,7 +101,7 @@ public class ImmutableStackTest {
 
     @Test
     public void testMany() {
-        ImmutableStack<Integer> stack = ImmutableStack.of( 11, null, 5, 3, 2 );
+        final ImmutableStack<Integer> stack = ImmutableStack.of( 11, null, 5, 3, 2 );
         assertStackContains( stack, 2, 3, 5, null, 11 );
         assertStackContains( stack.push( 101 ).push( null ).push( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
         assertStackContains( stack, 2, 3, 5, null, 11 );

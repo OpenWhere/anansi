@@ -23,11 +23,14 @@
 
 package com.github.rconner.util;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -39,15 +42,15 @@ import static org.junit.Assert.fail;
  * Helper methods for other tests, and tests for those methods (which is why this class is named ...Test, so maven will
  * pick it up).
  */
-public class IterableTest {
+public final class IterableTest {
 
     // TODO: These should really be hamcrest Matcher implementations. I'm sure these already exist somewhere,
     // but it's not in the junit jar.
 
-    public static <E> void assertIteratorEmpty( Iterator<E> i ) {
-        assertThat( i.hasNext(), is( false ) );
+    public static <E> void assertIteratorEmpty( final Iterator<E> iterator ) {
+        assertThat( iterator.hasNext(), is( false ) );
         try {
-            i.next();
+            iterator.next();
             fail( "Should throw NoSuchElementException." );
         } catch( NoSuchElementException ignored ) {
             // expected
@@ -59,14 +62,14 @@ public class IterableTest {
         assertIteratorEmpty( Iterators.emptyIterator() );
     }
 
-    public static void assertIteratorsEqual( Iterator<?> a, Iterator<?> b ) {
-        assertThat( Iterators.elementsEqual( a, b ), is( true ) );
-        assertIteratorEmpty( a );
-        assertIteratorEmpty( b );
+    public static void assertIteratorsEqual( final Iterator<?> actual, final Iterator<?> expected ) {
+        assertThat( Iterators.elementsEqual( actual, expected ), is( true ) );
+        assertIteratorEmpty( actual );
+        assertIteratorEmpty( expected );
     }
 
-    public static void assertIteratorContains( Iterator<?> i, Object... elements ) {
-        assertIteratorsEqual( i, Arrays.asList( elements ).iterator() );
+    public static void assertIteratorContains( final Iterator<?> iterator, final Object... elements ) {
+        assertIteratorsEqual( iterator, Arrays.asList( elements ).iterator() );
     }
 
     @Test
@@ -77,7 +80,14 @@ public class IterableTest {
         assertIteratorContains( Arrays.asList( 7, 11, 13, 17, 19 ).iterator(), 7, 11, 13, 17, 19 );
     }
 
-    public static void assertIterablesEqual( Iterable<?> a, Iterable<?> b ) {
-        assertThat( Iterables.elementsEqual( a, b ), is( true ) );
+    public static void assertIterablesEqual( final Iterable<?> actual, final Iterable<?> expected ) {
+        assertThat( Iterables.elementsEqual( actual, expected ), is( true ) );
+    }
+
+    @Test
+    public void testAssertIterablesEqual() {
+        assertIterablesEqual( Collections.emptyList(), ImmutableSet.of() );
+        assertIterablesEqual( Arrays.asList( 2 ), Lists.newArrayList( 2 ) );
+        assertIterablesEqual( Arrays.asList( 7, 11, 13, 17, 19 ), Lists.newArrayList( 7, 11, 13, 17, 19 ) );
     }
 }

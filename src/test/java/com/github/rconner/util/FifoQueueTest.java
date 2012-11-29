@@ -37,13 +37,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class FifoQueueTest {
+public final class FifoQueueTest {
 
-    private static <E> void assertQueueContains( FifoQueue<E> queue, E... elements ) {
+    private static <E> void assertQueueContains( final FifoQueue<E> queue, final E... elements ) {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
-        for( E element : elements ) {
+        for( final E element : elements ) {
             assertThat( queue.contains( element ), is( true ) );
         }
         assertThat( queue.contains( new Object() ), is( false ) );
@@ -78,12 +78,12 @@ public class FifoQueueTest {
         assertThat( queue.size(), is( elements.length ) );
     }
 
-    private static <E> void testDequeue( FifoQueue<E> queue, E... elements ) {
+    private static <E> void testDequeue( final FifoQueue<E> queue, final E... elements ) {
         assertQueueContains( queue, elements );
         if( elements.length == 0 ) {
             return;
         }
-        E element = queue.dequeue();
+        final E element = queue.dequeue();
         assertThat( element, is( elements[ 0 ] ) );
         testDequeue( queue, Arrays.copyOfRange( elements, 1, elements.length ) );
     }
@@ -91,7 +91,7 @@ public class FifoQueueTest {
     @Test
     @SuppressWarnings( "unchecked" )
     public void testEmpty() {
-        FifoQueue<Integer> queue = FifoQueue.of();
+        final FifoQueue<Integer> queue = FifoQueue.of();
         assertQueueContains( queue );
         queue.enqueue( 101 );
         queue.enqueue( 102 );
@@ -101,7 +101,7 @@ public class FifoQueueTest {
 
     @Test
     public void testSingle() {
-        FifoQueue<Integer> queue = FifoQueue.of( 42 );
+        final FifoQueue<Integer> queue = FifoQueue.of( 42 );
         assertQueueContains( queue, 42 );
         queue.enqueue( 101 );
         queue.enqueue( 102 );
@@ -111,7 +111,7 @@ public class FifoQueueTest {
 
     @Test
     public void testMany() {
-        FifoQueue<Integer> queue = FifoQueue.of( 2, 3, 5, null, 11 );
+        final FifoQueue<Integer> queue = FifoQueue.of( 2, 3, 5, null, 11 );
         assertQueueContains( queue, 2, 3, 5, null, 11 );
         queue.enqueue( 101 );
         queue.enqueue( null );
@@ -121,14 +121,15 @@ public class FifoQueueTest {
     }
 
     @Test
+    @SuppressWarnings( "MethodWithMultipleLoops" )
     public void testRandomMutations() {
-        FifoQueue<Integer> queue = new FifoQueue<Integer>();
-        LinkedList<Integer> expected = Lists.newLinkedList();
-        Random random = new Random();
+        final FifoQueue<Integer> queue = new FifoQueue<Integer>();
+        final LinkedList<Integer> expected = Lists.newLinkedList();
+        final Random random = new Random();
 
         // Put some initial values in.
         for( int i = 0; i < 1000; i++ ) {
-            Integer element = random.nextInt();
+            final Integer element = random.nextInt();
             queue.enqueue( element );
             expected.addLast( element );
         }
@@ -140,11 +141,11 @@ public class FifoQueueTest {
         // because we're not testing for an empty queue.
         for( int i = 0; i < 1000; i++ ) {
             if( random.nextBoolean() ) {
-                Integer element = random.nextInt();
+                final Integer element = random.nextInt();
                 queue.enqueue( element );
                 expected.addLast( element );
             } else {
-                Integer head = queue.head();
+                final Integer head = queue.head();
                 assertThat( queue.dequeue(), is( head ) );
                 assertThat( expected.removeFirst(), is( head ) );
             }
