@@ -23,6 +23,7 @@
 
 package com.github.rconner.util;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.junit.Test;
@@ -59,9 +60,14 @@ public class IterableTest {
         assertIteratorEmpty( Iterators.emptyIterator() );
     }
 
-    public static <E> void assertIteratorContains( Iterator<E> i, Object... elements ) {
-        assertThat( Lists.<Object>newArrayList( i ), is( Arrays.asList( elements ) ) );
-        assertIteratorEmpty( i );
+    public static void assertIteratorsEqual( Iterator<?> a, Iterator<?> b ) {
+        assertThat( Iterators.elementsEqual( a, b ), is( true ) );
+        assertIteratorEmpty( a );
+        assertIteratorEmpty( b );
+    }
+
+    public static void assertIteratorContains( Iterator<?> i, Object... elements ) {
+        assertIteratorsEqual( i, Arrays.asList( elements ).iterator() );
     }
 
     @Test
@@ -72,9 +78,7 @@ public class IterableTest {
         assertIteratorContains( Arrays.asList( 7, 11, 13, 17, 19 ).iterator(), 7, 11, 13, 17, 19 );
     }
 
-    public static void assertIteratorsEqual( Iterator<?> a, Iterator<?> b ) {
-        assertThat( Lists.newArrayList( a ), is( Lists.newArrayList( b ) ) );
-        assertIteratorEmpty( a );
-        assertIteratorEmpty( b );
+    public static void assertIterablesEqual( Iterable<?> a, Iterable<?> b ) {
+        assertThat( Iterables.elementsEqual( a, b ), is( true ) );
     }
 }
