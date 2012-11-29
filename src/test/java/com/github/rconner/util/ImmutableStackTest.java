@@ -40,6 +40,11 @@ public class ImmutableStackTest {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
+        for (E element : elements) {
+            assertThat(stack.contains(element), is(true));
+        }
+        assertThat(stack.contains(new Object()), is(false));
+
         assertIteratorContains(stack.iterator(), elements);
         assertIteratorContains(stack.iterator(), elements);
 
@@ -51,6 +56,7 @@ public class ImmutableStackTest {
         assertThat(stack.size(), is(elements.length));
 
         if (elements.length == 0) {
+            assertThat(stack.isEmpty(), is(true));
             try {
                 stack.peek();
                 fail("Should throw EmptyStackException.");
@@ -64,6 +70,7 @@ public class ImmutableStackTest {
                 // expected
             }
         } else {
+            assertThat(stack.isEmpty(), is(false));
             assertThat(stack.peek(), is(elements[0]));
             assertStackContains(stack.pop(), Arrays.copyOfRange(elements, 1, elements.length));
         }
@@ -99,6 +106,4 @@ public class ImmutableStackTest {
         assertStackContains(stack.push(101).push(102), 102, 101, 2, 3, 5, 7, 11);
         assertStackContains(stack, 2, 3, 5, 7, 11);
     }
-
-    // TODO: test other methods
 }
