@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Iterator;
 
+import static com.github.rconner.util.IterableTest.assertIteratorEmpty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -61,13 +62,13 @@ public class PathTest {
             assertThat(actualSubPath.getTo(), is(expectedSubPath.getTo()));
             assertThat(actualSubPath.getOver(), is(expectedSubPath.getOver()));
         }
-        ChainTest.assertIteratorEmpty(iterator);
+        assertIteratorEmpty(iterator);
     }
 
     private static <V, E> void assertPathEmpty(Path<V, Iterable<Path<V, E>>> actual, V root) {
         assertThat(actual.getFrom(), is(root));
         assertThat(actual.getTo(), is(root));
-        ChainTest.assertIteratorEmpty(actual.getOver().iterator());
+        assertIteratorEmpty(actual.getOver().iterator());
     }
 
     @Test

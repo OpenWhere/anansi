@@ -31,39 +31,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static com.github.rconner.util.IterableTest.assertIteratorContains;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class ChainTest {
-
-    public static <E> void assertIteratorEmpty(Iterator<E> i) {
-        assertThat(i.hasNext(), is(false));
-        try {
-            i.next();
-            fail("Should throw NoSuchElementException.");
-        } catch (NoSuchElementException ignored) {
-            // expected
-        }
-    }
-
-    @Test
-    public void testAssertIteratorEmpty() {
-        assertIteratorEmpty(Iterators.emptyIterator());
-    }
-
-    public static <E> void assertIteratorContains(Iterator<E> i, Object... elements) {
-        assertThat(Lists.<Object>newArrayList(i), is(Arrays.asList(elements)));
-        assertIteratorEmpty(i);
-    }
-
-    @Test
-    public void testAssertIteratorContains() {
-        assertIteratorContains(Iterators.emptyIterator());
-        assertIteratorContains(Arrays.asList(2).iterator(), 2);
-        assertIteratorContains(Arrays.asList(3, 5).iterator(), 3, 5);
-        assertIteratorContains(Arrays.asList(7, 11, 13, 17, 19).iterator(), 7, 11, 13, 17, 19);
-    }
 
     private static <E> void assertChainContains(Chain<E> chain, E... elements) {
 
