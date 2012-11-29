@@ -23,6 +23,7 @@
 
 package com.github.rconner.util;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
@@ -69,7 +70,13 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
 
     public abstract Iterable<E> reverse();
 
-
+    /**
+     * Creates a new ImmutableStack with the given elements, in order from bottom to top.
+     *
+     * @param elements
+     * @param <E>
+     * @return
+     */
     public static <E> ImmutableStack<E> of(E... elements) {
         @SuppressWarnings("unchecked")
         ImmutableStack<E> stack = (ImmutableStack<E>) EMPTY_STACK;
@@ -118,6 +125,11 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         @Override
         public Iterable<Object> reverse() {
             return ImmutableSet.of();
+        }
+
+        @Override
+        public String toString() {
+            return "[]";
         }
     };
 
@@ -218,6 +230,17 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
                     return new ArrayIterator<E>(array);
                 }
             };
+        }
+
+        private static final Joiner JOINER = Joiner.on(", ").useForNull("null");
+
+        @Override
+        public String toString() {
+            StringBuilder s = new StringBuilder();
+            s.append('[');
+            JOINER.appendTo(s, this);
+            s.append(']');
+            return s.toString();
         }
     }
 
