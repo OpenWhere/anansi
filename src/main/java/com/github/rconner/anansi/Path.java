@@ -23,7 +23,7 @@
 
 package com.github.rconner.anansi;
 
-import com.github.rconner.util.Chain;
+import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
 
 /**
@@ -121,17 +121,17 @@ public abstract class Path<V, E> {
     public static final class Builder<V, E> {
         private final V from;
         private final V to;
-        private final Chain<Path<V, E>> chain;
+        private final ImmutableStack<Path<V, E>> stack;
 
         @SuppressWarnings("unchecked")
         private Builder(V from) {
-            this(from, from, Chain.<Path<V, E>>of());
+            this(from, from, ImmutableStack.<Path<V, E>>of());
         }
 
-        private Builder(V from, V to, Chain<Path<V, E>> chain) {
+        private Builder(V from, V to, ImmutableStack<Path<V, E>> stack) {
             this.from = from;
             this.to = to;
-            this.chain = chain;
+            this.stack = stack;
         }
 
         public Builder<V, E> to(V to) {
@@ -140,17 +140,17 @@ public abstract class Path<V, E> {
 
         public Builder<V, E> to(V to, E over) {
             Path<V, E> step = Path.newInstance(this.to, to, over);
-            return new Builder<V, E>(from, to, chain.with(step));
+            return new Builder<V, E>(from, to, stack.push(step));
         }
 
         public Path<V, Iterable<Path<V, E>>> build() {
-            // if chain is empty, do not know from/to
+            // if stack is empty, do not know from/to
             // otherwise:
-            //   from := chain.last.from
-            //   to := chain.head.to
+            //   from := stack.last.from
+            //   to := stack.head.to
             // FIXME: Instead, build a *really* lazy path? b/c often the caller will only
-            // be interested in path.to anyway. So just keep the chain around in the path.
-            return Path.newInstance(from, to, chain.reverse());
+            // be interested in path.to anyway. So just keep the stack around in the path.
+            return Path.newInstance(from, to, stack.reverse());
         }
     }
 
