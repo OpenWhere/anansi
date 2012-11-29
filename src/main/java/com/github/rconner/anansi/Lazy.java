@@ -43,36 +43,36 @@ public class Lazy {
     private Lazy() {
     }
 
-    public static <T> Iterator<T> iterator(final Iterable<T> iterable) {
-        Preconditions.checkNotNull(iterable);
-        if (iterable instanceof LazyIterable<?>) {
+    public static <T> Iterator<T> iterator( final Iterable<T> iterable ) {
+        Preconditions.checkNotNull( iterable );
+        if( iterable instanceof LazyIterable<?> ) {
             return iterable.iterator();
         }
-        return new LazyIterator<T>(iterable);
+        return new LazyIterator<T>( iterable );
     }
 
-    public static <T> Iterable<T> iterable(final Iterable<T> iterable) {
-        Preconditions.checkNotNull(iterable);
-        if (iterable instanceof LazyIterable<?>) {
+    public static <T> Iterable<T> iterable( final Iterable<T> iterable ) {
+        Preconditions.checkNotNull( iterable );
+        if( iterable instanceof LazyIterable<?> ) {
             return iterable;
         }
-        return new LazyIterable<T>(iterable);
+        return new LazyIterable<T>( iterable );
     }
 
-    public static <V, E> Traversal<V, E> traversal(final Traversal<V, E> traversal) {
-        Preconditions.checkNotNull(traversal);
-        if (traversal instanceof LazyIterable<?>) {
+    public static <V, E> Traversal<V, E> traversal( final Traversal<V, E> traversal ) {
+        Preconditions.checkNotNull( traversal );
+        if( traversal instanceof LazyIterable<?> ) {
             return traversal;
         }
-        return new LazyTraversal<V, E>(traversal);
+        return new LazyTraversal<V, E>( traversal );
     }
 
-    public static <V, E> Traverser<V, E> traverser(final Function<V, Traversal<V, E>> traverser) {
-        Preconditions.checkNotNull(traverser);
-        if (traverser instanceof LazyTraverser) {
-            return (LazyTraverser<V, E>) traverser;
+    public static <V, E> Traverser<V, E> traverser( final Function<V, Traversal<V, E>> traverser ) {
+        Preconditions.checkNotNull( traverser );
+        if( traverser instanceof LazyTraverser ) {
+            return ( LazyTraverser<V, E> ) traverser;
         }
-        return new LazyTraverser<V, E>(traverser);
+        return new LazyTraverser<V, E>( traverser );
     }
 
 
@@ -80,12 +80,12 @@ public class Lazy {
         private final Iterable<T> iterable;
         private Iterator<T> delegate = null;
 
-        private LazyIterator(Iterable<T> iterable) {
+        private LazyIterator( Iterable<T> iterable ) {
             this.iterable = iterable;
         }
 
         private Iterator<T> getDelegate() {
-            if (delegate == null) {
+            if( delegate == null ) {
                 delegate = iterable.iterator();
             }
             return delegate;
@@ -100,7 +100,7 @@ public class Lazy {
         }
 
         public void remove() {
-            Preconditions.checkState(delegate != null);
+            Preconditions.checkState( delegate != null );
             delegate.remove();
         }
     }
@@ -108,38 +108,38 @@ public class Lazy {
     private static class LazyIterable<T> implements Iterable<T> {
         final Iterable<T> delegate;
 
-        private LazyIterable(Iterable<T> delegate) {
+        private LazyIterable( Iterable<T> delegate ) {
             this.delegate = delegate;
         }
 
         public Iterator<T> iterator() {
-            return Lazy.iterator(delegate);
+            return Lazy.iterator( delegate );
         }
     }
 
     private static class LazyTraversal<V, E> implements Traversal<V, E> {
         final Traversal<V, E> delegate;
 
-        private LazyTraversal(Traversal<V, E> delegate) {
+        private LazyTraversal( Traversal<V, E> delegate ) {
             this.delegate = delegate;
         }
 
         public Iterator<Path<V, E>> iterator() {
-            return Lazy.iterator(delegate);
+            return Lazy.iterator( delegate );
         }
     }
 
     private static class LazyTraverser<V, E> implements Traverser<V, E> {
         final Function<V, Traversal<V, E>> delegate;
 
-        private LazyTraverser(Function<V, Traversal<V, E>> delegate) {
+        private LazyTraverser( Function<V, Traversal<V, E>> delegate ) {
             this.delegate = delegate;
         }
 
-        public Traversal<V, E> apply(final V from) {
+        public Traversal<V, E> apply( final V from ) {
             return new Traversal<V, E>() {
                 public Iterator<Path<V, E>> iterator() {
-                    return Lazy.iterator(delegate.apply(from));
+                    return Lazy.iterator( delegate.apply( from ) );
                 }
             };
         }

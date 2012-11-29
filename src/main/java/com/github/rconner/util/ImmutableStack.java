@@ -53,13 +53,13 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
     private ImmutableStack() {
     }
 
-    public abstract ImmutableStack<E> push(E element);
+    public abstract ImmutableStack<E> push( E element );
 
     public abstract ImmutableStack<E> pop();
 
     public abstract E peek();
 
-    public abstract boolean contains(Object object);
+    public abstract boolean contains( Object object );
 
     public abstract int size();
 
@@ -75,21 +75,22 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
      *
      * @param elements
      * @param <E>
+     *
      * @return
      */
-    public static <E> ImmutableStack<E> of(E... elements) {
-        @SuppressWarnings("unchecked")
-        ImmutableStack<E> stack = (ImmutableStack<E>) EMPTY_STACK;
-        for (E element : elements) {
-            stack = stack.push(element);
+    public static <E> ImmutableStack<E> of( E... elements ) {
+        @SuppressWarnings( "unchecked" )
+        ImmutableStack<E> stack = ( ImmutableStack<E> ) EMPTY_STACK;
+        for( E element : elements ) {
+            stack = stack.push( element );
         }
         return stack;
     }
 
     private static final ImmutableStack<Object> EMPTY_STACK = new ImmutableStack<Object>() {
         @Override
-        public ImmutableStack<Object> push(Object element) {
-            return new Stack<Object>(element, this);
+        public ImmutableStack<Object> push( Object element ) {
+            return new Stack<Object>( element, this );
         }
 
         @Override
@@ -103,7 +104,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
 
         @Override
-        public boolean contains(Object object) {
+        public boolean contains( Object object ) {
             return false;
         }
 
@@ -138,15 +139,15 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         private final ImmutableStack<E> rest;
         private final int size;
 
-        private Stack(E top, ImmutableStack<E> rest) {
+        private Stack( E top, ImmutableStack<E> rest ) {
             this.top = top;
             this.rest = rest;
             this.size = rest.size() + 1;
         }
 
         @Override
-        public ImmutableStack<E> push(E element) {
-            return new Stack<E>(element, this);
+        public ImmutableStack<E> push( E element ) {
+            return new Stack<E>( element, this );
         }
 
         @Override
@@ -160,10 +161,10 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
 
         @Override
-        public boolean contains(Object object) {
+        public boolean contains( Object object ) {
             ImmutableStack<E> stack = this;
-            while (!stack.isEmpty()) {
-                if (Objects.equal(object, stack.peek())) {
+            while( !stack.isEmpty() ) {
+                if( Objects.equal( object, stack.peek() ) ) {
                     return true;
                 }
                 stack = stack.pop();
@@ -193,7 +194,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
 
                 @Override
                 public E next() {
-                    if (stack.isEmpty()) {
+                    if( stack.isEmpty() ) {
                         throw new NoSuchElementException();
                     }
                     E top = stack.peek();
@@ -217,29 +218,29 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
             // There's no way to do this without saving all the elements, at least no way that isn't O(n^2).
             // An ImmutableList would work, except they don't allow null elements.
 
-            final Object[] array = new Object[size];
+            final Object[] array = new Object[ size ];
             ImmutableStack<E> stack = this;
-            for (int i = size - 1; i >= 0; i--) {
-                array[i] = stack.peek();
+            for( int i = size - 1; i >= 0; i-- ) {
+                array[ i ] = stack.peek();
                 stack = stack.pop();
             }
 
             return new Iterable<E>() {
                 @Override
                 public Iterator<E> iterator() {
-                    return new ArrayIterator<E>(array);
+                    return new ArrayIterator<E>( array );
                 }
             };
         }
 
-        private static final Joiner JOINER = Joiner.on(", ").useForNull("null");
+        private static final Joiner JOINER = Joiner.on( ", " ).useForNull( "null" );
 
         @Override
         public String toString() {
             StringBuilder s = new StringBuilder();
-            s.append('[');
-            JOINER.appendTo(s, this);
-            s.append(']');
+            s.append( '[' );
+            JOINER.appendTo( s, this );
+            s.append( ']' );
             return s.toString();
         }
     }
@@ -248,7 +249,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         private final Object[] array;
         private int i = 0;
 
-        private ArrayIterator(Object[] array) {
+        private ArrayIterator( Object[] array ) {
             this.array = array;
         }
 
@@ -258,12 +259,12 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings( "unchecked" )
         public E next() {
-            if (i >= array.length) {
+            if( i >= array.length ) {
                 throw new NoSuchElementException();
             }
-            return (E) array[i++];
+            return ( E ) array[ i++ ];
         }
     }
 }

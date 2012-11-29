@@ -40,9 +40,9 @@ public final class FifoQueue<E> implements Iterable<E> {
     private Node<E> tail = null;
     private int size = 0;
 
-    public void enqueue(E element) {
-        Node<E> node = new Node<E>(element);
-        if (tail == null) {
+    public void enqueue( E element ) {
+        Node<E> node = new Node<E>( element );
+        if( tail == null ) {
             head = tail = node;
         } else {
             tail.next = node;
@@ -52,12 +52,12 @@ public final class FifoQueue<E> implements Iterable<E> {
     }
 
     public E dequeue() {
-        if (head == null) {
+        if( head == null ) {
             throw new NoSuchElementException();
         }
         E element = head.element;
         head = head.next;
-        if (head == null) {
+        if( head == null ) {
             tail = null;
         }
         size--;
@@ -65,16 +65,16 @@ public final class FifoQueue<E> implements Iterable<E> {
     }
 
     public E head() {
-        if (head == null) {
+        if( head == null ) {
             throw new NoSuchElementException();
         }
         return head.element;
     }
 
-    public boolean contains(Object object) {
+    public boolean contains( Object object ) {
         Node<E> node = head;
-        while (node != null) {
-            if (Objects.equal(object, node.element)) {
+        while( node != null ) {
+            if( Objects.equal( object, node.element ) ) {
                 return true;
             }
             node = node.next;
@@ -102,7 +102,7 @@ public final class FifoQueue<E> implements Iterable<E> {
 
             @Override
             public E next() {
-                if (node == null) {
+                if( node == null ) {
                     throw new NoSuchElementException();
                 }
                 E element = node.element;
@@ -112,14 +112,14 @@ public final class FifoQueue<E> implements Iterable<E> {
         };
     }
 
-    private static final Joiner JOINER = Joiner.on(", ").useForNull("null");
+    private static final Joiner JOINER = Joiner.on( ", " ).useForNull( "null" );
 
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        s.append('[');
-        JOINER.appendTo(s, this);
-        s.append(']');
+        s.append( '[' );
+        JOINER.appendTo( s, this );
+        s.append( ']' );
         return s.toString();
     }
 
@@ -128,7 +128,7 @@ public final class FifoQueue<E> implements Iterable<E> {
         final E element;
         Node<E> next = null;
 
-        private Node(E element) {
+        private Node( E element ) {
             this.element = element;
         }
     }

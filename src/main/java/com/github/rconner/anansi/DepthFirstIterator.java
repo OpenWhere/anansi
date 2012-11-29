@@ -29,6 +29,7 @@ import com.google.common.annotations.Beta;
  * An Iterator used in depth-first traversals.
  *
  * @param <T>
+ *
  * @author rconner
  */
 @Beta

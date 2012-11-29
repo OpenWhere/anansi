@@ -44,31 +44,31 @@ public class IterableTest {
     // TODO: These should really be hamcrest Matcher implementations. I'm sure these already exist somewhere,
     // but it's not in the junit jar.
 
-    public static <E> void assertIteratorEmpty(Iterator<E> i) {
-        assertThat(i.hasNext(), is(false));
+    public static <E> void assertIteratorEmpty( Iterator<E> i ) {
+        assertThat( i.hasNext(), is( false ) );
         try {
             i.next();
-            fail("Should throw NoSuchElementException.");
-        } catch (NoSuchElementException ignored) {
+            fail( "Should throw NoSuchElementException." );
+        } catch( NoSuchElementException ignored ) {
             // expected
         }
     }
 
     @Test
     public void testAssertIteratorEmpty() {
-        assertIteratorEmpty(Iterators.emptyIterator());
+        assertIteratorEmpty( Iterators.emptyIterator() );
     }
 
-    public static <E> void assertIteratorContains(Iterator<E> i, Object... elements) {
-        assertThat(Lists.<Object>newArrayList(i), is(Arrays.asList(elements)));
-        assertIteratorEmpty(i);
+    public static <E> void assertIteratorContains( Iterator<E> i, Object... elements ) {
+        assertThat( Lists.<Object>newArrayList( i ), is( Arrays.asList( elements ) ) );
+        assertIteratorEmpty( i );
     }
 
     @Test
     public void testAssertIteratorContains() {
-        assertIteratorContains(Iterators.emptyIterator());
-        assertIteratorContains(Arrays.asList(2).iterator(), 2);
-        assertIteratorContains(Arrays.asList(3, 5).iterator(), 3, 5);
-        assertIteratorContains(Arrays.asList(7, 11, 13, 17, 19).iterator(), 7, 11, 13, 17, 19);
+        assertIteratorContains( Iterators.emptyIterator() );
+        assertIteratorContains( Arrays.asList( 2 ).iterator(), 2 );
+        assertIteratorContains( Arrays.asList( 3, 5 ).iterator(), 3, 5 );
+        assertIteratorContains( Arrays.asList( 7, 11, 13, 17, 19 ).iterator(), 7, 11, 13, 17, 19 );
     }
 }

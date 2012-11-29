@@ -36,74 +36,74 @@ import static org.junit.Assert.fail;
 
 public class ImmutableStackTest {
 
-    private static <E> void assertStackContains(ImmutableStack<E> stack, E... elements) {
+    private static <E> void assertStackContains( ImmutableStack<E> stack, E... elements ) {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
-        for (E element : elements) {
-            assertThat(stack.contains(element), is(true));
+        for( E element : elements ) {
+            assertThat( stack.contains( element ), is( true ) );
         }
-        assertThat(stack.contains(new Object()), is(false));
+        assertThat( stack.contains( new Object() ), is( false ) );
 
-        assertIteratorContains(stack.iterator(), elements);
-        assertIteratorContains(stack.iterator(), elements);
+        assertIteratorContains( stack.iterator(), elements );
+        assertIteratorContains( stack.iterator(), elements );
 
         Iterable<E> reverse = stack.reverse();
-        Object[] expectedReverse = Lists.reverse(Lists.newArrayList(elements)).toArray();
-        assertIteratorContains(reverse.iterator(), expectedReverse);
-        assertIteratorContains(reverse.iterator(), expectedReverse);
+        Object[] expectedReverse = Lists.reverse( Lists.newArrayList( elements ) ).toArray();
+        assertIteratorContains( reverse.iterator(), expectedReverse );
+        assertIteratorContains( reverse.iterator(), expectedReverse );
 
-        assertThat(stack.size(), is(elements.length));
+        assertThat( stack.size(), is( elements.length ) );
 
-        if (elements.length == 0) {
-            assertThat(stack.isEmpty(), is(true));
+        if( elements.length == 0 ) {
+            assertThat( stack.isEmpty(), is( true ) );
             try {
                 stack.peek();
-                fail("Should throw EmptyStackException.");
-            } catch (EmptyStackException ignored) {
+                fail( "Should throw EmptyStackException." );
+            } catch( EmptyStackException ignored ) {
                 // expected
             }
             try {
                 stack.pop();
-                fail("Should throw EmptyStackException.");
-            } catch (EmptyStackException ignored) {
+                fail( "Should throw EmptyStackException." );
+            } catch( EmptyStackException ignored ) {
                 // expected
             }
         } else {
-            assertThat(stack.isEmpty(), is(false));
-            assertThat(stack.peek(), is(elements[0]));
-            assertStackContains(stack.pop(), Arrays.copyOfRange(elements, 1, elements.length));
+            assertThat( stack.isEmpty(), is( false ) );
+            assertThat( stack.peek(), is( elements[ 0 ] ) );
+            assertStackContains( stack.pop(), Arrays.copyOfRange( elements, 1, elements.length ) );
         }
 
         // Test them again to make sure following the head/tail references didn't change state.
 
-        assertIteratorContains(stack.iterator(), elements);
-        assertIteratorContains(stack.reverse().iterator(), expectedReverse);
-        assertThat(stack.size(), is(elements.length));
+        assertIteratorContains( stack.iterator(), elements );
+        assertIteratorContains( stack.reverse().iterator(), expectedReverse );
+        assertThat( stack.size(), is( elements.length ) );
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void testEmpty() {
         ImmutableStack<Integer> stack = ImmutableStack.of();
-        assertStackContains(stack);
-        assertStackContains(stack.push(101).push(102), 102, 101);
-        assertStackContains(stack);
+        assertStackContains( stack );
+        assertStackContains( stack.push( 101 ).push( 102 ), 102, 101 );
+        assertStackContains( stack );
     }
 
     @Test
     public void testSingle() {
-        ImmutableStack<Integer> stack = ImmutableStack.of(42);
-        assertStackContains(stack, 42);
-        assertStackContains(stack.push(101).push(102), 102, 101, 42);
-        assertStackContains(stack, 42);
+        ImmutableStack<Integer> stack = ImmutableStack.of( 42 );
+        assertStackContains( stack, 42 );
+        assertStackContains( stack.push( 101 ).push( 102 ), 102, 101, 42 );
+        assertStackContains( stack, 42 );
     }
 
     @Test
     public void testMany() {
-        ImmutableStack<Integer> stack = ImmutableStack.of(11, 7, 5, 3, 2);
-        assertStackContains(stack, 2, 3, 5, 7, 11);
-        assertStackContains(stack.push(101).push(102), 102, 101, 2, 3, 5, 7, 11);
-        assertStackContains(stack, 2, 3, 5, 7, 11);
+        ImmutableStack<Integer> stack = ImmutableStack.of( 11, 7, 5, 3, 2 );
+        assertStackContains( stack, 2, 3, 5, 7, 11 );
+        assertStackContains( stack.push( 101 ).push( 102 ), 102, 101, 2, 3, 5, 7, 11 );
+        assertStackContains( stack, 2, 3, 5, 7, 11 );
     }
 }

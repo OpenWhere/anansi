@@ -31,6 +31,7 @@ import java.util.Iterator;
  * An Iterator with a prune operation.
  *
  * @param <T>
+ *
  * @author rconner
  */
 @Beta

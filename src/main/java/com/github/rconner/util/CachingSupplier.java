@@ -38,26 +38,26 @@ import java.lang.ref.WeakReference;
  */
 public class CachingSupplier<T> implements Supplier<T> {
     private final Supplier<T> delegate;
-    private volatile WeakReference<T> ref = new WeakReference<T>(null);
+    private volatile WeakReference<T> ref = new WeakReference<T>( null );
 
-    private CachingSupplier(Supplier<T> delegate) {
+    private CachingSupplier( Supplier<T> delegate ) {
         this.delegate = delegate;
     }
 
-    public static <T> Supplier<T> of(Supplier<T> delegate) {
-        return (delegate instanceof CachingSupplier) ? delegate : new CachingSupplier<T>(Preconditions.checkNotNull(delegate));
+    public static <T> Supplier<T> of( Supplier<T> delegate ) {
+        return ( delegate instanceof CachingSupplier ) ? delegate : new CachingSupplier<T>( Preconditions.checkNotNull( delegate ) );
     }
 
     @Override
     public T get() {
         T value = ref.get();
-        if (value == null) {
-            synchronized (this) {
+        if( value == null ) {
+            synchronized( this ) {
                 value = ref.get();
-                if (value == null) {
+                if( value == null ) {
                     value = delegate.get();
-                    Preconditions.checkState(value != null, "Value returned by delegate supplier cannot be null.");
-                    ref = new WeakReference<T>(value);
+                    Preconditions.checkState( value != null, "Value returned by delegate supplier cannot be null." );
+                    ref = new WeakReference<T>( value );
                 }
             }
         }

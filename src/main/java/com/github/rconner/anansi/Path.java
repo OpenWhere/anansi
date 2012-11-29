@@ -32,6 +32,7 @@ import com.google.common.annotations.Beta;
  *
  * @param <V>
  * @param <E>
+ *
  * @author rconner
  */
 @Beta
@@ -59,10 +60,11 @@ public abstract class Path<V, E> {
      * @param to
      * @param <V>
      * @param <E>
+     *
      * @return
      */
-    public static <V, E> Path<V, E> newInstance(V from, V to) {
-        return new TrivialPath<V, E>(from, to, null);
+    public static <V, E> Path<V, E> newInstance( V from, V to ) {
+        return new TrivialPath<V, E>( from, to, null );
     }
 
     /**
@@ -73,10 +75,11 @@ public abstract class Path<V, E> {
      * @param over
      * @param <V>
      * @param <E>
+     *
      * @return
      */
-    public static <V, E> Path<V, E> newInstance(V from, V to, E over) {
-        return new TrivialPath<V, E>(from, to, over);
+    public static <V, E> Path<V, E> newInstance( V from, V to, E over ) {
+        return new TrivialPath<V, E>( from, to, over );
     }
 
     private static final class TrivialPath<V, E> extends Path<V, E> {
@@ -84,7 +87,7 @@ public abstract class Path<V, E> {
         private final V to;
         private final E over;
 
-        private TrivialPath(V from, V to, E over) {
+        private TrivialPath( V from, V to, E over ) {
             this.from = from;
             this.to = to;
             this.over = over;
@@ -112,10 +115,11 @@ public abstract class Path<V, E> {
      * @param from
      * @param <V>
      * @param <E>
+     *
      * @return
      */
-    public static <V, E> Builder<V, E> from(V from) {
-        return new Builder<V, E>(from);
+    public static <V, E> Builder<V, E> from( V from ) {
+        return new Builder<V, E>( from );
     }
 
     public static final class Builder<V, E> {
@@ -123,24 +127,24 @@ public abstract class Path<V, E> {
         private final V to;
         private final ImmutableStack<Path<V, E>> stack;
 
-        @SuppressWarnings("unchecked")
-        private Builder(V from) {
-            this(from, from, ImmutableStack.<Path<V, E>>of());
+        @SuppressWarnings( "unchecked" )
+        private Builder( V from ) {
+            this( from, from, ImmutableStack.<Path<V, E>>of() );
         }
 
-        private Builder(V from, V to, ImmutableStack<Path<V, E>> stack) {
+        private Builder( V from, V to, ImmutableStack<Path<V, E>> stack ) {
             this.from = from;
             this.to = to;
             this.stack = stack;
         }
 
-        public Builder<V, E> to(V to) {
-            return to(to, null);
+        public Builder<V, E> to( V to ) {
+            return to( to, null );
         }
 
-        public Builder<V, E> to(V to, E over) {
-            Path<V, E> step = Path.newInstance(this.to, to, over);
-            return new Builder<V, E>(from, to, stack.push(step));
+        public Builder<V, E> to( V to, E over ) {
+            Path<V, E> step = Path.newInstance( this.to, to, over );
+            return new Builder<V, E>( from, to, stack.push( step ) );
         }
 
         public Path<V, Iterable<Path<V, E>>> build() {
@@ -150,7 +154,7 @@ public abstract class Path<V, E> {
             //   to := stack.head.to
             // FIXME: Instead, build a *really* lazy path? b/c often the caller will only
             // be interested in path.to anyway. So just keep the stack around in the path.
-            return Path.newInstance(from, to, stack.reverse());
+            return Path.newInstance( from, to, stack.reverse() );
         }
     }
 
