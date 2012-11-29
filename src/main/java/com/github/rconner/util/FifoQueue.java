@@ -38,26 +38,23 @@ import java.util.NoSuchElementException;
 @Beta
 public final class FifoQueue<E> implements Iterable<E> {
 
-    private Node<E> head = null;
-    private Node<E> tail = null;
-    private int size = 0;
+    private Node<E> head;
+    private Node<E> tail;
+    private int size;
 
-    public FifoQueue() {
-        // nothing to do
-    }
-
-    public static <E> FifoQueue<E> of( E... elements ) {
-        FifoQueue<E> queue = new FifoQueue<E>();
-        for( E element : elements ) {
+    public static <E> FifoQueue<E> of( final E... elements ) {
+        final FifoQueue<E> queue = new FifoQueue<E>();
+        for( final E element : elements ) {
             queue.enqueue( element );
         }
         return queue;
     }
 
-    public void enqueue( E element ) {
-        Node<E> node = new Node<E>( element );
+    public void enqueue( final E element ) {
+        final Node<E> node = new Node<E>( element );
         if( tail == null ) {
-            head = tail = node;
+            head = node;
+            tail = node;
         } else {
             tail.next = node;
             tail = node;
@@ -69,7 +66,7 @@ public final class FifoQueue<E> implements Iterable<E> {
         if( head == null ) {
             throw new NoSuchElementException();
         }
-        E element = head.element;
+        final E element = head.element;
         head = head.next;
         if( head == null ) {
             tail = null;
@@ -85,7 +82,7 @@ public final class FifoQueue<E> implements Iterable<E> {
         return head.element;
     }
 
-    public boolean contains( Object object ) {
+    public boolean contains( final Object object ) {
         Node<E> node = head;
         while( node != null ) {
             if( Objects.equal( object, node.element ) ) {
@@ -107,7 +104,7 @@ public final class FifoQueue<E> implements Iterable<E> {
     @Override
     public Iterator<E> iterator() {
         return new UnmodifiableIterator<E>() {
-            Node<E> node = head;
+            private Node<E> node = head;
 
             @Override
             public boolean hasNext() {
@@ -119,7 +116,7 @@ public final class FifoQueue<E> implements Iterable<E> {
                 if( node == null ) {
                     throw new NoSuchElementException();
                 }
-                E element = node.element;
+                final E element = node.element;
                 node = node.next;
                 return element;
             }
@@ -130,19 +127,19 @@ public final class FifoQueue<E> implements Iterable<E> {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append( '[' );
-        JOINER.appendTo( s, this );
-        s.append( ']' );
-        return s.toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append( '[' );
+        JOINER.appendTo( sb, this );
+        sb.append( ']' );
+        return sb.toString();
     }
 
 
     private static class Node<E> {
         final E element;
-        Node<E> next = null;
+        Node<E> next;
 
-        private Node( E element ) {
+        Node( final E element ) {
             this.element = element;
         }
     }

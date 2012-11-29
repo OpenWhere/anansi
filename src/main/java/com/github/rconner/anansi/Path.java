@@ -63,7 +63,7 @@ public abstract class Path<V, E> {
      *
      * @return
      */
-    public static <V, E> Path<V, E> newInstance( V from, V to ) {
+    public static <V, E> Path<V, E> newInstance( final V from, final V to ) {
         return new TrivialPath<V, E>( from, to, null );
     }
 
@@ -78,7 +78,7 @@ public abstract class Path<V, E> {
      *
      * @return
      */
-    public static <V, E> Path<V, E> newInstance( V from, V to, E over ) {
+    public static <V, E> Path<V, E> newInstance( final V from, final V to, final E over ) {
         return new TrivialPath<V, E>( from, to, over );
     }
 
@@ -87,7 +87,7 @@ public abstract class Path<V, E> {
         private final V to;
         private final E over;
 
-        private TrivialPath( V from, V to, E over ) {
+        TrivialPath( final V from, final V to, final E over ) {
             this.from = from;
             this.to = to;
             this.over = over;
@@ -118,7 +118,7 @@ public abstract class Path<V, E> {
      *
      * @return
      */
-    public static <V, E> Builder<V, E> from( V from ) {
+    public static <V, E> Builder<V, E> from( final V from ) {
         return new Builder<V, E>( from );
     }
 
@@ -128,17 +128,17 @@ public abstract class Path<V, E> {
         private final ImmutableStack<Path<V, E>> stack;
 
         @SuppressWarnings( "unchecked" )
-        private Builder( V from ) {
+        Builder( final V from ) {
             this( from, from, ImmutableStack.<Path<V, E>>of() );
         }
 
-        private Builder( V from, V to, ImmutableStack<Path<V, E>> stack ) {
+        private Builder( final V from, final V to, final ImmutableStack<Path<V, E>> stack ) {
             this.from = from;
             this.to = to;
             this.stack = stack;
         }
 
-        public Builder<V, E> add( Path<V, E> path ) {
+        public Builder<V, E> add( final Path<V, E> path ) {
             return new Builder<V, E>( from, path.getTo(), stack.push( path ) );
         }
 

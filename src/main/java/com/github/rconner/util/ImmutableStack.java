@@ -80,18 +80,23 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
      *
      * @return
      */
-    public static <E> ImmutableStack<E> of( E... elements ) {
+    public static <E> ImmutableStack<E> of( final E... elements ) {
         @SuppressWarnings( "unchecked" )
         ImmutableStack<E> stack = ( ImmutableStack<E> ) EMPTY_STACK;
-        for( E element : elements ) {
+        for( final E element : elements ) {
             stack = stack.push( element );
         }
         return stack;
     }
 
-    private static final ImmutableStack<Object> EMPTY_STACK = new ImmutableStack<Object>() {
+    private static final ImmutableStack<Object> EMPTY_STACK = new EmptyStack();
+
+    private static final class EmptyStack extends ImmutableStack<Object> {
+        EmptyStack() {
+        }
+
         @Override
-        public ImmutableStack<Object> push( Object element ) {
+        public ImmutableStack<Object> push( final Object element ) {
             return new Stack<Object>( element, this );
         }
 
@@ -106,7 +111,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
 
         @Override
-        public boolean contains( Object object ) {
+        public boolean contains( final Object object ) {
             return false;
         }
 
@@ -134,21 +139,21 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         public String toString() {
             return "[]";
         }
-    };
+    }
 
-    private static class Stack<E> extends ImmutableStack<E> {
+    private static final class Stack<E> extends ImmutableStack<E> {
         private final E top;
         private final ImmutableStack<E> rest;
         private final int size;
 
-        private Stack( E top, ImmutableStack<E> rest ) {
+        Stack( final E top, final ImmutableStack<E> rest ) {
             this.top = top;
             this.rest = rest;
-            this.size = rest.size() + 1;
+            size = rest.size() + 1;
         }
 
         @Override
-        public ImmutableStack<E> push( E element ) {
+        public ImmutableStack<E> push( final E element ) {
             return new Stack<E>( element, this );
         }
 
@@ -163,7 +168,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
 
         @Override
-        public boolean contains( Object object ) {
+        public boolean contains( final Object object ) {
             ImmutableStack<E> stack = this;
             while( !stack.isEmpty() ) {
                 if( Objects.equal( object, stack.peek() ) ) {
@@ -187,7 +192,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         @Override
         public Iterator<E> iterator() {
             return new UnmodifiableIterator<E>() {
-                ImmutableStack<E> stack = Stack.this;
+                private ImmutableStack<E> stack = Stack.this;
 
                 @Override
                 public boolean hasNext() {
@@ -199,7 +204,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
                     if( stack.isEmpty() ) {
                         throw new NoSuchElementException();
                     }
-                    E top = stack.peek();
+                    final E top = stack.peek();
                     stack = stack.pop();
                     return top;
                 }
@@ -239,34 +244,35 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
 
         @Override
         public String toString() {
-            StringBuilder s = new StringBuilder();
-            s.append( '[' );
-            JOINER.appendTo( s, this );
-            s.append( ']' );
-            return s.toString();
+            final StringBuilder sb = new StringBuilder();
+            sb.append( '[' );
+            JOINER.appendTo( sb, this );
+            sb.append( ']' );
+            return sb.toString();
         }
     }
 
     private static final class ArrayIterator<E> extends UnmodifiableIterator<E> {
         private final Object[] array;
-        private int i = 0;
+        private int index;
 
-        private ArrayIterator( Object[] array ) {
+        ArrayIterator( final Object... array ) {
+            //noinspection AssignmentToCollectionOrArrayFieldFromParameter
             this.array = array;
         }
 
         @Override
         public boolean hasNext() {
-            return i < array.length;
+            return index < array.length;
         }
 
         @Override
         @SuppressWarnings( "unchecked" )
         public E next() {
-            if( i >= array.length ) {
+            if( index >= array.length ) {
                 throw new NoSuchElementException();
             }
-            return ( E ) array[ i++ ];
+            return ( E ) array[ index++ ];
         }
     }
 }
