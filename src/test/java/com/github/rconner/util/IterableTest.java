@@ -25,7 +25,6 @@ package com.github.rconner.util;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.Arrays;
