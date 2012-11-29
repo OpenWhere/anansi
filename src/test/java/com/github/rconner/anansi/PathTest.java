@@ -77,16 +77,16 @@ public class PathTest {
         Path<Integer, Iterable<Path<Integer, String>>> rootPath = rootBuilder.build();
         assertPathEmpty( rootPath, 11 );
 
-        Path.Builder<Integer, String> builderTo13 = rootBuilder.to( 13 );
+        Path.Builder<Integer, String> builderTo13 = rootBuilder.add( Path.<Integer, String>newInstance( 11, 13 ) );
         Path<Integer, Iterable<Path<Integer, String>>> pathTo13 = builderTo13.build();
         assertPathContains( pathTo13, Path.<Integer, String>newInstance( 11, 13 ) );
 
-        Path.Builder<Integer, String> builderTo17 = builderTo13.to( 17, "to 17" );
+        Path.Builder<Integer, String> builderTo17 = builderTo13.add( Path.newInstance( 13, 17, "to 17" ) );
         Path<Integer, Iterable<Path<Integer, String>>> pathTo17 = builderTo17.build();
         assertPathContains( pathTo17, Path.<Integer, String>newInstance( 11, 13 ), Path.newInstance( 13, 17, "to 17" ) );
 
         // From 13, not from the recently added 17
-        Path.Builder<Integer, String> builderTo19 = builderTo13.to( 19, "to 19" );
+        Path.Builder<Integer, String> builderTo19 = builderTo13.add( Path.newInstance( 13, 19, "to 19" ) );
         Path<Integer, Iterable<Path<Integer, String>>> pathTo19 = builderTo19.build();
         assertPathContains( pathTo19, Path.<Integer, String>newInstance( 11, 13 ), Path.newInstance( 13, 19, "to 19" ) );
 

@@ -138,13 +138,8 @@ public abstract class Path<V, E> {
             this.stack = stack;
         }
 
-        public Builder<V, E> to( V to ) {
-            return to( to, null );
-        }
-
-        public Builder<V, E> to( V to, E over ) {
-            Path<V, E> step = Path.newInstance( this.to, to, over );
-            return new Builder<V, E>( from, to, stack.push( step ) );
+        public Builder<V, E> add( Path<V, E> path ) {
+            return new Builder<V, E>( from, path.getTo(), stack.push( path ) );
         }
 
         public Path<V, Iterable<Path<V, E>>> build() {
