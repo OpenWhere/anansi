@@ -71,4 +71,10 @@ public class IterableTest {
         assertIteratorContains( Arrays.asList( 3, 5 ).iterator(), 3, 5 );
         assertIteratorContains( Arrays.asList( 7, 11, 13, 17, 19 ).iterator(), 7, 11, 13, 17, 19 );
     }
+
+    public static void assertIteratorsEqual( Iterator<?> a, Iterator<?> b ) {
+        assertThat( Lists.newArrayList( a ), is( Lists.newArrayList( b ) ) );
+        assertIteratorEmpty( a );
+        assertIteratorEmpty( b );
+    }
 }
