@@ -40,6 +40,18 @@ public final class FifoQueue<E> implements Iterable<E> {
     private Node<E> tail = null;
     private int size = 0;
 
+    public FifoQueue() {
+        // nothing to do
+    }
+
+    public static <E> FifoQueue<E> of( E... elements ) {
+        FifoQueue<E> queue = new FifoQueue<E>();
+        for( E element : elements ) {
+            queue.enqueue( element );
+        }
+        return queue;
+    }
+
     public void enqueue( E element ) {
         Node<E> node = new Node<E>( element );
         if( tail == null ) {
