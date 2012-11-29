@@ -48,6 +48,6 @@ public interface PruningIterator<T> extends Iterator<T> {
      * @throws UnsupportedOperationException
      *         if this method is not supported by this {@link Iterator}.
      */
-    public void prune();
+    void prune();
 
 }

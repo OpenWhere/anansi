@@ -41,6 +41,6 @@ public interface DepthFirstIterator<T> extends PruningIterator<T> {
      *
      * @return
      */
-    public boolean isDescending();
+    boolean isDescending();
 
 }
