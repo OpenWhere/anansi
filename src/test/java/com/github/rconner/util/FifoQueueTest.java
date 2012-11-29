@@ -111,12 +111,13 @@ public class FifoQueueTest {
 
     @Test
     public void testMany() {
-        FifoQueue<Integer> queue = FifoQueue.of( 2, 3, 5, 7, 11 );
-        assertQueueContains( queue, 2, 3, 5, 7, 11 );
+        FifoQueue<Integer> queue = FifoQueue.of( 2, 3, 5, null, 11 );
+        assertQueueContains( queue, 2, 3, 5, null, 11 );
         queue.enqueue( 101 );
+        queue.enqueue( null );
         queue.enqueue( 102 );
-        assertQueueContains( queue, 2, 3, 5, 7, 11, 101, 102 );
-        testDequeue( queue, 2, 3, 5, 7, 11, 101, 102 );
+        assertQueueContains( queue, 2, 3, 5, null, 11, 101, null, 102 );
+        testDequeue( queue, 2, 3, 5, null, 11, 101, null, 102 );
     }
 
     @Test
