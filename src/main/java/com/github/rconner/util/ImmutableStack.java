@@ -34,7 +34,8 @@ import java.util.NoSuchElementException;
 
 /**
  * A minimal immutable stack implementation, which does <strong>not</strong> implement {@link java.util.Collection}.
- * Note that it is not expected that the contained elements will also be immutable.
+ * Note that it is not necessary for the contained elements to also be immutable; just remember that shared mutable
+ * objects require synchronization even if they are contained in immutable data structures.
  * <p/>
  * A {@link #push(Object)} operation returns a new stack. A {@link #pop()} operation returns the stack upon which {@link
  * #push(Object)} was called to add the top element. Because instances are immutable, storage can be (and is) reused. A
