@@ -23,6 +23,7 @@
 
 package com.github.rconner.util;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.UnmodifiableIterator;
@@ -34,6 +35,7 @@ import java.util.NoSuchElementException;
  * A minimal FIFO queue implementation, which does <strong>not</strong> implement {@link java.util.Collection}. This
  * implementation is not thread-safe, and does not even have a fail-fast iterator.
  */
+@Beta
 public final class FifoQueue<E> implements Iterable<E> {
 
     private Node<E> head = null;

@@ -23,6 +23,7 @@
 
 package com.github.rconner.util;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
@@ -45,6 +46,7 @@ import java.util.NoSuchElementException;
  * <p/>
  * Instances of this class do not implement {@link #equals(Object)} or {@link #hashCode()}.
  */
+@Beta
 public abstract class ImmutableStack<E> implements Iterable<E> {
 
     /**
