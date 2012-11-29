@@ -29,30 +29,30 @@ import com.google.common.base.Supplier;
 import java.lang.ref.WeakReference;
 
 /**
- * A Supplier which caches the instance retrieved from a delegate Supplier in a {@link java.lang.ref.WeakReference}. If
- * the reference is clear on a call to {@code get()}, it is retrieved again from the delegate. Note that the delegate
- * Supplier cannot return null. Instances of this class are internally thread-safe and will never invoke the delegate
- * concurrently.
+ * A Supplier which caches the instance retrieved from a delegate Supplier in a {@link WeakReference}. If the reference
+ * is clear on a call to {@code get()}, it is retrieved again from the delegate. Note that the delegate Supplier cannot
+ * return null. Instances of this class are internally thread-safe and will never invoke the delegate concurrently.
  *
  * @param <T>
  */
-public class CachingSupplier<T> implements Supplier<T> {
+public final class CachingSupplier<T> implements Supplier<T> {
     private final Supplier<T> delegate;
     private volatile WeakReference<T> ref = new WeakReference<T>( null );
+    private final Object lock = new Object();
 
-    private CachingSupplier( Supplier<T> delegate ) {
+    private CachingSupplier( final Supplier<T> delegate ) {
         this.delegate = delegate;
     }
 
-    public static <T> Supplier<T> of( Supplier<T> delegate ) {
-        return ( delegate instanceof CachingSupplier ) ? delegate : new CachingSupplier<T>( Preconditions.checkNotNull( delegate ) );
+    public static <T> Supplier<T> of( final Supplier<T> delegate ) {
+        return delegate instanceof CachingSupplier ? delegate : new CachingSupplier<T>( Preconditions.checkNotNull( delegate ) );
     }
 
     @Override
     public T get() {
         T value = ref.get();
         if( value == null ) {
-            synchronized( this ) {
+            synchronized( lock ) {
                 value = ref.get();
                 if( value == null ) {
                     value = delegate.get();
