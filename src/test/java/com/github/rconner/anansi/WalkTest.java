@@ -77,29 +77,17 @@ public final class WalkTest {
         final Walk<Integer, Iterable<Walk<Integer, String>>> rootWalk = rootBuilder.build();
         assertWalkEmpty( rootWalk, 11 );
 
-        final Walk.Builder<Integer, String> builderTo13 = rootBuilder.add( Walk.<Integer, String>newInstance( 11, 13 ) );
-        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo13 = builderTo13.build();
+        rootBuilder.add( Walk.<Integer, String>newInstance( 11, 13 ) );
+        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo13 = rootBuilder.build();
         assertWalkContains( walkTo13, Walk.<Integer, String>newInstance( 11, 13 ) );
 
-        final Walk.Builder<Integer, String> builderTo17 = builderTo13.add( Walk.newInstance( 13, 17, "to 17" ) );
-        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo17 = builderTo17.build();
+        rootBuilder.add( Walk.newInstance( 13, 17, "to 17" ) );
+        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo17 = rootBuilder.build();
         assertWalkContains( walkTo17, Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 17, "to 17" ) );
-
-        // From 13, not from the recently added 17
-        final Walk.Builder<Integer, String> builderTo19 = builderTo13.add( Walk.newInstance( 13, 19, "to 19" ) );
-        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo19 = builderTo19.build();
-        assertWalkContains( walkTo19, Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 19, "to 19" ) );
-
-        // Test that the builders are still building the same walks.
-        assertWalkEmpty( rootBuilder.build(), 11 );
-        assertWalkContains( builderTo13.build(), Walk.<Integer, String>newInstance( 11, 13 ) );
-        assertWalkContains( builderTo17.build(), Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 17, "to 17" ) );
-        assertWalkContains( builderTo19.build(), Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 19, "to 19" ) );
 
         // Test that all the previously built walks have not changed.
         assertWalkEmpty( rootWalk, 11 );
         assertWalkContains( walkTo13, Walk.<Integer, String>newInstance( 11, 13 ) );
         assertWalkContains( walkTo17, Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 17, "to 17" ) );
-        assertWalkContains( walkTo19, Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 19, "to 19" ) );
     }
 }

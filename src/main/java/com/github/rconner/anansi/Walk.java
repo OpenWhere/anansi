@@ -110,7 +110,7 @@ public abstract class Walk<V, E> {
     }
 
     /**
-     * Creates a builder used to create a Walk with sub-walks. Note that Walk.Builder instances are immutable.
+     * Creates a builder used to create a Walk with sub-walks.
      *
      * @param from
      * @param <V>
@@ -124,22 +124,21 @@ public abstract class Walk<V, E> {
 
     public static final class Builder<V, E> {
         private final V from;
-        private final V to;
-        private final ImmutableStack<Walk<V, E>> stack;
-
         @SuppressWarnings( "unchecked" )
-        Builder( final V from ) {
-            this( from, from, ImmutableStack.<Walk<V, E>>of() );
-        }
+        private ImmutableStack<Walk<V, E>> stack = ImmutableStack.of();
 
-        private Builder( final V from, final V to, final ImmutableStack<Walk<V, E>> stack ) {
+        Builder( final V from ) {
             this.from = from;
-            this.to = to;
-            this.stack = stack;
         }
 
         public Builder<V, E> add( final Walk<V, E> walk ) {
-            return new Builder<V, E>( from, walk.getTo(), stack.push( walk ) );
+            stack = stack.push( walk );
+            return this;
+        }
+
+        public Builder<V, E> pop() {
+            stack = stack.pop();
+            return this;
         }
 
         public Walk<V, Iterable<Walk<V, E>>> build() {
@@ -149,6 +148,7 @@ public abstract class Walk<V, E> {
             //   to := stack.head.to
             // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
             // be interested in walk.to anyway. So just keep the stack around in the walk.
+            V to = stack.isEmpty() ? from : stack.peek().getTo();
             return Walk.newInstance( from, to, stack.reverse() );
         }
     }
