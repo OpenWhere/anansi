@@ -27,8 +27,8 @@ import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
 
 /**
- * A path from one vertex to another, optionally over some implementation-specific object. It is not uncommon for a Path
- * to be over an Iterable of (sub) Paths.
+ * A walk from one vertex to another, optionally over some implementation-specific object. It is not uncommon for a Walk
+ * to be over an Iterable of (sub) Walks.
  *
  * @param <V>
  * @param <E>
@@ -36,7 +36,7 @@ import com.google.common.annotations.Beta;
  * @author rconner
  */
 @Beta
-public abstract class Path<V, E> {
+public abstract class Walk<V, E> {
 
     /**
      * @return
@@ -54,7 +54,7 @@ public abstract class Path<V, E> {
     public abstract E getOver();
 
     /**
-     * Creates a new immutable Path, with an over of null.
+     * Creates a new immutable Walk, with an over of null.
      *
      * @param from
      * @param to
@@ -63,12 +63,12 @@ public abstract class Path<V, E> {
      *
      * @return
      */
-    public static <V, E> Path<V, E> newInstance( final V from, final V to ) {
-        return new TrivialPath<V, E>( from, to, null );
+    public static <V, E> Walk<V, E> newInstance( final V from, final V to ) {
+        return new TrivialWalk<V, E>( from, to, null );
     }
 
     /**
-     * Creates a new immutable Path.
+     * Creates a new immutable Walk.
      *
      * @param from
      * @param to
@@ -78,16 +78,16 @@ public abstract class Path<V, E> {
      *
      * @return
      */
-    public static <V, E> Path<V, E> newInstance( final V from, final V to, final E over ) {
-        return new TrivialPath<V, E>( from, to, over );
+    public static <V, E> Walk<V, E> newInstance( final V from, final V to, final E over ) {
+        return new TrivialWalk<V, E>( from, to, over );
     }
 
-    private static final class TrivialPath<V, E> extends Path<V, E> {
+    private static final class TrivialWalk<V, E> extends Walk<V, E> {
         private final V from;
         private final V to;
         private final E over;
 
-        TrivialPath( final V from, final V to, final E over ) {
+        TrivialWalk( final V from, final V to, final E over ) {
             this.from = from;
             this.to = to;
             this.over = over;
@@ -110,7 +110,7 @@ public abstract class Path<V, E> {
     }
 
     /**
-     * Creates a builder used to create a Path with sub-paths. Note that Path.Builder instances are immutable.
+     * Creates a builder used to create a Walk with sub-walks. Note that Walk.Builder instances are immutable.
      *
      * @param from
      * @param <V>
@@ -125,31 +125,31 @@ public abstract class Path<V, E> {
     public static final class Builder<V, E> {
         private final V from;
         private final V to;
-        private final ImmutableStack<Path<V, E>> stack;
+        private final ImmutableStack<Walk<V, E>> stack;
 
         @SuppressWarnings( "unchecked" )
         Builder( final V from ) {
-            this( from, from, ImmutableStack.<Path<V, E>>of() );
+            this( from, from, ImmutableStack.<Walk<V, E>>of() );
         }
 
-        private Builder( final V from, final V to, final ImmutableStack<Path<V, E>> stack ) {
+        private Builder( final V from, final V to, final ImmutableStack<Walk<V, E>> stack ) {
             this.from = from;
             this.to = to;
             this.stack = stack;
         }
 
-        public Builder<V, E> add( final Path<V, E> path ) {
-            return new Builder<V, E>( from, path.getTo(), stack.push( path ) );
+        public Builder<V, E> add( final Walk<V, E> walk ) {
+            return new Builder<V, E>( from, walk.getTo(), stack.push( walk ) );
         }
 
-        public Path<V, Iterable<Path<V, E>>> build() {
+        public Walk<V, Iterable<Walk<V, E>>> build() {
             // if stack is empty, do not know from/to
             // otherwise:
             //   from := stack.last.from
             //   to := stack.head.to
-            // FIXME: Instead, build a *really* lazy path? b/c often the caller will only
-            // be interested in path.to anyway. So just keep the stack around in the path.
-            return Path.newInstance( from, to, stack.reverse() );
+            // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
+            // be interested in walk.to anyway. So just keep the stack around in the walk.
+            return Walk.newInstance( from, to, stack.reverse() );
         }
     }
 

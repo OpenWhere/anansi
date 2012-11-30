@@ -129,7 +129,7 @@ public class Lazy {
         }
 
         @Override
-        public Iterator<Path<V, E>> iterator() {
+        public Iterator<Walk<V, E>> iterator() {
             return Lazy.iterator( delegate );
         }
     }
@@ -145,7 +145,7 @@ public class Lazy {
         public Traversal<V, E> apply( final V from ) {
             return new Traversal<V, E>() {
                 @Override
-                public Iterator<Path<V, E>> iterator() {
+                public Iterator<Walk<V, E>> iterator() {
                     return Lazy.iterator( delegate.apply( from ) );
                 }
             };
