@@ -27,8 +27,9 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 
 /**
- * A Function which, when given a vertex, produces a {@link Traversal} originating from that vertex. Implementations
- * should endeavor to return Traversals that are lazily evaluated, and should document their behavior in any case.
+ * A Function which, when given a vertex, produces an Iterable of {@link Walk Walks} originating from that vertex.
+ * Implementations should endeavor to return Iterables that are lazily evaluated, and should document their behavior in
+ * any case.
  *
  * @param <V>
  * @param <E>
@@ -36,6 +37,6 @@ import com.google.common.base.Function;
  * @author rconner
  */
 @Beta
-public interface Traverser<V, E> extends Function<V, Traversal<V, E>> {
+public interface Traverser<V, E> extends Function<V, Iterable<Walk<V, E>>> {
     // No additional methods
 }
