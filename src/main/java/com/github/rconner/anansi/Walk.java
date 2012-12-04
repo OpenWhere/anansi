@@ -25,10 +25,10 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
+import com.google.common.collect.ImmutableSet;
 
 /**
- * A walk from one vertex to another, optionally over some implementation-specific object. It is not uncommon for a Walk
- * to be over an Iterable of (sub) Walks.
+ * A walk from one vertex to another, via an Iterable of {@link Step Steps}.
  *
  * @param <V>
  * @param <E>
@@ -36,25 +36,66 @@ import com.google.common.annotations.Beta;
  * @author rconner
  */
 @Beta
-public abstract class Walk<V, E> {
+public final class Walk<V, E> {
+    private final V from;
+    private final V to;
+    private final Iterable<Step<V, E>> via;
+
+    /**
+     * The only Walk constructor, private to prevent direct instantiation by clients.
+     *
+     * @param from
+     * @param to
+     * @param via
+     */
+    private Walk( final V from, final V to, final Iterable<Step<V, E>> via ) {
+        this.from = from;
+        this.to = to;
+        this.via = via;
+    }
 
     /**
      * @return
      */
-    public abstract V getFrom();
+    public V getFrom() {
+        return from;
+    }
 
     /**
      * @return
      */
-    public abstract V getTo();
+    public V getTo() {
+        return to;
+    }
 
     /**
      * @return
      */
-    public abstract E getOver();
+    public Iterable<Step<V, E>> getVia() {
+        return via;
+    }
+
+    public static final class Step<V, E> {
+        private final V to;
+        private final E over;
+
+        Step( final V to, final E over ) {
+            this.to = to;
+            this.over = over;
+        }
+
+        public V getTo() {
+            return to;
+        }
+
+        public E getOver() {
+            return over;
+        }
+    }
 
     /**
-     * Creates a new immutable Walk, with an over of null.
+     * Creates a new, empty, immutable Walk. This should only be used when a Walk literally has travelled over no edges,
+     * the Walk to the root of a breadth- or depth-first traversal for example.
      *
      * @param from
      * @param to
@@ -63,12 +104,12 @@ public abstract class Walk<V, E> {
      *
      * @return
      */
-    public static <V, E> Walk<V, E> newInstance( final V from, final V to ) {
-        return new TrivialWalk<V, E>( from, to, null );
+    public static <V, E> Walk<V, E> empty( final V from, final V to ) {
+        return new Walk<V, E>( from, to, ImmutableSet.<Step<V, E>>of() );
     }
 
     /**
-     * Creates a new immutable Walk.
+     * Creates a new, immutable Walk with a single Step.
      *
      * @param from
      * @param to
@@ -78,39 +119,42 @@ public abstract class Walk<V, E> {
      *
      * @return
      */
-    public static <V, E> Walk<V, E> newInstance( final V from, final V to, final E over ) {
-        return new TrivialWalk<V, E>( from, to, over );
-    }
-
-    private static final class TrivialWalk<V, E> extends Walk<V, E> {
-        private final V from;
-        private final V to;
-        private final E over;
-
-        TrivialWalk( final V from, final V to, final E over ) {
-            this.from = from;
-            this.to = to;
-            this.over = over;
-        }
-
-        @Override
-        public V getFrom() {
-            return from;
-        }
-
-        @Override
-        public V getTo() {
-            return to;
-        }
-
-        @Override
-        public E getOver() {
-            return over;
-        }
+    public static <V, E> Walk<V, E> single( final V from, final V to, final E over ) {
+        return new Walk<V, E>( from, to, ImmutableSet.of( new Step<V, E>( to, over ) ) );
     }
 
     /**
-     * Creates a builder used to create a Walk with sub-walks.
+     * Creates a new, immutable Walk with a single Step with an over of null.
+     *
+     * @param from
+     * @param to
+     * @param over
+     * @param <V>
+     * @param <E>
+     *
+     * @return
+     */
+    public static <V, E> Walk<V, E> single( final V from, final V to ) {
+        return single( from, to, null );
+    }
+
+    /**
+     * Creates a new, immutable Walk with multiple steps.
+     *
+     * @param from
+     * @param to
+     * @param via
+     * @param <V>
+     * @param <E>
+     *
+     * @return
+     */
+    static <V, E> Walk<V, E> multi( final V from, final V to, final Iterable<Step<V, E>> via ) {
+        return new Walk<V, E>( from, to, via );
+    }
+
+    /**
+     * Creates a builder used to create a Walk with multiple Steps.
      *
      * @param from
      * @param <V>
@@ -125,14 +169,19 @@ public abstract class Walk<V, E> {
     public static final class Builder<V, E> {
         private final V from;
         @SuppressWarnings( "unchecked" )
-        private ImmutableStack<Walk<V, E>> stack = ImmutableStack.of();
+        private ImmutableStack<Step<V, E>> stack = ImmutableStack.of();
 
         Builder( final V from ) {
             this.from = from;
         }
 
-        public Builder<V, E> add( final Walk<V, E> walk ) {
-            stack = stack.push( walk );
+        public Builder<V, E> add( final Step<V, E> step ) {
+            stack = stack.push( step );
+            return this;
+        }
+
+        public Builder<V, E> add( final V to, final E over ) {
+            stack = stack.push( new Step<V, E>( to, over ) );
             return this;
         }
 
@@ -141,15 +190,10 @@ public abstract class Walk<V, E> {
             return this;
         }
 
-        public Walk<V, Iterable<Walk<V, E>>> build() {
-            // if stack is empty, do not know from/to
-            // otherwise:
-            //   from := stack.last.from
-            //   to := stack.head.to
+        public Walk<V, E> build() {
             // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
             // be interested in walk.to anyway. So just keep the stack around in the walk.
-            V to = stack.isEmpty() ? from : stack.peek().getTo();
-            return Walk.newInstance( from, to, stack.reverse() );
+            return stack.isEmpty() ? Walk.<V, E>empty( from, from ) : Walk.multi( from, stack.peek().getTo(), stack.reverse() );
         }
     }
 

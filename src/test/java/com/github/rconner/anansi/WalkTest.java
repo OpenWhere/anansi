@@ -23,71 +23,54 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.collect.Iterables;
 import org.junit.Test;
 
-import java.util.Iterator;
-
-import static com.github.rconner.util.IterableTest.assertIteratorEmpty;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public final class WalkTest {
 
+    private static <V, E> void assertWalkContains( final Walk<V, E> actual, final Object... expected ) {
+        assertThat( actual.getFrom(), is( expected[ 0 ] ) );
+        assertThat( actual.getTo(), is( expected[ expected.length - 1 ] ) );
+        assertThat( Iterables.size( actual.getVia() ), is( ( expected.length - 1 ) / 2 ) );
+        int i = 1;
+        for( Walk.Step<V, E> step : actual.getVia() ) {
+            assertThat( step.getOver(), is( expected[ i ] ) );
+            assertThat( step.getTo(), is( expected[ i + 1 ] ) );
+            i += 2;
+        }
+    }
+
     @Test
     public void simple() {
-        final Walk<Integer, ?> walk = Walk.newInstance( 2, 3 );
-        assertThat( walk.getFrom(), is( 2 ) );
-        assertThat( walk.getTo(), is( 3 ) );
-        assertThat( walk.getOver(), nullValue() );
+        assertWalkContains( Walk.single( 2, 3 ), 2, null, 3 );
     }
 
     @Test
     public void simpleOver() {
-        final Walk<Integer, String> walk = Walk.newInstance( 5, 7, "abc" );
-        assertThat( walk.getFrom(), is( 5 ) );
-        assertThat( walk.getTo(), is( 7 ) );
-        assertThat( walk.getOver(), is( "abc" ) );
-    }
-
-    private static <V, E> void assertWalkContains( final Walk<V, Iterable<Walk<V, E>>> actual, final Walk<V, E>... expected ) {
-        assertThat( actual.getFrom(), is( expected[ 0 ].getFrom() ) );
-        assertThat( actual.getTo(), is( expected[ expected.length - 1 ].getTo() ) );
-
-        final Iterator<Walk<V, E>> iterator = actual.getOver().iterator();
-        for( final Walk<V, E> expectedSubWalk : expected ) {
-            final Walk<V, E> actualSubWalk = iterator.next();
-            assertThat( actualSubWalk.getFrom(), is( expectedSubWalk.getFrom() ) );
-            assertThat( actualSubWalk.getTo(), is( expectedSubWalk.getTo() ) );
-            assertThat( actualSubWalk.getOver(), is( expectedSubWalk.getOver() ) );
-        }
-        assertIteratorEmpty( iterator );
-    }
-
-    private static <V, E> void assertWalkEmpty( final Walk<V, Iterable<Walk<V, E>>> actual, final V root ) {
-        assertThat( actual.getFrom(), is( root ) );
-        assertThat( actual.getTo(), is( root ) );
-        assertIteratorEmpty( actual.getOver().iterator() );
+        assertWalkContains( Walk.single( 5, 7, "abc" ), 5, "abc", 7 );
     }
 
     @Test
     @SuppressWarnings( "unchecked" )
     public void builder() {
         final Walk.Builder<Integer, String> rootBuilder = Walk.from( 11 );
-        final Walk<Integer, Iterable<Walk<Integer, String>>> rootWalk = rootBuilder.build();
-        assertWalkEmpty( rootWalk, 11 );
+        final Walk<Integer, String> rootWalk = rootBuilder.build();
+        assertWalkContains( rootWalk, 11 );
 
-        rootBuilder.add( Walk.<Integer, String>newInstance( 11, 13 ) );
-        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo13 = rootBuilder.build();
-        assertWalkContains( walkTo13, Walk.<Integer, String>newInstance( 11, 13 ) );
+        rootBuilder.add( 13, null );
+        final Walk<Integer, String> walkTo13 = rootBuilder.build();
+        assertWalkContains( walkTo13, 11, null, 13 );
 
-        rootBuilder.add( Walk.newInstance( 13, 17, "to 17" ) );
-        final Walk<Integer, Iterable<Walk<Integer, String>>> walkTo17 = rootBuilder.build();
-        assertWalkContains( walkTo17, Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 17, "to 17" ) );
+        rootBuilder.add( 17, "to 17" );
+        final Walk<Integer, String> walkTo17 = rootBuilder.build();
+        assertWalkContains( walkTo17, 11, null, 13, "to 17", 17 );
 
         // Test that all the previously built walks have not changed.
-        assertWalkEmpty( rootWalk, 11 );
-        assertWalkContains( walkTo13, Walk.<Integer, String>newInstance( 11, 13 ) );
-        assertWalkContains( walkTo17, Walk.<Integer, String>newInstance( 11, 13 ), Walk.newInstance( 13, 17, "to 17" ) );
+        assertWalkContains( rootWalk, 11 );
+        assertWalkContains( walkTo13, 11, null, 13 );
+        assertWalkContains( walkTo17, 11, null, 13, "to 17", 17 );
     }
 }
