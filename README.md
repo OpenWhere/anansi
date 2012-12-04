@@ -101,8 +101,8 @@ These are the essential classes/interfaces involved:
 
     Walk<V,E> {
         V from;
-        V to;  // convenience, same as steps.last.to
-        [ Step<V,E> ] steps;
+        V to;  // convenience, same as via.last.to
+        [ Step<V,E> ] via;
     }
 
     Traverser<V,E> {
@@ -141,8 +141,8 @@ All of that is the easy reasoning, and leads to roughly this model (pseudo-code,
 
     Walk<V,E> {
         V from;
-        V to;  // convenience, same as steps.last.to
-        [ Step<V,E> ] steps;
+        V to;  // convenience, same as via.last.to
+        [ Step<V,E> ] via;
     }
 
 Where this gets difficult is that we also want to:
@@ -187,7 +187,7 @@ After having done that, it's relatively simple to allow referencing the `over` o
         V from;
         V to;
         E over;               // only if trivial is true
-        [ Step<V,E> ] steps;
+        [ Step<V,E> ] via;
         boolean trivial;      // or "primitive", "leaf", ...
     }
 
@@ -214,7 +214,7 @@ That leads you to this:
         V from;
         V to;
         E over;               // only if trivial is true
-        [ Step<V,E> ] steps;
+        [ Step<V,E> ] via;
         boolean trivial;      // or "primitive", "leaf", ...
     }
 
@@ -224,19 +224,19 @@ the boolean trivial/composite property. Now we have this:
     Walk<V,E> {
         V from;
         V to;
-        E over;                  // only if step is true, throws an exception otherwise
-        [ Walk<V,E> ] children;  // only if step is false, throws an exception otherwise, or maybe returns []?
+        E over;             // only if step is true, throws an exception otherwise
+        [ Walk<V,E> ] via;  // only if step is false, throws an exception otherwise, or maybe returns []?
         boolean step;
     }
 
-This is essentially the same as the previous option, except replacing `[Step] steps` with `[Walk] children`. So we lose
-the semantic difference between a Walk and a Step.
+This is essentially the same as the previous option, except replacing `[Step] via` with `[Walk] via`. So we lose the
+semantic difference between a Walk and a Step.
 
 
 ### Examples
 
 Let's work through an example. The adjacency graph will be as follows, with `x` being arbitrary. No choice of `x`
-results in ambiguity because the `over` and `steps/children` are stored in different fields.
+results in ambiguity because the `over` and `via` are stored in different fields.
 
     A --> B (over x)
     B --> C (over x)
