@@ -224,3 +224,10 @@ trivial walk will be written as `A - > B over x`. An Option 2 or 3 compound walk
 Besides the obvious differences, it should be noted that with Options 1 and 3, a compound traversal can reuse
 Steps/Walks from the adjacency traversal to build the compound walks. Option 2 requires that the compound traversal
 create new Step instances.
+
+
+### Resolution
+
+Until requirements force anansi to take a different direction (it is being used, by me), it will be using Option 1.
+That option is the simplest of the three, and may be sufficient. Simpler is always better as long as you meet
+requirements.
