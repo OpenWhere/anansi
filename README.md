@@ -69,47 +69,70 @@ Where this gets difficult is that we also want to:
 - Model an empty Walk. For example, the first Walk in a pre-order traversal is just the start vertex, no edge having
   been followed yet.
 - Model a self-loop, which must be different than an empty Walk.
-- Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc. By extension, keep track of
-  nested compound traversals.
+- Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc.
+- Keep track of nested compound traversals.
 
-To make that last point happen, you have to implement the composite pattern. Otherwise, you'll end up declaring things
-like `Walk< V, Step< V, Step< V,E > > >`. While that might describe the structure accurately, it's not a good code.
 
-It has to be possible for both client and library code to distinguish trivial walks/steps from compoosite ones. Not
-having children is not sufficient, since the aforementioned empty walk is composite, but has no Steps. Therefore, there
-either has to be method to distinguish the two, or they must be different public classes or interfaces.
+### Option 1
+
+Stick with the above interfaces. We sacrifice:
+
+- Referencing the parts (form/to/over) of a one-step adjacency walk should be simple getters.
+- Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc.
+- Keep track of nested compound traversals.
+
+But we gain some simplicity from that. All Walks are the modeled the same way, and there is no if/then code for testing
+adjacency vs. compound, because they are exactly the same.
+
+
+### Option 2
+
+Provide a way to distinguish one-step adjacency and compound Walks.
+
+Not having children is not a sufficient criterion, since an empty walk is composite, but has no Steps. Therefore, there
+either has to be method to distinguish the two, or they must be different public classes/interfaces. Having a method is
+a bit cleaner.
+
+After having done that, it's relatively simple to allow referencing the `over` of an adjacency Walk.
+
+    interface Step<V,E> {
+        V to;
+        E over;
+    }
+
+    interface Walk<V,E> {
+        V from;
+        V to;
+        E over;               // only if trivial is true
+        [ Step<V,E> ] steps;
+        boolean trivial;      // or "primitive", "leaf", ...
+    }
+
+The one capability we now don't have is to keep track of nested compound traversals. If you chain together two compound
+walks `[A -> B -> ... -> M]` and `[M -> N -> ... -> Z]`, you get a flattened walk `[A -> ... -> Z ]`. Note that this
+might actaully be a good thing.
+
+
+### Option 3
+
+Implement a composite pattern, to keep track of nested compound traversals. Otherwise, you'll end up declaring things
+like `Walk< V, Step< V, Step< V,E > > >`. While that might describe the structure accurately, it's not good code.
 
 That leads you to this:
 
     interface Step<V,E> {
         V to;
-        E over;                  // only if trivial is true
-        [ Step<V,E> ] children;  // only if trivial is false
-        boolean trivial;         // or "primitive", "leaf", ...
-    }
-
-    interface Walk<V,E> {
-        V from;
-        V to;
-        [ Step<V,E> ] steps;
-    }
-
-If you then decide you also want a trivial adjacency walk to have an easily accessible `over` property, without having
-to invoke `walk.steps[0].over`, you end up with this:
-
-    interface Step<V,E> {
-        V to;
-        E over;
+        E over;               // only if trivial is true
         [ Step<V,E> ] children;
-        boolean trivial;
+        boolean trivial;      // or "primitive", "leaf", ...
     }
 
     interface Walk<V,E> {
         V from;
         V to;
-        E over;
+        E over;               // only if trivial is true
         [ Step<V,E> ] steps;
-        boolean trivial;
+        boolean trivial;      // or "primitive", "leaf", ...
     }
 
 At this point, it hardly seems worthwhile to have a distinct Step interface at all. Removing that, we can repurpose the
@@ -123,9 +146,14 @@ term for the boolean trivial/composite property. Now we have this:
         boolean step;
     }
 
+This is essentially the same as the previous option, except replacing `[Step] steps` with `[Walk] children`. So we lose
+the semantic difference between a Walk and a Step.
 
-Let's work through an example. The adjacency graph will be as follows, with `x` being arbitrary at this point. During
-the discussion, certain values of `x` will be explored to ascertain ambiguity.
+
+### Examples
+
+Let's work through an example. The adjacency graph will be as follows, with `x` being arbitrary. No choice of `x`
+results in ambiguity because the `over` and `steps/children` are stored in different fields.
 
     A --> B (over x)
     B --> C (over x)
@@ -142,38 +170,57 @@ The adjacency walks will be denoted as `{AB}`, `{BC}`, and `{AA}` respectively.
 
 The pre-order traversal walks will be denoted as `[A]`, `[AB]`, `[ABC]`, and `[AA]` respectively.
 
-If a walk is a step, it will be written as (for exampe) `A -> B over x`. If a walk is compound, it will be written as
-(for example) `A -> C via [ A -> B over x, B -> C over x ]`.
+A step will be written as `-> B over x`. An Option 1 walk will be written as `A -> B via [ ... ]`. An Option 2 or 3
+trivial walk will be written as `A - > B over x`. An Option 2 or 3 compound walk will be written as
+`A - > B via [ ... ]`.
 
 <BR/>
 
 <table>
     <tr>
+        <th></th>
+        <th>Option 1</th>
+        <th>Option 2</th>
+        <th>Option 3</th>
+    </tr>
+    <tr>
         <th>{AB}</th>
+        <td><pre><code>A -> B via [ -> B over x ]</code></pre></td>
+        <td><pre><code>A -> B over x</code></pre></td>
         <td><pre><code>A -> B over x</code></pre></td>
     </tr>
     <tr>
         <th>{AA}</th>
+        <td><pre><code>A -> A via [ -> A over x ]</code></pre></td>
+        <td><pre><code>A -> A over x</code></pre></td>
         <td><pre><code>A -> A over x</code></pre></td>
     </tr>
     <tr>
         <th>[A]</th>
         <td><pre><code>A -> A via []</code></pre></td>
+        <td><pre><code>A -> A via []</code></pre></td>
+        <td><pre><code>A -> A via []</code></pre></td>
     </tr>
     <tr>
         <th>[AB]</th>
+        <td><pre><code>A -> B via [ -> B over x ]</code></pre></td>
+        <td><pre><code>A -> B via [ -> B over x ]</code></pre></td>
         <td><pre><code>A -> B via [ A -> B over x ]</code></pre></td>
     </tr>
     <tr>
         <th>[ABC]</th>
+        <td><pre><code>A -> B via [ -> B over x, -> C over x ]</code></pre></td>
+        <td><pre><code>A -> B via [ -> B over x, -> C over x ]</code></pre></td>
         <td><pre><code>A -> B via [ A -> B over x, B -> C over x ]</code></pre></td>
     </tr>
     <tr>
         <th>[AA]</th>
+        <td><pre><code>A -> A via [ -> A over x ]</code></pre></td>
+        <td><pre><code>A -> A via [ -> A over x ]</code></pre></td>
         <td><pre><code>A -> A via [ A -> A over x ]</code></pre></td>
     </tr>
 </table>
 
-Because trivial and compound walks have a method to distinguish them, there is no ambiguity even if `x` is an Iterable
-of walks. When building a compound walk, the walks produced by the adjacency traverser can be used directly (if
-immutable), and we don't even need to test whether they are trivial or not.
+Besides the obvious differences, it should be noted that with Options 1 and 3, a compound traversal can reuse
+Steps/Walks from the adjacency traversal to build the compound walks. Option 2 requires that the compound traversal
+create new Step instances.
