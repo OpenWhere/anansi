@@ -59,7 +59,7 @@ All of that is the easy reasoning, and leads to roughly this model (pseudo-code,
     interface Walk<V,E> {
         V from;
         V to;  // convenience, same as steps.last.to
-        [ Step<V,E> ] steps;  // rename this field!
+        [ Step<V,E> ] steps;
     }
 
 Where this gets difficult is that we also want to:
@@ -83,9 +83,9 @@ That leads you to this:
 
     interface Step<V,E> {
         V to;
-        E over;  // only if trivial is true
+        E over;                  // only if trivial is true
         [ Step<V,E> ] children;  // only if trivial is false
-        boolean trivial;  // or "trivial", "leaf", ...
+        boolean trivial;         // or "primitive", "leaf", ...
     }
 
     interface Walk<V,E> {
@@ -94,8 +94,8 @@ That leads you to this:
         [ Step<V,E> ] steps;
     }
 
-If you then decide you also want a simple trivial adjacency walk to have an easily accessible `over` property, without
-having to invoke `walk.steps[0].over`, you end up with this:
+If you then decide you also want a trivial adjacency walk to have an easily accessible `over` property, without having
+to invoke `walk.steps[0].over`, you end up with this:
 
     interface Step<V,E> {
         V to;
