@@ -27,6 +27,13 @@ Traversal primitives and operations for graph-like structures.
 
 **TODO** Add basic discussion of the interfaces and how things work.
 
+    Traversal := [ Walk ]
+    Traverser := function: V -> Traversal
+
+In particular, an adjacency function is a Traverser. Give an adjacency function a vertex and it will return an Iterable
+of (short) Walks to adjacent vertices. This is very similar to a DFS, which is given a vertex and returns an Iterable of
+non-trivial Walks.
+
 
 ## Reasoning about options for implementing Walk/Step
 
@@ -62,72 +69,63 @@ Where this gets difficult is that we also want to:
 - Model an empty Walk. For example, the first Walk in a pre-order traversal is just the start vertex, no edge having
   been followed yet.
 - Model a self-loop, which must be different than an empty Walk.
-- (maybe?) Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc. This is possibly a
-  concern because the two could be handled differently by (another) compound traversal.
+- Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc. By extension, keep track of
+  nested compound traversals.
 
-It is important to figure out how a compound traversal builds Walks from the Walks returned by the client-supplied
-Traverser. Referring back to the basic interace definitions:
+To make that last point happen, you have to implement the composite pattern. Otherwise, you'll end up declaring things
+like `Walk< V, Step< V, Step< V,E > > >`. While that might describe the structure accurately, it's not a good code.
 
-    Traversal := [ Walk ]
-    Traverser := function: V -> Traversal
+It has to be possible for both client and library code to distinguish trivial walks/steps from compoosite ones. Not
+having children is not sufficient, since the aforementioned empty walk is composite, but has no Steps. Therefore, there
+either has to be method to distinguish the two, or they must be different public classes or interfaces.
 
-In particular, an adjacency function is a Traverser. Give an adjacency function a vertex and it will return an Iterable
-of (short) Walks to adjacent vertices. This is very similar to a DFS, which is given a vertex and returns an Iterable of
-non-trivial Walks. Note that it is a bad idea to test whether the "over" contains an Iterable (even of Steps) as
-distinguishing between an adjacency Walk and a one-step compound walk, because an adjacency Walk just might be over some
-Iterable which has nothing to do with compound traversals. Only the creator of the Walk knows what kind they are
-building.
+That leads you to this:
 
-Some options for Walk implementions are:
+    interface Step<V,E> {
+        V to;
+        E over;  // only if trivial is true
+        [ Step<V,E> ] children;  // only if trivial is false
+        boolean trivial;  // or "trivial", "leaf", ...
+    }
 
-1. The implementation described above.
+    interface Walk<V,E> {
+        V from;
+        V to;
+        [ Step<V,E> ] steps;
+    }
 
-2. Ignore what I just said, there is no `Step`.
-```
-    V from;
-    V to;
-    E over;  // can be a [Walk]
-```
+If you then decide you also want a simple trivial adjacency walk to have an easily accessible `over` property, without
+having to invoke `walk.steps[0].over`, you end up with this:
 
-3. Exactly like the previous option, but there is a `Step` interface and `Walk.over` can be an `[Step]`.
+    interface Step<V,E> {
+        V to;
+        E over;
+        [ Step<V,E> ] children;
+        boolean trivial;
+    }
 
-4. A `Walk` is `from` + one `Step`, and `Step.over` can be an `[Step]`.
-```
-    V from;
-    Step step;  // rename!
-```
-
-5. `Walk` extends `Step`, adding `from` field.
-```
-    V from;
-    V to;  // inherited
-    E over;  // inherited
-```
-Structurally, this is essentially the same as the previous option except Walk can be used directly as a Step, which
-allows Walks to be reused. Compound traversals wouldn't need to construct Steps from adjacency Walks, they could just
-use those Walks directly. That makes this the same as the option with no Step at all, since there would be no concrete
-Step implementations; why bother when you can use the already-built Walk? This option will get no further consideration
-because the no-Step option is simpler and equivalent.
-
-6. Distinct classes/interfaces for trivial (adjacency) walks and compund walks.
-```
-    interface TrivialWalk {
+    interface Walk<V,E> {
         V from;
         V to;
         E over;
+        [ Step<V,E> ] steps;
+        boolean trivial;
     }
-    interface CompoundWalk {
+
+At this point, it hardly seems worthwhile to have a distinct Step interface at all. Removing that, we can repurpose the
+term for the boolean trivial/composite property. Now we have this:
+
+    interface Walk<V,E> {
         V from;
-        V to;  // convenience, same as steps.last.to
-        [ Step<V,E> ] steps;  // rename this field!
+        V to;
+        E over;                  // only if step is true, throws an exception otherwise
+        [ Walk<V,E> ] children;  // only if step is false, throws an exception otherwise, or maybe returns []?
+        boolean step;
     }
-```
-The main problem with this option is complexity. The client has to either know what kind of thing they're getting, or
-has to use instanceof checks.
 
 
-Let's work through an example using each of these, except #5. The adjacency graph will be as follows, with `x` being
-arbitrary at this point. During the discussion, certain values of `x` will be explored to ascertain ambiguity.
+Let's work through an example. The adjacency graph will be as follows, with `x` being arbitrary at this point. During
+the discussion, certain values of `x` will be explored to ascertain ambiguity.
 
     A --> B (over x)
     B --> C (over x)
@@ -144,176 +142,38 @@ The adjacency walks will be denoted as `{AB}`, `{BC}`, and `{AA}` respectively.
 
 The pre-order traversal walks will be denoted as `[A]`, `[AB]`, `[ABC]`, and `[AA]` respectively.
 
-A `Step` will be written as `-> to "over" over`. For example, `-> B over x`.
-
-A `Walk` will be written as `from -> to "over"/"steps" over/steps` if possible. For example, `A -> B over x` or
-`A -> C over [ -> B over x, -> C over x ]`.
-
-Following the examples will be notes and the pseudo-code snippet required to construct a compound walk from an Iterable
-of adjacency walks. Note that all options can be made unambiguous by introducing an additional method on Walk for
-querying whether it is trivial or compound.
+If a walk is a step, it will be written as (for exampe) `A -> B over x`. If a walk is compound, it will be written as
+(for example) `A -> C via [ A -> B over x, B -> C over x ]`.
 
 <BR/>
 
 <table>
-
     <tr>
-        <th>Impl.</th>
         <th>{AB}</th>
+        <td><pre><code>A -> B over x</code></pre></td>
+    </tr>
+    <tr>
         <th>{AA}</th>
+        <td><pre><code>A -> A over x</code></pre></td>
+    </tr>
+    <tr>
         <th>[A]</th>
+        <td><pre><code>A -> A via []</code></pre></td>
+    </tr>
+    <tr>
         <th>[AB]</th>
+        <td><pre><code>A -> B via [ A -> B over x ]</code></pre></td>
+    </tr>
+    <tr>
         <th>[ABC]</th>
+        <td><pre><code>A -> B via [ A -> B over x, B -> C over x ]</code></pre></td>
+    </tr>
+    <tr>
         <th>[AA]</th>
+        <td><pre><code>A -> A via [ A -> A over x ]</code></pre></td>
     </tr>
-
-
-    <tr>
-        <td rowspan="3">1</td>
-        <td>A -> B steps [ -> B over x ]</td>
-        <td>A -> A steps [ -> A over x ]</td>
-        <td>A -> A steps []</td>
-        <td>A -> B steps [ -> B over x ]</td>
-        <td>A -> C steps [ -> B over x, -> C over x ]</td>
-        <td>A -> A steps [ -> A over x ]</td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-            {AB} and [AB] are ambiguous. {AA} and [AA] are ambiguous.<BR/>
-            Adjacency Steps are reused when constructing compound Walks.<BR/>
-            More deeply nested compound walks are flattened, so that Walk.steps always contains &quot;leaf&quot; steps.<BR/>
-            Over value for adjacency walks is not easy to retrieve (walk.steps[0].over).
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-<pre><code>
-for( walk : adjacentWalks ) {
-    compoundWalk.steps.appendAll( walk.steps );
-}
-</code></pre>
-        </td>
-    </tr>
-
-
-    <tr>
-        <td rowspan="3">2</td>
-        <td>A -> B over x</td>
-        <td>A -> A over x</td>
-        <td>A -> A over []</td>
-        <td>A -> B over [ A -> B over x ]</td>
-        <td>A -> C over [ A -> B over x, B -> C over x ]</td>
-        <td>A -> A over [ A -> A over x ]</td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-            {AA} and [A] are ambiguous if x=[]. All are ambiguous if x=[Walk].<BR/>
-            Adjacency Walks are reused when constructing compound Walks.<BR/>
-            Structure of more deeply nested compound walks is retained.
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-<pre><code>
-compoundWalk.over = adjacentWalks;
-</code></pre>
-        </td>
-    </tr>
-
-
-    <tr>
-        <td rowspan="3">3</td>
-        <td>A -> B over x</td>
-        <td>A -> A over x</td>
-        <td>A -> A over []</td>
-        <td>A -> B over [ -> B over x ]</td>
-        <td>A -> C over [ -> B over x, -> C over x ]</td>
-        <td>A -> A over [ -> A over x ]</td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-            {AA} and [A] are ambiguous if x=[]. All are ambiguous if x=[Step].<BR/>
-            No objects are reused when constructing compound Walks.<BR/>
-            Structure of more deeply nested compound walks is retained.
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-<pre><code>
-for( walk : adjacentWalks ) {
-    compoundWalk.over.append( -> walk.to over walk.over );
-}
-</code></pre>
-        </td>
-    </tr>
-
-
-    <tr>
-        <td rowspan="3">4</td>
-        <td>A -> { B over x }</td>
-        <td>A -> { A over x }</td>
-        <td>A -> { null }</td>
-        <td>A -> { B over [ { B over x } ]</td>
-        <td>A -> { C over [ { B over x }, { C over x } ]</td>
-        <td>A -> { A over [ { A over x } ]</td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-            All are ambiguous if x=[Step].<BR/>
-            Adjacency Steps are reused when constructing compound Walks.<BR/>
-            Structure of more deeply nested compound walks is retained.
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-<pre><code>
-for( walk : adjacentWalks ) {
-    compoundWalk.step.over.append( walk.step );
-}
-</code></pre>
-        </td>
-    </tr>
-
-
-    <tr>
-        <td rowspan="3">6</td>
-        <td>A -> B over x</td>
-        <td>A -> A over x</td>
-        <td>A -> A steps []</td>
-        <td>A -> B steps [ -> B over x ]</td>
-        <td>A -> C steps [ -> B over x, -> C over x ]</td>
-        <td>A -> A steps [ -> A over x ]</td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-            There is no ambiguity, but there are also two classes to distinguish. You cannot blindly call
-                 walk.getOver(), because that method might not exist.<BR/>
-            No objects are reused when constructing compound Walks.<BR/>
-            Structure of more deeply nested compound walks is retained.
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="7">
-<pre><code>
-for( walk : adjacentWalks ) {
-    if( walk instanceof TrivialWalk ) {
-        compoundWalk.steps.append( -> walk.to over walk.over );
-    } else {
-        compoundWalk.steps.append( -> walk.to over walk.steps );
-    }
-}
-</code></pre>
-        </td>
-    </tr>
-
 </table>
+
+Because trivial and compound walks have a method to distinguish them, there is no ambiguity even if `x` is an Iterable
+of walks. When building a compound walk, the walks produced by the adjacency traverser can be used directly (if
+immutable), and we don't even need to test whether they are trivial or not.
