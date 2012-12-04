@@ -73,7 +73,7 @@ or other complex traversals is just a matter of replacing the single Steps being
 This is really just a general function, accepting a vertex and returning walks from that vertex. It is not a graph, nor
 does it pretend to be one. Any implementation is free to implement whatever filtering it wants however it wants. In
 practice, adjacency traversals are produced in implementation-specific ways. In the end, using
-[Google Guava's](http://code.google.com/p/guava-libraries/) `Function` interface we have this:
+[Google Guava's](http://code.google.com/p/guava-libraries/) `Function` interface, we have this:
 
     Iterable<Walk<V,E>> apply( V vertex )
 
@@ -109,13 +109,13 @@ These are the essential classes/interfaces involved:
         Iterable<Walk<V,E>> apply( V vertex );
     }
 
-Clarifying how this generally works ... there is some implementation-specific way of creating Traversers that answer the
-question "Given V, what is adjacent to it?". Using that (or any Traverser created by this library), you can construct
-more complex Traversers for performing things like a pre-order depth-first traversal.
+There is some implementation-specific way of creating Traversers that answer the question "Given V, what is adjacent to
+it?". Using that (or any Traverser created by this library), you can construct more complex Traversers for performing
+things like a pre-order depth-first traversal.
 
-Repeating this for emphasis: An adjacency function is a Traverser. Give an adjacency function a vertex and it will
-return an Iterable of (short) Walks to adjacent vertices. A depth-first search is also a Traverser; give it a vertex and
-it will return an Iterable of (non-trivial) Walks to reachable vertices.
+Repeating this for emphasis: An adjacency function is a Traverser; give it a vertex and it will return an Iterable of
+(short) Walks to adjacent vertices. A depth-first search is also a Traverser; give it a vertex and it will return an
+Iterable of (non-trivial) Walks to reachable vertices.
 
 
 ## Reasoning about options for implementing Walk/Step
