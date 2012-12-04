@@ -185,39 +185,39 @@ trivial walk will be written as `A - > B over x`. An Option 2 or 3 compound walk
     </tr>
     <tr>
         <th>{AB}</th>
-        <td><pre><code>A -> B via [ -> B over x ]</code></pre></td>
-        <td><pre><code>A -> B over x</code></pre></td>
-        <td><pre><code>A -> B over x</code></pre></td>
+        <td>A -> B via [ -> B over x ]</td>
+        <td>A -> B over x</td>
+        <td>A -> B over x</td>
     </tr>
     <tr>
         <th>{AA}</th>
-        <td><pre><code>A -> A via [ -> A over x ]</code></pre></td>
-        <td><pre><code>A -> A over x</code></pre></td>
-        <td><pre><code>A -> A over x</code></pre></td>
+        <td>A -> A via [ -> A over x ]</td>
+        <td>A -> A over x</td>
+        <td>A -> A over x</td>
     </tr>
     <tr>
         <th>[A]</th>
-        <td><pre><code>A -> A via []</code></pre></td>
-        <td><pre><code>A -> A via []</code></pre></td>
-        <td><pre><code>A -> A via []</code></pre></td>
+        <td>A -> A via []</td>
+        <td>A -> A via []</td>
+        <td>A -> A via []</td>
     </tr>
     <tr>
         <th>[AB]</th>
-        <td><pre><code>A -> B via [ -> B over x ]</code></pre></td>
-        <td><pre><code>A -> B via [ -> B over x ]</code></pre></td>
-        <td><pre><code>A -> B via [ A -> B over x ]</code></pre></td>
+        <td>A -> B via [ -> B over x ]</td>
+        <td>A -> B via [ -> B over x ]</td>
+        <td>A -> B via [ A -> B over x ]</td>
     </tr>
     <tr>
         <th>[ABC]</th>
-        <td><pre><code>A -> B via [ -> B over x, -> C over x ]</code></pre></td>
-        <td><pre><code>A -> B via [ -> B over x, -> C over x ]</code></pre></td>
-        <td><pre><code>A -> B via [ A -> B over x, B -> C over x ]</code></pre></td>
+        <td>A -> B via [ -> B over x, -> C over x ]</td>
+        <td>A -> B via [ -> B over x, -> C over x ]</td>
+        <td>A -> B via [ A -> B over x, B -> C over x ]</td>
     </tr>
     <tr>
         <th>[AA]</th>
-        <td><pre><code>A -> A via [ -> A over x ]</code></pre></td>
-        <td><pre><code>A -> A via [ -> A over x ]</code></pre></td>
-        <td><pre><code>A -> A via [ A -> A over x ]</code></pre></td>
+        <td>A -> A via [ -> A over x ]</td>
+        <td>A -> A via [ -> A over x ]</td>
+        <td>A -> A via [ A -> A over x ]</td>
     </tr>
 </table>
 
