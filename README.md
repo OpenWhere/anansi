@@ -147,7 +147,7 @@ The pre-order traversal walks will be denoted as `[A]`, `[AB]`, `[ABC]`, and `[A
 A `Step` will be written as `-> to "over" over`. For example, `-> B over x`.
 
 A `Walk` will be written as `from -> to "over"/"steps" over/steps` if possible. For example, `A -> B over x` or
-`A -> C over [ -> B over x, -C over x ]`.
+`A -> C over [ -> B over x, -> C over x ]`.
 
 Following the examples will be notes and the pseudo-code snippet required to construct a compound walk from an Iterable
 of adjacency walks. Note that all options can be made unambiguous by introducing an additional method on Walk for
