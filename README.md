@@ -149,8 +149,9 @@ A `Step` will be written as `-> to "over" over`. For example, `-> B over x`.
 A `Walk` will be written as `from -> to "over"/"steps" over/steps` if possible. For example, `A -> B over x` or
 `A -> C over [ -> B over x, -C over x ]`.
 
-Following the examples will be the pseudo-code snippet required to construct a compound walk from an Iterable of
-adjacency walks.
+Following the examples will be notes and the pseudo-code snippet required to construct a compound walk from an Iterable
+of adjacency walks. Note that all options can be made unambiguous by introducing an additional method on Walk for
+querying whether it is trivial or compound.
 
 <BR/>
 
@@ -294,7 +295,8 @@ for( walk : adjacentWalks ) {
 
     <tr>
         <td colspan="7">
-            There is no ambiguity, but there are also two classes to distinguish.<BR/>
+            There is no ambiguity, but there are also two classes to distinguish. You cannot blindly call
+                 walk.getOver(), because that method might not exist.<BR/>
             No objects are reused when constructing compound Walks.<BR/>
             Structure of more deeply nested compound walks is retained.
         </td>
