@@ -175,13 +175,20 @@ public final class Walk<V, E> {
             this.from = from;
         }
 
+        public Builder<V, E> add( final V to, final E over ) {
+            stack = stack.push( new Step<V, E>( to, over ) );
+            return this;
+        }
+
         public Builder<V, E> add( final Step<V, E> step ) {
             stack = stack.push( step );
             return this;
         }
 
-        public Builder<V, E> add( final V to, final E over ) {
-            stack = stack.push( new Step<V, E>( to, over ) );
+        public Builder<V, E> add( final Walk<V, E> walk ) {
+            for( Step<V, E> step : walk.getVia() ) {
+                stack = stack.push( step );
+            }
             return this;
         }
 
