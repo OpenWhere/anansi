@@ -60,11 +60,11 @@ public final class WalkTest {
         final Walk<Integer, String> rootWalk = rootBuilder.build();
         assertWalkContains( rootWalk, 11 );
 
-        rootBuilder.add( 13, null );
+        rootBuilder.add( Walk.single( 11, 13, ( String ) null ) );
         final Walk<Integer, String> walkTo13 = rootBuilder.build();
         assertWalkContains( walkTo13, 11, null, 13 );
 
-        rootBuilder.add( 17, "to 17" );
+        rootBuilder.add( Walk.single( 13, 17, "to 17" ) );
         final Walk<Integer, String> walkTo17 = rootBuilder.build();
         assertWalkContains( walkTo17, 11, null, 13, "to 17", 17 );
 

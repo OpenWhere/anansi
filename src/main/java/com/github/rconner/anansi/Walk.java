@@ -25,7 +25,9 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 
 /**
  * A walk from one vertex to another, via an Iterable of {@link Step Steps}.
@@ -169,26 +171,14 @@ public final class Walk<V, E> {
     public static final class Builder<V, E> {
         private final V from;
         @SuppressWarnings( "unchecked" )
-        private ImmutableStack<Step<V, E>> stack = ImmutableStack.of();
+        private ImmutableStack<Walk<V, E>> stack = ImmutableStack.of();
 
         Builder( final V from ) {
             this.from = from;
         }
 
-        public Builder<V, E> add( final V to, final E over ) {
-            stack = stack.push( new Step<V, E>( to, over ) );
-            return this;
-        }
-
-        public Builder<V, E> add( final Step<V, E> step ) {
-            stack = stack.push( step );
-            return this;
-        }
-
         public Builder<V, E> add( final Walk<V, E> walk ) {
-            for( Step<V, E> step : walk.getVia() ) {
-                stack = stack.push( step );
-            }
+            stack = stack.push( walk );
             return this;
         }
 
@@ -197,11 +187,31 @@ public final class Walk<V, E> {
             return this;
         }
 
+        @SuppressWarnings( "unchecked" )
         public Walk<V, E> build() {
             // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
             // be interested in walk.to anyway. So just keep the stack around in the walk.
-            return stack.isEmpty() ? Walk.<V, E>empty( from, from ) : Walk.multi( from, stack.peek().getTo(), stack.reverse() );
+            if( stack.isEmpty() ) {
+                return Walk.empty( from, from );
+            }
+            final Iterable<Walk<V, E>> walks = stack.reverse();
+            final Function<Walk<V, E>, Iterable<Step<V, E>>> func = GetVia.getInstance();
+            final Iterable<Step<V, E>> steps = Iterables.concat( Iterables.transform( walks, func ) );
+            return Walk.multi( from, stack.peek().getTo(), steps );
         }
     }
 
+    private static class GetVia<V, E> implements Function<Walk<V, E>, Iterable<Step<V, E>>> {
+        private static final Function<?, ?> INSTANCE = new GetVia();
+
+        @SuppressWarnings( "unchecked" )
+        static <V, E> Function<Walk<V, E>, Iterable<Step<V, E>>> getInstance() {
+            return ( Function<Walk<V, E>, Iterable<Step<V, E>>> ) INSTANCE;
+        }
+
+        @Override
+        public Iterable<Step<V, E>> apply( final Walk<V, E> walk ) {
+            return walk.getVia();
+        }
+    }
 }
