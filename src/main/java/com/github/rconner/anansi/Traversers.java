@@ -24,6 +24,7 @@
 package com.github.rconner.anansi;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
@@ -40,6 +41,29 @@ public class Traversers {
      * Prevent instantiation.
      */
     private Traversers() {
+    }
+
+
+    /**
+     * Returns a Traverser that returns an empty Iterable for all inputs.
+     *
+     * @param <V>
+     * @param <E>
+     *
+     * @return
+     */
+    @SuppressWarnings( "unchecked" )
+    public static <V, E> Traverser<V, E> empty() {
+        return ( Traverser<V, E> ) EmptyTraverser.INSTANCE;
+    }
+
+    private static final class EmptyTraverser<V, E> implements Traverser<V, E> {
+        static final Traverser<?, ?> INSTANCE = new EmptyTraverser<Object, Object>();
+
+        @Override
+        public Iterable<Walk<V, E>> apply( final V input ) {
+            return ImmutableSet.of();
+        }
     }
 
 
