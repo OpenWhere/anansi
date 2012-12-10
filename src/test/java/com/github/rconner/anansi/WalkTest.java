@@ -71,7 +71,7 @@ public final class WalkTest {
         final Walk<Integer, String> stillWalkTo13 = rootBuilder.build();
         assertWalkContains( stillWalkTo13, 11, null, 13 );
 
-        subBuilderFrom13.add( Walk.single( 13, 15, (String) null ) );
+        subBuilderFrom13.add( Walk.single( 13, 15, ( String ) null ) );
         final Walk<Integer, String> subWalkTo15 = subBuilderFrom13.build();
         assertWalkContains( subWalkTo15, 13, null, 15 );
 
