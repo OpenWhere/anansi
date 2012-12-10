@@ -141,6 +141,9 @@ public class StructureTest {
         for( final Walk.Step<Object, String> step : walk.getVia() ) {
             sb.append( step.getOver() );
         }
+        if( sb.length() > 0 && sb.charAt( 0 ) == '.' ) {
+            return sb.substring( 1 );
+        }
         return sb.toString();
     }
 
@@ -204,103 +207,103 @@ public class StructureTest {
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "A String" ) );
-        assertThat( toPath( walk ), is( ".string" ) );
+        assertThat( toPath( walk ), is( "string" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) 42 ) );
-        assertThat( toPath( walk ), is( ".integer" ) );
+        assertThat( toPath( walk ), is( "integer" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "zero" ) );
-        assertThat( toPath( walk ), is( ".list[0]" ) );
+        assertThat( toPath( walk ), is( "list[0]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "one" ) );
-        assertThat( toPath( walk ), is( ".list[1]" ) );
+        assertThat( toPath( walk ), is( "list[1]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "two" ) );
-        assertThat( toPath( walk ), is( ".list[2]" ) );
+        assertThat( toPath( walk ), is( "list[2]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "three" ) );
-        assertThat( toPath( walk ), is( ".list[3]" ) );
+        assertThat( toPath( walk ), is( "list[3]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "four" ) );
-        assertThat( toPath( walk ), is( ".array[0]" ) );
+        assertThat( toPath( walk ), is( "array[0]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "five" ) );
-        assertThat( toPath( walk ), is( ".array[1]" ) );
+        assertThat( toPath( walk ), is( "array[1]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "six" ) );
-        assertThat( toPath( walk ), is( ".array[2]" ) );
+        assertThat( toPath( walk ), is( "array[2]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) false ) );
-        assertThat( toPath( walk ), is( ".booleanArray[0]" ) );
+        assertThat( toPath( walk ), is( "booleanArray[0]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) true ) );
-        assertThat( toPath( walk ), is( ".booleanArray[1]" ) );
+        assertThat( toPath( walk ), is( "booleanArray[1]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) true ) );
-        assertThat( toPath( walk ), is( ".booleanArray[2]" ) );
+        assertThat( toPath( walk ), is( "booleanArray[2]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) false ) );
-        assertThat( toPath( walk ), is( ".booleanArray[3]" ) );
+        assertThat( toPath( walk ), is( "booleanArray[3]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) true ) );
-        assertThat( toPath( walk ), is( ".booleanArray[4]" ) );
+        assertThat( toPath( walk ), is( "booleanArray[4]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "Another String" ) );
-        assertThat( toPath( walk ), is( ".map.string" ) );
+        assertThat( toPath( walk ), is( "map.string" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "Alice" ) );
-        assertThat( toPath( walk ), is( ".map.people[0].name" ) );
+        assertThat( toPath( walk ), is( "map.people[0].name" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) 37 ) );
-        assertThat( toPath( walk ), is( ".map.people[0].age" ) );
+        assertThat( toPath( walk ), is( "map.people[0].age" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "Bob" ) );
-        assertThat( toPath( walk ), is( ".map.people[1].name" ) );
+        assertThat( toPath( walk ), is( "map.people[1].name" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) 55 ) );
-        assertThat( toPath( walk ), is( ".map.people[1].age" ) );
+        assertThat( toPath( walk ), is( "map.people[1].age" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "Carol" ) );
-        assertThat( toPath( walk ), is( ".map.people[2].name" ) );
+        assertThat( toPath( walk ), is( "map.people[2].name" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) 23 ) );
-        assertThat( toPath( walk ), is( ".map.people[2].age" ) );
+        assertThat( toPath( walk ), is( "map.people[2].age" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "Dave" ) );
-        assertThat( toPath( walk ), is( ".map.people[3].name" ) );
+        assertThat( toPath( walk ), is( "map.people[3].name" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) 27 ) );
-        assertThat( toPath( walk ), is( ".map.people[3].age" ) );
+        assertThat( toPath( walk ), is( "map.people[3].age" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) "Elise" ) );
-        assertThat( toPath( walk ), is( ".map.owner.name" ) );
+        assertThat( toPath( walk ), is( "map.owner.name" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( (Object) 43 ) );
-        assertThat( toPath( walk ), is( ".map.owner.age" ) );
+        assertThat( toPath( walk ), is( "map.owner.age" ) );
 
         assertThat( iterator.hasNext(), is( false ) );
     }
