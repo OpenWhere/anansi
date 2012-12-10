@@ -26,6 +26,7 @@ package com.github.rconner.anansi;
 import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
@@ -178,6 +179,7 @@ public final class Walk<V, E> {
         }
 
         public Builder<V, E> add( final Walk<V, E> walk ) {
+            Preconditions.checkNotNull( walk );
             stack = stack.push( walk );
             return this;
         }
