@@ -107,8 +107,8 @@ public final class Walk<V, E> {
      *
      * @return
      */
-    public static <V, E> Walk<V, E> empty( final V from, final V to ) {
-        return new Walk<V, E>( from, to, ImmutableSet.<Step<V, E>>of() );
+    public static <V, E> Walk<V, E> empty( final V from ) {
+        return new Walk<V, E>( from, from, ImmutableSet.<Step<V, E>>of() );
     }
 
     /**
@@ -194,7 +194,7 @@ public final class Walk<V, E> {
             // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
             // be interested in walk.to anyway. So just keep the stack around in the walk.
             if( stack.isEmpty() ) {
-                return Walk.empty( from, from );
+                return Walk.empty( from );
             }
             final Iterable<Walk<V, E>> walks = stack.reverse();
             final Function<Walk<V, E>, Iterable<Step<V, E>>> func = GetVia.getInstance();
