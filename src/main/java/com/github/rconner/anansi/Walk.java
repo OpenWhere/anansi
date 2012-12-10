@@ -189,6 +189,10 @@ public final class Walk<V, E> {
             return this;
         }
 
+        public boolean isEmpty() {
+            return stack.isEmpty();
+        }
+
         @SuppressWarnings( "unchecked" )
         public Walk<V, E> build() {
             // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
