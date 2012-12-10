@@ -228,4 +228,51 @@ public final class TraversersTest {
         assertThat( iterator.hasNext(), is( false ) );
     }
 
+
+    @Test
+    public void leavesEmpty() {
+        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( emptyGraph ) );
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A" );
+        assertThat( iterator.hasNext(), is( false ) );
+    }
+
+    @Test
+    public void leavesSingleton() {
+        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( singletomGraph ) );
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->B", "B" );
+        assertThat( iterator.hasNext(), is( false ) );
+    }
+
+    @Test
+    public void leavesTree() {
+        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( tree ) );
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D" );
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->F", "F" );
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->G", "G" );
+        assertThat( iterator.hasNext(), is( false ) );
+    }
+
+    @Test
+    public void leavesDag() {
+        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( dag ) );
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D", "D->G", "G" );
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->D", "D", "D->G", "G" );
+        assertThat( iterator.hasNext(), is( false ) );
+    }
+
 }

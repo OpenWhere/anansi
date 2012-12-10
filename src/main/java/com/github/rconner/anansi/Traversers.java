@@ -192,9 +192,7 @@ public class Traversers {
         private final Traverser<V, E> adjacency;
 
         /**
-         * A stack of Iterators. The next object to be returned is from the topmost Iterator which has something left to
-         * return. As objects are returned, the above function is used to create new Iterators which are pushed onto the
-         * stack, even if they are empty.
+         * A stack of Iterators.
          */
         private final LinkedList<Iterator<Walk<V, E>>> iteratorStack = Lists.newLinkedList();
 
@@ -228,6 +226,103 @@ public class Traversers {
                 return result;
             }
 
+            while( true ) {
+                final Walk<V, E> walk = top.next();
+                top = adjacency.apply( walk.getTo() ).iterator();
+                builder.add( walk );
+                if( !top.hasNext() ) {
+                    final Walk<V, E> result = builder.build();
+                    builder.pop();
+                    return result;
+                }
+                iteratorStack.addFirst( top );
+            }
+        }
+
+        @Override
+        public void remove() {
+            Preconditions.checkState( !iteratorStack.isEmpty() );
+            iteratorStack.getFirst().remove();
+        }
+    }
+
+
+    /**
+     * Returns a traverser to reachable leaves with <strong>NO</strong> cycle detection. If a cycle is present, some
+     * call to next() will infinitely loop (most likely resulting in an OutOfMemoryError).
+     *
+     * @param adjacency
+     * @param <V>
+     * @param <E>
+     *
+     * @return
+     */
+    public static <V, E> Traverser<V, E> leaves( final Traverser<V, E> adjacency ) {
+        Preconditions.checkNotNull( adjacency );
+        return new LeafTraverser<V, E>( Lazy.traverser( adjacency ) );
+    }
+
+    private static final class LeafTraverser<V, E> implements Traverser<V, E> {
+        private final Traverser<V, E> adjacency;
+
+        LeafTraverser( final Traverser<V, E> adjacency ) {
+            this.adjacency = adjacency;
+        }
+
+        @Override
+        public Iterable<Walk<V, E>> apply( final V start ) {
+            return new Iterable<Walk<V, E>>() {
+                @Override
+                public Iterator<Walk<V, E>> iterator() {
+                    return new LeafIterator<V, E>( start, adjacency );
+                }
+            };
+        }
+    }
+
+    private static final class LeafIterator<V, E> implements Iterator<Walk<V, E>> {
+        /**
+         * The supplied adjacency function.
+         */
+        private final Traverser<V, E> adjacency;
+
+        /**
+         * A stack of Iterators.
+         */
+        private final LinkedList<Iterator<Walk<V, E>>> iteratorStack = Lists.newLinkedList();
+
+        /**
+         * Collects adjacency walks and produces the compound walks to return.
+         */
+        private final Walk.Builder<V, E> builder;
+
+        LeafIterator( final V start, final Traverser<V, E> adjacency ) {
+            this.adjacency = adjacency;
+            iteratorStack.addFirst( Iterators.singletonIterator( Walk.<V, E>empty( start ) ) );
+            builder = Walk.from( start );
+        }
+
+        @Override
+        public boolean hasNext() {
+            for( final Iterator<Walk<V, E>> iterator : iteratorStack ) {
+                if( iterator.hasNext() ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Walk<V, E> next() {
+            while( !iteratorStack.getFirst().hasNext() ) {
+                if( builder.isEmpty() ) {
+                    throw new NoSuchElementException();
+                }
+                iteratorStack.removeFirst();
+                builder.pop();
+            }
+
+            Iterator<Walk<V, E>> top = iteratorStack.getFirst();
             while( true ) {
                 final Walk<V, E> walk = top.next();
                 top = adjacency.apply( walk.getTo() ).iterator();
