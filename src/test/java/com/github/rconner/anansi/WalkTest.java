@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 public final class WalkTest {
 
-    private static <V, E> void assertWalkContains( final Walk<V, E> actual, final Object... expected ) {
+    static <V, E> void assertWalkContains( final Walk<V, E> actual, final Object... expected ) {
         assertThat( actual.getFrom(), is( expected[ 0 ] ) );
         assertThat( actual.getTo(), is( expected[ expected.length - 1 ] ) );
         assertThat( Iterables.size( actual.getVia() ), is( ( expected.length - 1 ) / 2 ) );
