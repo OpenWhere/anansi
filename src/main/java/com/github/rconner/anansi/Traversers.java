@@ -204,16 +204,17 @@ public class Traversers {
         private final Walk.Builder<V, E> builder;
 
         PostOrderIterator( final V start, final Traverser<V, E> adjacency ) {
-            super();
             this.adjacency = adjacency;
             iteratorStack.addFirst( Iterators.singletonIterator( Walk.<V, E>empty( start ) ) );
             builder = Walk.from( start );
         }
 
+        @Override
         public boolean hasNext() {
             return !builder.isEmpty() || iteratorStack.getFirst().hasNext();
         }
 
+        @Override
         public Walk<V, E> next() {
             Iterator<Walk<V, E>> top = iteratorStack.getFirst();
 
@@ -232,7 +233,7 @@ public class Traversers {
                 top = adjacency.apply( walk.getTo() ).iterator();
                 builder.add( walk );
                 if( !top.hasNext() ) {
-                    Walk<V, E> result = builder.build();
+                    final Walk<V, E> result = builder.build();
                     builder.pop();
                     return result;
                 }
@@ -240,6 +241,7 @@ public class Traversers {
             }
         }
 
+        @Override
         public void remove() {
             Preconditions.checkState( !iteratorStack.isEmpty() );
             iteratorStack.getFirst().remove();
