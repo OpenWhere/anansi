@@ -27,9 +27,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.UnmodifiableIterator;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -367,5 +370,135 @@ public class Traversers {
         }
     }
 
+
+    /**
+     * Returns a Traverser which will return the (adjacency Walks to) immediate Iterable elements, array elements, or
+     * Map values for any such non-empty input. If the input is an empty Iterable, array, or Map, an empty Iterable will
+     * be returned. If the input is not an Iterable, array, or Map, an empty Iterable will be returned. The values of
+     * {@link Walk.Step#getOver()} are strings representing the path in normal idiomatic usage.
+     *
+     * @return
+     */
+    public static Traverser<Object, String> elements() {
+        return ELEMENT_ADJACENCY;
+    }
+
+    /**
+     * Returns a {@link #leaves(Traverser)} Traverser which uses {@link #elements()} as an adjacency Traverser.
+     *
+     * @return
+     */
+    public static Traverser<Object, String> leafElements() {
+        return LEAF_ELEMENTS_TRAVERSER;
+    }
+
+    /**
+     * Returns an idiomatic String path for the given Walk produced by {@link #leafElements()}.
+     *
+     * @param walk
+     *
+     * @return
+     */
+    public static String elementPath( final Walk<Object, String> walk ) {
+        final StringBuilder sb = new StringBuilder();
+        for( final Walk.Step<Object, String> step : walk.getVia() ) {
+            sb.append( step.getOver() );
+        }
+        if( sb.length() > 0 && sb.charAt( 0 ) == '.' ) {
+            return sb.substring( 1 );
+        }
+        return sb.toString();
+    }
+
+    private static final Traverser<Object, String> ELEMENT_ADJACENCY = new Traverser<Object, String>() {
+        @Override
+        public Iterable<Walk<Object, String>> apply( final Object object ) {
+            if( object == null ) {
+                return ImmutableSet.of();
+            } else if( object.getClass().isArray() ) {
+                return arrayWalker( object );
+                // Put Map before Iterable just in case someone declared an iterable map.
+            } else if( object instanceof Map ) {
+                return mapWalker( ( Map<String, Object> ) object );
+            } else if( object instanceof Iterable ) {
+                return iterableWalker( ( Iterable<?> ) object );
+            }
+            return ImmutableSet.of();
+        }
+    };
+
+    private static final Traverser<Object, String> LEAF_ELEMENTS_TRAVERSER = leaves( ELEMENT_ADJACENCY );
+
+    private static Iterable<Walk<Object, String>> arrayWalker( final Object array ) {
+        final int size = Array.getLength( array );
+        return new Iterable<Walk<Object, String>>() {
+            @Override
+            public Iterator<Walk<Object, String>> iterator() {
+                return new UnmodifiableIterator<Walk<Object, String>>() {
+                    private int index;
+
+                    @Override
+                    public boolean hasNext() {
+                        return index < size;
+                    }
+
+                    @Override
+                    public Walk<Object, String> next() {
+                        if( index >= size ) {
+                            throw new NoSuchElementException();
+                        }
+                        final String over = "[" + index + "]";
+                        return Walk.single( array, Array.get( array, index++ ), over );
+                    }
+                };
+            }
+        };
+    }
+
+    private static Iterable<Walk<Object, String>> iterableWalker( final Iterable<?> iterable ) {
+        return new Iterable<Walk<Object, String>>() {
+            @Override
+            public Iterator<Walk<Object, String>> iterator() {
+                return new UnmodifiableIterator<Walk<Object, String>>() {
+                    private final Iterator<?> delegate = iterable.iterator();
+                    private int index;
+
+                    @Override
+                    public boolean hasNext() {
+                        return delegate.hasNext();
+                    }
+
+                    @Override
+                    public Walk<Object, String> next() {
+                        final Object element = delegate.next();
+                        final String over = "[" + index++ + "]";
+                        return Walk.single( iterable, element, over );
+                    }
+                };
+            }
+        };
+    }
+
+    private static Iterable<Walk<Object, String>> mapWalker( final Map<String, Object> map ) {
+        return new Iterable<Walk<Object, String>>() {
+            @Override
+            public Iterator<Walk<Object, String>> iterator() {
+                return new UnmodifiableIterator<Walk<Object, String>>() {
+                    private final Iterator<Map.Entry<String, Object>> delegate = map.entrySet().iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return delegate.hasNext();
+                    }
+
+                    @Override
+                    public Walk<Object, String> next() {
+                        final Map.Entry<String, ?> entry = delegate.next();
+                        return Walk.single( map, entry.getValue(), '.' + entry.getKey() );
+                    }
+                };
+            }
+        };
+    }
 
 }
