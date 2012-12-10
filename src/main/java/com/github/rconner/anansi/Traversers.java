@@ -84,7 +84,7 @@ public class Traversers {
         /**
          * Collects adjacency walks and produces the compound walks to return.
          */
-        private final Walk.Builder< V, E > builder;
+        private final Walk.Builder<V, E> builder;
 
         PreOrderIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
