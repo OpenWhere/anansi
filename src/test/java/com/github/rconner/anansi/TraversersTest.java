@@ -47,16 +47,12 @@ public final class TraversersTest {
     private final Multimap<String, Walk<String, String>> emptyGraph = ImmutableMultimap.of();
 
     private final Multimap<String, Walk<String, String>> singletomGraph = ImmutableMultimap.of(
-            "A",
-            Walk.single(
-                    "A",
-                    "B",
-                    "A->B" ) );
+            "A", Walk.single(
+            "A", "B", "A->B" ) );
 
     // Warning! Do not perform a post-order traversal on this graph.
     private final Multimap<String, Walk<String, String>> loop = ImmutableMultimap.of(
-            "A",
-            Walk.single( "A", "A", "A->A" ) );
+            "A", Walk.single( "A", "A", "A->A" ) );
 
     // Warning! Do not perform a post-order traversal on this graph.
     private final Multimap<String, Walk<String, String>> cycle = ImmutableListMultimap.<String, Walk<String, String>>builder()
@@ -344,20 +340,18 @@ public final class TraversersTest {
                 .put( "integer", 42 )
                 .put( "list", Arrays.asList( "zero", "one", "two", "three" ) )
                 .put( "array", new Object[] { "four", "five", "six" } )
-                .put( "booleanArray", new boolean[] { false, true, true, false, true } )
+                .put( "boolean.array", new boolean[] { false, true, true, false, true } )
                 .put(
-                        "map",
-                        ImmutableMap.builder()
-                                .put( "string", "Another String" )
-                                .put(
-                                        "people",
-                                        Arrays.asList(
-                                                ImmutableMap.of( "name", "Alice", "age", 37 ),
-                                                ImmutableMap.of( "name", "Bob", "age", 55 ),
-                                                ImmutableMap.of( "name", "Carol", "age", 23 ),
-                                                ImmutableMap.of( "name", "Dave", "age", 27 ) ) )
-                                .put( "owner", ImmutableMap.of( "name", "Elise", "age", 43 ) )
-                                .build() )
+                        "map", ImmutableMap.builder()
+                        .put( "foo[abc]bar", "Another String" )
+                        .put(
+                                "people", Arrays.asList(
+                                ImmutableMap.of( "name", "Alice", "age", 37 ),
+                                ImmutableMap.of( "name", "Bob", "age", 55 ),
+                                ImmutableMap.of( "name", "Carol", "age", 23 ),
+                                ImmutableMap.of( "name", "Dave", "age", 27 ) ) )
+                        .put( "owner", ImmutableMap.of( "name", "Elise", "age", 43 ) )
+                        .build() )
                 .build();
 
         Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( map ).iterator();
@@ -401,27 +395,27 @@ public final class TraversersTest {
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) false ) );
-        assertThat( Traversers.elementPath( walk ), is( "booleanArray[0]" ) );
+        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[0]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) true ) );
-        assertThat( Traversers.elementPath( walk ), is( "booleanArray[1]" ) );
+        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[1]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) true ) );
-        assertThat( Traversers.elementPath( walk ), is( "booleanArray[2]" ) );
+        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[2]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) false ) );
-        assertThat( Traversers.elementPath( walk ), is( "booleanArray[3]" ) );
+        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[3]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) true ) );
-        assertThat( Traversers.elementPath( walk ), is( "booleanArray[4]" ) );
+        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[4]" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) "Another String" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.string" ) );
+        assertThat( Traversers.elementPath( walk ), is( "map.foo\\[abc\\]bar" ) );
 
         walk = iterator.next();
         assertThat( walk.getTo(), is( ( Object ) "Alice" ) );

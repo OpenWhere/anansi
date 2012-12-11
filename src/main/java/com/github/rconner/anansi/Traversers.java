@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
 /**
  * Static factory methods for building Traversers.
@@ -481,6 +482,8 @@ public class Traversers {
         };
     }
 
+    private static final Pattern DELIMITER_PATTERN = Pattern.compile( "(\\.|\\[|\\])" );
+
     private static Iterable<Walk<Object, String>> mapWalker( final Map<String, Object> map ) {
         return new Iterable<Walk<Object, String>>() {
             @Override
@@ -496,8 +499,8 @@ public class Traversers {
                     @Override
                     public Walk<Object, String> next() {
                         final Map.Entry<String, ?> entry = delegate.next();
-                        // FIXME: Escape the over. Periods and brackets
-                        return Walk.single( map, entry.getValue(), '.' + entry.getKey() );
+                        String over = DELIMITER_PATTERN.matcher( entry.getKey() ).replaceAll( "\\\\$0" );
+                        return Walk.single( map, entry.getValue(), '.' + over );
                     }
                 };
             }
