@@ -46,10 +46,17 @@ public final class TraversersTest {
 
     private final Multimap<String, Walk<String, String>> emptyGraph = ImmutableMultimap.of();
 
-    private final Multimap<String, Walk<String, String>> singletomGraph = ImmutableMultimap.of( "A", Walk.single( "A", "B", "A->B" ) );
+    private final Multimap<String, Walk<String, String>> singletomGraph = ImmutableMultimap.of(
+            "A",
+            Walk.single(
+                    "A",
+                    "B",
+                    "A->B" ) );
 
     // Warning! Do not perform a post-order traversal on this graph.
-    private final Multimap<String, Walk<String, String>> loop = ImmutableMultimap.of( "A", Walk.single( "A", "A", "A->A" ) );
+    private final Multimap<String, Walk<String, String>> loop = ImmutableMultimap.of(
+            "A",
+            Walk.single( "A", "A", "A->A" ) );
 
     // Warning! Do not perform a post-order traversal on this graph.
     private final Multimap<String, Walk<String, String>> cycle = ImmutableListMultimap.<String, Walk<String, String>>builder()
@@ -338,12 +345,19 @@ public final class TraversersTest {
                 .put( "list", Arrays.asList( "zero", "one", "two", "three" ) )
                 .put( "array", new Object[] { "four", "five", "six" } )
                 .put( "booleanArray", new boolean[] { false, true, true, false, true } )
-                .put( "map", ImmutableMap.builder()
-                        .put( "string", "Another String" )
-                        .put( "people", Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ), ImmutableMap.of( "name", "Bob", "age", 55 ), ImmutableMap
-                                .of( "name", "Carol", "age", 23 ), ImmutableMap.of( "name", "Dave", "age", 27 ) ) )
-                        .put( "owner", ImmutableMap.of( "name", "Elise", "age", 43 ) )
-                        .build() )
+                .put(
+                        "map",
+                        ImmutableMap.builder()
+                                .put( "string", "Another String" )
+                                .put(
+                                        "people",
+                                        Arrays.asList(
+                                                ImmutableMap.of( "name", "Alice", "age", 37 ),
+                                                ImmutableMap.of( "name", "Bob", "age", 55 ),
+                                                ImmutableMap.of( "name", "Carol", "age", 23 ),
+                                                ImmutableMap.of( "name", "Dave", "age", 27 ) ) )
+                                .put( "owner", ImmutableMap.of( "name", "Elise", "age", 43 ) )
+                                .build() )
                 .build();
 
         Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( map ).iterator();
