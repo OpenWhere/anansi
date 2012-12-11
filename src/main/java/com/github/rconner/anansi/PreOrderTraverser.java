@@ -68,10 +68,9 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
         private final LinkedList<Iterator<Walk<V, E>>> iteratorStack = Lists.newLinkedList();
 
         /**
-         * The Iterator which supplied the last object returned by next(). A value of {@code null} indicates that the
-         * last object has been removed.
+         * True if this iterator is in a valid state for calling remove() or prune().
          */
-        private Iterator<Walk<V, E>> current;
+        private boolean canMutate = false;
 
         /**
          * Collects adjacency walks and produces the compound walks to return.
@@ -97,36 +96,35 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
         @Override
         public Walk<V, E> next() {
             while( !iteratorStack.isEmpty() ) {
-                final Iterator<Walk<V, E>> t = iteratorStack.getFirst();
-                if( t.hasNext() ) {
-                    current = t;
-                    final Walk<V, E> result = current.next();
+                if( iteratorStack.getFirst().hasNext() ) {
+                    final Walk<V, E> result = iteratorStack.getFirst().next();
                     iteratorStack.addFirst( adjacency.apply( result.getTo() ).iterator() );
                     builder.add( result );
+                    canMutate = true;
                     return builder.build();
                 }
                 iteratorStack.removeFirst();
                 builder.pop();
             }
-            current = null;
+            canMutate = false;
             throw new NoSuchElementException();
         }
 
         @Override
         public void remove() {
-            Preconditions.checkState( current != null );
-            current.remove();
-            current = null;
+            Preconditions.checkState( canMutate );
             iteratorStack.removeFirst();
             builder.pop();
+            iteratorStack.getFirst().remove();
+            canMutate = false;
         }
 
         @Override
         public void prune() {
-            Preconditions.checkState( current != null );
-            current = null;
+            Preconditions.checkState( canMutate );
             iteratorStack.removeFirst();
             builder.pop();
+            canMutate = false;
         }
     }
 }
