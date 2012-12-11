@@ -338,7 +338,7 @@ public final class TraversersTest {
     }
 
     @Test
-    public void normal() {
+    public void nestedElements() {
         final Map<?, ?> map = ImmutableMap.builder()
                 .put( "string", "A String" )
                 .put( "integer", 42 )
