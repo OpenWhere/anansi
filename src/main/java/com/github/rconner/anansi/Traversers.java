@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
@@ -38,6 +39,7 @@ import java.util.NoSuchElementException;
 /**
  * Static factory methods for building Traversers.
  */
+@Beta
 public class Traversers {
 
     /**
