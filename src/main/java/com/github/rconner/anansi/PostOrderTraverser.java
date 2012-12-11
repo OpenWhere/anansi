@@ -84,28 +84,19 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
         @Override
         public Walk<V, E> next() {
             Iterator<Walk<V, E>> top = iteratorStack.getFirst();
-
-            if( !top.hasNext() ) {
-                if( builder.isEmpty() ) {
-                    throw new NoSuchElementException();
-                }
-                iteratorStack.removeFirst();
-                final Walk<V, E> result = builder.build();
-                builder.pop();
-                return result;
-            }
-
-            while( true ) {
+            while( top.hasNext() ) {
                 final Walk<V, E> walk = top.next();
                 top = adjacency.apply( walk.getTo() ).iterator();
-                builder.add( walk );
-                if( !top.hasNext() ) {
-                    final Walk<V, E> result = builder.build();
-                    builder.pop();
-                    return result;
-                }
                 iteratorStack.addFirst( top );
+                builder.add( walk );
             }
+            if( builder.isEmpty() ) {
+                throw new NoSuchElementException();
+            }
+            final Walk<V, E> result = builder.build();
+            iteratorStack.removeFirst();
+            builder.pop();
+            return result;
         }
 
         @Override

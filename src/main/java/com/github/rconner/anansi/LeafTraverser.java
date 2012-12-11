@@ -97,17 +97,16 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
             }
 
             Iterator<Walk<V, E>> top = iteratorStack.getFirst();
-            while( true ) {
+            while( top.hasNext() ) {
                 final Walk<V, E> walk = top.next();
                 top = adjacency.apply( walk.getTo() ).iterator();
-                builder.add( walk );
-                if( !top.hasNext() ) {
-                    final Walk<V, E> result = builder.build();
-                    builder.pop();
-                    return result;
-                }
                 iteratorStack.addFirst( top );
+                builder.add( walk );
             }
+            final Walk<V, E> result = builder.build();
+            iteratorStack.removeFirst();
+            builder.pop();
+            return result;
         }
 
         @Override
