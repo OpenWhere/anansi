@@ -496,6 +496,7 @@ public class Traversers {
                     @Override
                     public Walk<Object, String> next() {
                         final Map.Entry<String, ?> entry = delegate.next();
+                        // FIXME: Escape the over. Periods and brackets
                         return Walk.single( map, entry.getValue(), '.' + entry.getKey() );
                     }
                 };
