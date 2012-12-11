@@ -45,7 +45,8 @@ public final class CachingSupplier<T> implements Supplier<T> {
     }
 
     public static <T> Supplier<T> of( final Supplier<T> delegate ) {
-        return delegate instanceof CachingSupplier ? delegate : new CachingSupplier<T>( Preconditions.checkNotNull( delegate ) );
+        Preconditions.checkNotNull( delegate );
+        return delegate instanceof CachingSupplier ? delegate : new CachingSupplier<T>( delegate );
     }
 
     @Override
