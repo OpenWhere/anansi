@@ -378,7 +378,9 @@ public class Traversers {
      * Returns a Traverser which will return the (adjacency Walks to) immediate Iterable elements, array elements, or
      * Map values for any such non-empty input. If the input is an empty Iterable, array, or Map, an empty Iterable will
      * be returned. If the input is not an Iterable, array, or Map, an empty Iterable will be returned. The values of
-     * {@link Walk.Step#getOver()} are strings representing the path in normal idiomatic usage.
+     * {@link Walk.Step#getOver()} are strings representing the path in normal idiomatic usage. Because they are used
+     * as path separators, periods (property reference) and brackets (array indexing) are escaped with preceding
+     * backslashes if they appear as Map keys.
      *
      * @return
      */
