@@ -104,7 +104,9 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
                     return builder.build();
                 }
                 iteratorStack.removeFirst();
-                builder.pop();
+                if( !builder.isEmpty() ) {
+                    builder.pop();
+                }
             }
             canMutate = false;
             throw new NoSuchElementException();
