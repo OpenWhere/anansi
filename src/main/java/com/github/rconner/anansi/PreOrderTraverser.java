@@ -23,12 +23,10 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.ImmutableStack;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 /**
@@ -60,33 +58,22 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
          */
         private final Traverser<V, E> adjacency;
 
-        /**
-         * A stack of Iterators. The next object to be returned is from the topmost Iterator which has something left to
-         * return. As objects are returned, the above function is used to create new Iterators which are pushed onto the
-         * stack, even if they are empty.
-         */
-        private final LinkedList<Iterator<Walk<V, E>>> iteratorStack = Lists.newLinkedList();
+        private ImmutableStack<TraversalMove<V, E>> moveStack;
 
         /**
          * True if this iterator is in a valid state for calling remove() or prune().
          */
         private boolean canMutate = false;
 
-        /**
-         * Collects adjacency walks and produces the compound walks to return.
-         */
-        private final Walk.Builder<V, E> builder;
-
         PreOrderIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            iteratorStack.addFirst( Iterators.singletonIterator( Walk.<V, E>empty( start ) ) );
-            builder = Walk.from( start );
+            moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );
         }
 
         @Override
         public boolean hasNext() {
-            for( final Iterator<Walk<V, E>> iterator : iteratorStack ) {
-                if( iterator.hasNext() ) {
+            for( final TraversalMove<V, E> move : moveStack ) {
+                if( move.iterator.hasNext() ) {
                     return true;
                 }
             }
@@ -95,37 +82,32 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
-            while( !iteratorStack.isEmpty() ) {
-                if( iteratorStack.getFirst().hasNext() ) {
-                    final Walk<V, E> result = iteratorStack.getFirst().next();
-                    iteratorStack.addFirst( adjacency.apply( result.getTo() ).iterator() );
-                    builder.add( result );
-                    canMutate = true;
-                    return builder.build();
-                }
-                iteratorStack.removeFirst();
-                if( !builder.isEmpty() ) {
-                    builder.pop();
-                }
+            while( !moveStack.isEmpty() && !moveStack.peek().iterator.hasNext() ) {
+                moveStack = moveStack.pop();
             }
-            canMutate = false;
-            throw new NoSuchElementException();
+            if( moveStack.isEmpty() ) {
+                canMutate = false;
+                throw new NoSuchElementException();
+            }
+            TraversalMove<V, E> move = moveStack.peek();
+            move = move.with( adjacency, move.iterator.next() );
+            moveStack = moveStack.push( move );
+            canMutate = true;
+            return move.builder.build();
         }
 
         @Override
         public void remove() {
             Preconditions.checkState( canMutate );
-            iteratorStack.removeFirst();
-            builder.pop();
-            iteratorStack.getFirst().remove();
+            moveStack = moveStack.pop();
+            moveStack.peek().iterator.remove();
             canMutate = false;
         }
 
         @Override
         public void prune() {
             Preconditions.checkState( canMutate );
-            iteratorStack.removeFirst();
-            builder.pop();
+            moveStack = moveStack.pop();
             canMutate = false;
         }
     }

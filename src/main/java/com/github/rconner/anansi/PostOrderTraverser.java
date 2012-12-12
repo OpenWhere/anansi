@@ -23,12 +23,10 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.ImmutableStack;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 /**
@@ -60,49 +58,37 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
          */
         private final Traverser<V, E> adjacency;
 
-        /**
-         * A stack of Iterators.
-         */
-        private final LinkedList<Iterator<Walk<V, E>>> iteratorStack = Lists.newLinkedList();
-
-        /**
-         * Collects adjacency walks and produces the compound walks to return.
-         */
-        private final Walk.Builder<V, E> builder;
+        private ImmutableStack<TraversalMove<V, E>> moveStack;
 
         PostOrderIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            iteratorStack.addFirst( Iterators.singletonIterator( Walk.<V, E>empty( start ) ) );
-            builder = Walk.from( start );
+            moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );
         }
 
         @Override
         public boolean hasNext() {
-            return !builder.isEmpty() || iteratorStack.getFirst().hasNext();
+            return moveStack.size() > 1 || moveStack.peek().iterator.hasNext();
         }
 
         @Override
         public Walk<V, E> next() {
-            Iterator<Walk<V, E>> top = iteratorStack.getFirst();
-            while( top.hasNext() ) {
-                final Walk<V, E> walk = top.next();
-                top = adjacency.apply( walk.getTo() ).iterator();
-                iteratorStack.addFirst( top );
-                builder.add( walk );
+            TraversalMove<V, E> move = moveStack.peek();
+            while( move.iterator.hasNext() ) {
+                move = move.with( adjacency, move.iterator.next() );
+                moveStack = moveStack.push( move );
             }
-            if( builder.isEmpty() ) {
+            if( moveStack.size() == 1) {
                 throw new NoSuchElementException();
             }
-            final Walk<V, E> result = builder.build();
-            iteratorStack.removeFirst();
-            builder.pop();
-            return result;
+            final Walk<V, E> walk = move.builder.build();
+            moveStack = moveStack.pop();
+            return walk;
         }
 
         @Override
         public void remove() {
-            Preconditions.checkState( !iteratorStack.isEmpty() );
-            iteratorStack.getFirst().remove();
+            Preconditions.checkState( !moveStack.isEmpty() );
+            moveStack.peek().iterator.remove();
         }
     }
 }

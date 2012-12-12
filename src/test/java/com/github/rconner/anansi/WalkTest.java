@@ -56,44 +56,52 @@ public final class WalkTest {
     @Test
     @SuppressWarnings( "unchecked" )
     public void builder() {
-        final Walk.Builder<Integer, String> rootBuilder = Walk.from( 11 );
+        Walk.Builder<Integer, String> rootBuilder = Walk.from( 11 );
         final Walk<Integer, String> rootWalk = rootBuilder.build();
         assertWalkContains( rootWalk, 11 );
 
-        rootBuilder.add( Walk.single( 11, 13, ( String ) null ) );
+        rootBuilder = rootBuilder.add( Walk.single( 11, 13, ( String ) null ) );
         final Walk<Integer, String> walkTo13 = rootBuilder.build();
         assertWalkContains( walkTo13, 11, null, 13 );
 
-        final Walk.Builder<Integer, String> subBuilderFrom13 = Walk.from( 13 );
+        Walk.Builder<Integer, String> subBuilderFrom13 = Walk.from( 13 );
         final Walk<Integer, String> subWalkTo13 = subBuilderFrom13.build();
 
-        rootBuilder.add( subWalkTo13 );
+        rootBuilder = rootBuilder.add( subWalkTo13 );
         final Walk<Integer, String> stillWalkTo13 = rootBuilder.build();
         assertWalkContains( stillWalkTo13, 11, null, 13 );
 
-        subBuilderFrom13.add( Walk.single( 13, 15, ( String ) null ) );
+        subBuilderFrom13 = subBuilderFrom13.add( Walk.single( 13, 15, ( String ) null ) );
         final Walk<Integer, String> subWalkTo15 = subBuilderFrom13.build();
         assertWalkContains( subWalkTo15, 13, null, 15 );
 
-        rootBuilder.add( subWalkTo15 );
+        rootBuilder = rootBuilder.add( subWalkTo15 );
         final Walk<Integer, String> walkTo15 = rootBuilder.build();
         assertWalkContains( walkTo15, 11, null, 13, null, 15 );
 
-        rootBuilder.add( Walk.single( 15, 17, "to 17" ) );
+        rootBuilder = rootBuilder.add( Walk.single( 15, 17, "to 17" ) );
         final Walk<Integer, String> walkTo17 = rootBuilder.build();
         assertWalkContains( walkTo17, 11, null, 13, null, 15, "to 17", 17 );
 
-        final Walk.Builder<Integer, String> subBuilderFrom17 = Walk.from( 17 );
-        subBuilderFrom17.add( Walk.single( 17, 19, "to 19" ) );
-        subBuilderFrom17.add( Walk.single( 19, 21, "to 21" ) );
-        subBuilderFrom17.add( Walk.single( 21, 23, "to 23" ) );
+        Walk.Builder<Integer, String> subBuilderFrom17 = Walk.from( 17 );
+        subBuilderFrom17 = subBuilderFrom17.add( Walk.single( 17, 19, "to 19" ) );
+        subBuilderFrom17 = subBuilderFrom17.add( Walk.single( 19, 21, "to 21" ) );
+        subBuilderFrom17 = subBuilderFrom17.add( Walk.single( 21, 23, "to 23" ) );
         final Walk<Integer, String> subWalkTo23 = subBuilderFrom17.build();
         assertWalkContains( subWalkTo23, 17, "to 19", 19, "to 21", 21, "to 23", 23 );
 
-        rootBuilder.add( subWalkTo23 );
+        rootBuilder = rootBuilder.add( subWalkTo23 );
         final Walk<Integer, String> walkTo23 = rootBuilder.build();
         assertWalkContains( walkTo23, 11, null, 13, null, 15, "to 17", 17, "to 19", 19, "to 21", 21, "to 23", 23 );
 
         // Test that all the previously built walks have not changed.
+        assertWalkContains( rootWalk, 11 );
+        assertWalkContains( walkTo13, 11, null, 13 );
+        assertWalkContains( stillWalkTo13, 11, null, 13 );
+        assertWalkContains( subWalkTo15, 13, null, 15 );
+        assertWalkContains( walkTo15, 11, null, 13, null, 15 );
+        assertWalkContains( walkTo17, 11, null, 13, null, 15, "to 17", 17 );
+        assertWalkContains( subWalkTo23, 17, "to 19", 19, "to 21", 21, "to 23", 23 );
+        assertWalkContains( walkTo23, 11, null, 13, null, 15, "to 17", 17, "to 19", 19, "to 21", 21, "to 23", 23 );
     }
 }

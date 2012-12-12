@@ -25,10 +25,8 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 
 /**
  * A walk from one vertex to another, via an Iterable of {@link Step Steps}.
@@ -51,7 +49,7 @@ public final class Walk<V, E> {
      * @param to
      * @param via
      */
-    private Walk( final V from, final V to, final Iterable<Step<V, E>> via ) {
+    Walk( final V from, final V to, final Iterable<Step<V, E>> via ) {
         this.from = from;
         this.to = to;
         this.via = via;
@@ -142,22 +140,7 @@ public final class Walk<V, E> {
     }
 
     /**
-     * Creates a new, immutable Walk with multiple steps.
-     *
-     * @param from
-     * @param to
-     * @param via
-     * @param <V>
-     * @param <E>
-     *
-     * @return
-     */
-    static <V, E> Walk<V, E> multi( final V from, final V to, final Iterable<Step<V, E>> via ) {
-        return new Walk<V, E>( from, to, via );
-    }
-
-    /**
-     * Creates a builder used to create a Walk with multiple Steps.
+     * Creates an immutable builder used to create a Walk with multiple Steps.
      *
      * @param from
      * @param <V>
@@ -165,28 +148,27 @@ public final class Walk<V, E> {
      *
      * @return
      */
+    @SuppressWarnings( "unchecked" )
     public static <V, E> Builder<V, E> from( final V from ) {
-        return new Builder<V, E>( from );
+        return new Builder<V, E>( from, ImmutableStack.<Step<V, E>>of() );
     }
 
     public static final class Builder<V, E> {
         private final V from;
-        @SuppressWarnings( "unchecked" )
-        private ImmutableStack<Walk<V, E>> stack = ImmutableStack.of();
+        private final ImmutableStack<Step<V, E>> stack;
 
-        Builder( final V from ) {
+        Builder( final V from, final ImmutableStack<Step<V, E>> stack ) {
             this.from = from;
+            this.stack = stack;
         }
 
         public Builder<V, E> add( final Walk<V, E> walk ) {
             Preconditions.checkNotNull( walk );
-            stack = stack.push( walk );
-            return this;
-        }
-
-        public Builder<V, E> pop() {
-            stack = stack.pop();
-            return this;
+            ImmutableStack<Step<V, E>> next = stack;
+            for( final Step<V, E> step : walk.getVia() ) {
+                next = next.push( step );
+            }
+            return new Builder<V, E>( from, next );
         }
 
         public boolean isEmpty() {
@@ -195,29 +177,10 @@ public final class Walk<V, E> {
 
         @SuppressWarnings( "unchecked" )
         public Walk<V, E> build() {
-            // FIXME: Instead, build a *really* lazy walk? b/c often the caller will only
-            // be interested in walk.to anyway. So just keep the stack around in the walk.
             if( stack.isEmpty() ) {
                 return Walk.empty( from );
             }
-            final Iterable<Walk<V, E>> walks = stack.reverse();
-            final Function<Walk<V, E>, Iterable<Step<V, E>>> func = GetVia.getInstance();
-            final Iterable<Step<V, E>> steps = Iterables.concat( Iterables.transform( walks, func ) );
-            return Walk.multi( from, stack.peek().getTo(), steps );
-        }
-    }
-
-    private static class GetVia<V, E> implements Function<Walk<V, E>, Iterable<Step<V, E>>> {
-        private static final Function<?, ?> INSTANCE = new GetVia();
-
-        @SuppressWarnings( "unchecked" )
-        static <V, E> Function<Walk<V, E>, Iterable<Step<V, E>>> getInstance() {
-            return ( Function<Walk<V, E>, Iterable<Step<V, E>>> ) INSTANCE;
-        }
-
-        @Override
-        public Iterable<Step<V, E>> apply( final Walk<V, E> walk ) {
-            return walk.getVia();
+            return new Walk( from, stack.peek().getTo(), stack.reverse() );
         }
     }
 }
