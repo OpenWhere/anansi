@@ -77,7 +77,7 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
-            while( !moveStack.peek().iterator.hasNext() ) {
+            while( !moveStack.isEmpty() && !moveStack.peek().iterator.hasNext() ) {
                 moveStack = moveStack.pop();
             }
             if( moveStack.isEmpty() ) {
