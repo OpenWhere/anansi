@@ -92,6 +92,20 @@ public class Traversers {
     }
 
     /**
+     * Returns a breadth-first traverser with <strong>NO</strong> cycle detection.
+     *
+     * @param adjacency
+     * @param <V>
+     * @param <E>
+     *
+     * @return
+     */
+    public static <V, E> Traverser<V, E> breadthFirst( final Traverser<V, E> adjacency ) {
+        Preconditions.checkNotNull( adjacency );
+        return new BreadthFirstTraverser<V, E>( Lazy.traverser( adjacency ) );
+    }
+
+    /**
      * Returns a traverser to reachable leaves with <strong>NO</strong> cycle detection. If a cycle is present, some
      * call to next() will infinitely loop (most likely resulting in an OutOfMemoryError).
      *

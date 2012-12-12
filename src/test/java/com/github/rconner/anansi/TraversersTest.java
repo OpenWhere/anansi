@@ -116,6 +116,7 @@ public final class TraversersTest {
         assertThat( iterator.hasNext(), is( true ) );
     }
 
+
     @Test
     public void preOrderEmpty() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( emptyGraph ) );
@@ -226,6 +227,73 @@ public final class TraversersTest {
 
 
     @Test
+    public void breadthFirstEmpty() {
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( emptyGraph ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
+    }
+
+    @Test
+    public void breadthFirstSingleton() {
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( singletomGraph ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+    }
+
+    @Test
+    public void breadthFirstLoop() {
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( loop ) );
+        assertTraversalBegins(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->A", "A" },
+                { "A", "A->A", "A", "A->A", "A" },
+                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
+    }
+
+    @Test
+    public void breadthFirstCycle() {
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( cycle ) );
+        assertTraversalBegins(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->B", "B" },
+                { "A", "A->B", "B", "B->C", "C" },
+                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
+                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
+    }
+
+    @Test
+    public void breadthFirstTree() {
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( tree ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->B", "B" },
+                { "A", "A->C", "C" },
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->C", "C", "C->F", "F" },
+                { "A", "A->C", "C", "C->G", "G" } } );
+    }
+
+    @Test
+    public void breadthFirstDag() {
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( dag ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->B", "B" },
+                { "A", "A->C", "C" },
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->C", "C", "C->D", "D" },
+                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+    }
+
+    // FIXME: Test breadth-first prune()
+
+
+    @Test
     public void leavesEmpty() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( emptyGraph ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
@@ -292,8 +360,7 @@ public final class TraversersTest {
     }
 
     static void assertElementsContains(
-            final Iterable<Walk<Object, String>> traversal,
-            final Object[][] actualElements ) {
+            final Iterable<Walk<Object, String>> traversal, final Object[][] actualElements ) {
         Iterator<Walk<Object, String>> iterator = traversal.iterator();
         for( Object[] element : actualElements ) {
             assertThat( iterator.hasNext(), is( true ) );
