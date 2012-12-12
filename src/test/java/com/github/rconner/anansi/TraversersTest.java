@@ -33,10 +33,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static com.github.rconner.anansi.WalkTest.assertWalkContains;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public final class TraversersTest {
 
@@ -90,100 +92,92 @@ public final class TraversersTest {
     }
 
 
+    static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] actualWalks ) {
+        Iterator<Walk<V, E>> iterator = traversal.iterator();
+        for( Object[] actualWalk : actualWalks ) {
+            assertThat( iterator.hasNext(), is( true ) );
+            assertWalkContains( iterator.next(), actualWalk );
+        }
+        assertThat( iterator.hasNext(), is( false ) );
+        try {
+            iterator.next();
+            fail( "Should have thrown a NoSuchElementException." );
+        } catch( NoSuchElementException ignored ) {
+            // success
+        }
+    }
+
+    static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] actualWalks ) {
+        Iterator<Walk<V, E>> iterator = traversal.iterator();
+        for( Object[] actualWalk : actualWalks ) {
+            assertThat( iterator.hasNext(), is( true ) );
+            assertWalkContains( iterator.next(), actualWalk );
+        }
+        assertThat( iterator.hasNext(), is( true ) );
+    }
+
     @Test
     public void preOrderEmpty() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( emptyGraph ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void preOrderSingleton() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( singletomGraph ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
     }
 
     @Test
     public void preOrderLoop() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( loop ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->A", "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->A", "A", "A->A", "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->A", "A", "A->A", "A", "A->A", "A" );
-        assertThat( iterator.hasNext(), is( true ) );
+        assertTraversalBegins(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->A", "A" },
+                { "A", "A->A", "A", "A->A", "A" },
+                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
     }
 
     @Test
     public void preOrderCycle() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( cycle ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->C", "C" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->C", "C", "C->A", "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
+        assertTraversalBegins(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->B", "B" },
+                { "A", "A->B", "B", "B->C", "C" },
+                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
+                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
     }
 
     @Test
     public void preOrderTree() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( tree ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->F", "F" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->G", "G" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->B", "B" },
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->C", "C" },
+                { "A", "A->C", "C", "C->F", "F" },
+                { "A", "A->C", "C", "C->G", "G" } } );
     }
 
     @Test
     public void preOrderDag() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( dag ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D", "D->G", "G" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->D", "D", "D->G", "G" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A" },
+                { "A", "A->B", "B" },
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->C", "C" },
+                { "A", "A->C", "C", "C->D", "D" },
+                { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
     // FIXME: Test pre-order prune()
@@ -192,112 +186,76 @@ public final class TraversersTest {
     @Test
     public void postOrderEmpty() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( emptyGraph ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void postOrderSingleton() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( singletomGraph ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" }, { "A" } } );
     }
 
     @Test
     public void postOrderTree() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( tree ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->F", "F" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->G", "G" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->B", "B" },
+                { "A", "A->C", "C", "C->F", "F" },
+                { "A", "A->C", "C", "C->G", "G" },
+                { "A", "A->C", "C" },
+                { "A" } } );
     }
 
     @Test
     public void postOrderDag() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( dag ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D", "D->G", "G" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->D", "D", "D->G", "G" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->B", "B" },
+                { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
+                { "A", "A->C", "C", "C->D", "D" },
+                { "A", "A->C", "C" },
+                { "A" } } );
     }
 
 
     @Test
     public void leavesEmpty() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( emptyGraph ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void leavesSingleton() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( singletomGraph ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" } } );
     }
 
     @Test
     public void leavesTree() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( tree ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->F", "F" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->G", "G" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A", "A->B", "B", "B->D", "D" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->C", "C", "C->F", "F" },
+                { "A", "A->C", "C", "C->G", "G" } } );
     }
 
     @Test
     public void leavesDag() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( dag ) );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->D", "D", "D->G", "G" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->B", "B", "B->E", "E" );
-        assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), "A", "A->C", "C", "C->D", "D", "D->G", "G" );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertTraversalContains(
+                traverser.apply( "A" ), new Object[][] {
+                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                { "A", "A->B", "B", "B->E", "E" },
+                { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
 
@@ -333,6 +291,25 @@ public final class TraversersTest {
         assertThat( iterator.hasNext(), is( false ) );
     }
 
+    static void assertElementsContains(
+            final Iterable<Walk<Object, String>> traversal,
+            final Object[][] actualElements ) {
+        Iterator<Walk<Object, String>> iterator = traversal.iterator();
+        for( Object[] element : actualElements ) {
+            assertThat( iterator.hasNext(), is( true ) );
+            final Walk<Object, String> walk = iterator.next();
+            assertThat( Traversers.elementPath( walk ), is( element[ 0 ] ) );
+            assertThat( walk.getTo(), is( element[ 1 ] ) );
+        }
+        assertThat( iterator.hasNext(), is( false ) );
+        try {
+            iterator.next();
+            fail( "Should have thrown a NoSuchElementException." );
+        } catch( NoSuchElementException ignored ) {
+            // success
+        }
+    }
+
     @Test
     public void nestedElements() {
         final Map<?, ?> map = ImmutableMap.builder()
@@ -354,110 +331,32 @@ public final class TraversersTest {
                         .build() )
                 .build();
 
-        Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( map ).iterator();
-        Walk<Object, String> walk;
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "A String" ) );
-        assertThat( Traversers.elementPath( walk ), is( "string" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) 42 ) );
-        assertThat( Traversers.elementPath( walk ), is( "integer" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "zero" ) );
-        assertThat( Traversers.elementPath( walk ), is( "list[0]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "one" ) );
-        assertThat( Traversers.elementPath( walk ), is( "list[1]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "two" ) );
-        assertThat( Traversers.elementPath( walk ), is( "list[2]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "three" ) );
-        assertThat( Traversers.elementPath( walk ), is( "list[3]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "four" ) );
-        assertThat( Traversers.elementPath( walk ), is( "array[0]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "five" ) );
-        assertThat( Traversers.elementPath( walk ), is( "array[1]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "six" ) );
-        assertThat( Traversers.elementPath( walk ), is( "array[2]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) false ) );
-        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[0]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) true ) );
-        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[1]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) true ) );
-        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[2]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) false ) );
-        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[3]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) true ) );
-        assertThat( Traversers.elementPath( walk ), is( "boolean\\.array[4]" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "Another String" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.foo\\[abc\\]bar" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "Alice" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[0].name" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) 37 ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[0].age" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "Bob" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[1].name" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) 55 ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[1].age" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "Carol" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[2].name" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) 23 ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[2].age" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "Dave" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[3].name" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) 27 ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.people[3].age" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) "Elise" ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.owner.name" ) );
-
-        walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) 43 ) );
-        assertThat( Traversers.elementPath( walk ), is( "map.owner.age" ) );
-
-        assertThat( iterator.hasNext(), is( false ) );
+        assertElementsContains(
+                Traversers.leafElements().apply( map ), new Object[][] {
+                { "string", "A String" },
+                { "integer", 42 },
+                { "list[0]", "zero" },
+                { "list[1]", "one" },
+                { "list[2]", "two" },
+                { "list[3]", "three" },
+                { "array[0]", "four" },
+                { "array[1]", "five" },
+                { "array[2]", "six" },
+                { "boolean\\.array[0]", false },
+                { "boolean\\.array[1]", true },
+                { "boolean\\.array[2]", true },
+                { "boolean\\.array[3]", false },
+                { "boolean\\.array[4]", true },
+                { "map.foo\\[abc\\]bar", "Another String" },
+                { "map.people[0].name", "Alice" },
+                { "map.people[0].age", 37 },
+                { "map.people[1].name", "Bob" },
+                { "map.people[1].age", 55 },
+                { "map.people[2].name", "Carol" },
+                { "map.people[2].age", 23 },
+                { "map.people[3].name", "Dave" },
+                { "map.people[3].age", 27 },
+                { "map.owner.name", "Elise" },
+                { "map.owner.age", 43 } } );
     }
-
 }
