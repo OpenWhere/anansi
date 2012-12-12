@@ -77,7 +77,7 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
                 move = move.with( adjacency, move.iterator.next() );
                 moveStack = moveStack.push( move );
             }
-            if( moveStack.size() == 1) {
+            if( moveStack.size() == 1 ) {
                 throw new NoSuchElementException();
             }
             final Walk<V, E> walk = move.builder.build();
