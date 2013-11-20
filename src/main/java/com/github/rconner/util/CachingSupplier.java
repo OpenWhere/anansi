@@ -23,6 +23,7 @@
 
 package com.github.rconner.util;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 
@@ -35,6 +36,7 @@ import java.lang.ref.WeakReference;
  *
  * @param <T>
  */
+@Beta
 public final class CachingSupplier<T> implements Supplier<T> {
     private final Supplier<T> delegate;
     private volatile WeakReference<T> ref = new WeakReference<T>( null );
