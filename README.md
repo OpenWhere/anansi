@@ -148,7 +148,7 @@ All of that is the easy reasoning, and leads to roughly this model (pseudo-code,
 Where this gets difficult is that we also want to:
 
 - Model an adjacency as essentially a one-step Walk.
-- Referencing the parts (form/to/over) of a one-step adjacency walk should be simple getters.
+- Referencing the parts (from/to/over) of a one-step adjacency walk should be simple getters.
 - Model an empty Walk. For example, the first Walk in a pre-order traversal is just the start vertex, no edge having
   been followed yet.
 - Model a self-loop, which must be different than an empty Walk.
@@ -160,7 +160,7 @@ Where this gets difficult is that we also want to:
 
 Stick with the above interfaces. We sacrifice:
 
-- Referencing the parts (form/to/over) of a one-step adjacency walk should be simple getters.
+- Referencing the parts (from/to/over) of a one-step adjacency walk should be simple getters.
 - Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc.
 - Keep track of nested compound traversals.
 
