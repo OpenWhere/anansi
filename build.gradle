@@ -22,11 +22,11 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 group = 'com.github.rconner'
-
 
 repositories {
     mavenCentral()
@@ -39,6 +39,24 @@ task wrapper( type: Wrapper ) {
 dependencies {
     compile 'com.google.guava:guava:13.0.1'
     testCompile 'junit:junit:4.+'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                url 'https://github.com/rconner/anansi'
+                description 'A Java library with traversal primitives and operations for graph-like structures.'
+                inceptionYear '2003'
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'http://opensource.org/licenses/MIT'
+                    }
+                }
+            }
+        }
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
