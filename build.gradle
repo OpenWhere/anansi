@@ -36,6 +36,10 @@ repositories {
     mavenCentral()
 }
 
+task wrapper( type: Wrapper ) {
+    gradleVersion = '1.7'
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
