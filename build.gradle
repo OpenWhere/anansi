@@ -27,10 +27,6 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 group = 'com.github.rconner'
 
-dependencies {
-    compile 'com.google.guava:guava:13.0.1'
-    testCompile 'junit:junit:4.+'
-}
 
 repositories {
     mavenCentral()
@@ -38,6 +34,11 @@ repositories {
 
 task wrapper( type: Wrapper ) {
     gradleVersion = '1.7'
+}
+
+dependencies {
+    compile 'com.google.guava:guava:13.0.1'
+    testCompile 'junit:junit:4.+'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
