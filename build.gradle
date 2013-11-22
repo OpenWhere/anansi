@@ -94,6 +94,13 @@ test {
 }
 
 
+// configure cobertura plugin
+cobertura {
+    coverageSourceDirs = [ project.sourceSets.main.java.srcDirs ]
+    coverageFormats = [ 'html', 'xml' ]
+}
+
+
 // customize the maven pom artifact
 uploadArchives {
     repositories {
