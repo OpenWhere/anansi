@@ -75,6 +75,19 @@ dependencies {
 }
 
 
+// configure about plugin
+jar {
+    dependsOn 'about'
+}
+
+about {
+    includeSystem = true
+    includeProperties = true
+    includePaths = true
+    includeDependencies = [ 'compile', 'runtime' ]
+}
+
+
 // customize the maven pom artifact
 uploadArchives {
     repositories {
