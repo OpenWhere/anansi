@@ -76,6 +76,7 @@ dependencies {
 
 
 // configure about plugin
+
 jar {
     dependsOn 'about'
 }
@@ -89,12 +90,14 @@ about {
 
 
 // Show stdout and stderr when running tests
+
 test {
     testLogging.showStandardStreams = true
 }
 
 
 // configure cobertura plugin
+
 cobertura {
     coverageSourceDirs = [ project.sourceSets.main.java.srcDirs ]
     coverageFormats = [ 'html', 'xml' ]
@@ -102,6 +105,7 @@ cobertura {
 
 
 // customize the maven pom artifact
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -122,6 +126,7 @@ uploadArchives {
 
 
 // create source and javadoc jars and add them as artifacts
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
