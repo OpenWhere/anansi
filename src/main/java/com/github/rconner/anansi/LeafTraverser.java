@@ -60,6 +60,7 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
 
         private ImmutableStack<TraversalMove<V, E>> moveStack;
 
+        @SuppressWarnings( "unchecked" )
         LeafIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
             moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );

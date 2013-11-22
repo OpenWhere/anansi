@@ -65,6 +65,7 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
          */
         private boolean canMutate = false;
 
+        @SuppressWarnings( "unchecked" )
         PreOrderIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
             moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );

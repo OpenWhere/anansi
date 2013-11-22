@@ -44,6 +44,7 @@ class Elements {
     private Elements() {
     }
 
+    @SuppressWarnings( "unchecked" )
     static final Traverser<Object, String> ELEMENT_ADJACENCY = new Traverser<Object, String>() {
         @Override
         public Iterable<Walk<Object, String>> apply( final Object object ) {
