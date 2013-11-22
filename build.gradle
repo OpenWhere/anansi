@@ -74,6 +74,8 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
+
+// customize the maven pom artifact
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -92,6 +94,8 @@ uploadArchives {
     }
 }
 
+
+// create source and javadoc jars and add them as artifacts
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
