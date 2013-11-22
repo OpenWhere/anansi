@@ -88,6 +88,12 @@ about {
 }
 
 
+// Show stdout and stderr when running tests
+test {
+    testLogging.showStandardStreams = true
+}
+
+
 // customize the maven pom artifact
 uploadArchives {
     repositories {
