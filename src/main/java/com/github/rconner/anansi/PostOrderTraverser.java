@@ -32,8 +32,10 @@ import java.util.NoSuchElementException;
 /**
  * Package implementation of the Traverser returned by {@link Traversers#postOrder(Traverser)}.
  *
- * @param <V>
- * @param <E>
+ * @param <V> the vertex type
+ * @param <E> the edge type
+ *
+ * @author rconner
  */
 final class PostOrderTraverser<V, E> implements Traverser<V, E> {
     private final Traverser<V, E> adjacency;

@@ -38,6 +38,8 @@ import java.lang.ref.WeakReference;
  * be reused, and allow its value to be garbage collected.
  *
  * @param <T>
+ *
+ * @author rconner
  */
 @Beta
 public final class CachingSupplier<T> implements Supplier<T> {

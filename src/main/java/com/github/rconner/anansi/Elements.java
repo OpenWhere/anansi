@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 /**
  * Package implementations of Traversers returned by {@link Traversers#elements()} and {@link
  * Traversers#leafElements()}.
+ *
+ * @author rconner
  */
 class Elements {
 

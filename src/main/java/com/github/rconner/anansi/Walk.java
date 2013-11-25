@@ -31,8 +31,8 @@ import com.google.common.collect.ImmutableSet;
 /**
  * A walk from one vertex to another, via an Iterable of {@link Step Steps}.
  *
- * @param <V>
- * @param <E>
+ * @param <V> the vertex type
+ * @param <E> the edge type
  *
  * @author rconner
  */
@@ -45,9 +45,9 @@ public final class Walk<V, E> {
     /**
      * The only Walk constructor, private to prevent direct instantiation by clients.
      *
-     * @param from
-     * @param to
-     * @param via
+     * @param from the first vertex in this Walk.
+     * @param to the last Vertex in this Walk.
+     * @param via the Steps in this Walk.
      */
     Walk( final V from, final V to, final Iterable<Step<V, E>> via ) {
         this.from = from;
@@ -56,21 +56,28 @@ public final class Walk<V, E> {
     }
 
     /**
-     * @return
+     * Return the first vertex in this Walk.
+     *
+     * @return the first vertex in this Walk.
      */
     public V getFrom() {
         return from;
     }
 
     /**
-     * @return
+     * Return the last vertex in this Walk. This is a convenience method, returning the value of {@link Step#getTo()}
+     * for the last {@code Step} returned by {@link #getVia()}.
+     *
+     * @return the last vertex in this Walk.
      */
     public V getTo() {
         return to;
     }
 
     /**
-     * @return
+     * Returns the {@link Step Steps} in this Walk.
+     *
+     * @return the {@code Steps} in this Walk.
      */
     public Iterable<Step<V, E>> getVia() {
         return via;
@@ -98,27 +105,26 @@ public final class Walk<V, E> {
      * Creates a new, empty, immutable Walk. This should only be used when a Walk literally has travelled over no edges,
      * the Walk to the root of a breadth- or depth-first traversal for example.
      *
-     * @param from
-     * @param to
-     * @param <V>
-     * @param <E>
+     * @param to the last vertex in the Walk.
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a new, empty, immutable Walk.
      */
-    public static <V, E> Walk<V, E> empty( final V from ) {
-        return new Walk<V, E>( from, from, ImmutableSet.<Step<V, E>>of() );
+    public static <V, E> Walk<V, E> empty( final V to ) {
+        return new Walk<V, E>( to, to, ImmutableSet.<Step<V, E>>of() );
     }
 
     /**
      * Creates a new, immutable Walk with a single Step.
      *
-     * @param from
-     * @param to
-     * @param over
-     * @param <V>
-     * @param <E>
+     * @param from the first vertex in the Walk.
+     * @param to the last vertex in the Walk.
+     * @param over the single edge over which the Walk steps.
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a new, immutable Walk with a single Step.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to, final E over ) {
         return new Walk<V, E>( from, to, ImmutableSet.of( new Step<V, E>( to, over ) ) );
@@ -127,13 +133,12 @@ public final class Walk<V, E> {
     /**
      * Creates a new, immutable Walk with a single Step with an over of null.
      *
-     * @param from
-     * @param to
-     * @param over
-     * @param <V>
-     * @param <E>
+     * @param from the first vertex in the Walk.
+     * @param to the last vertex in the Walk.
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a new, immutable Walk with a single Step with an over of null.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to ) {
         return single( from, to, null );
@@ -142,11 +147,11 @@ public final class Walk<V, E> {
     /**
      * Creates an immutable builder used to create a Walk with multiple Steps.
      *
-     * @param from
-     * @param <V>
-     * @param <E>
+     * @param from the first vertex in the Walk.
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return an immutable builder used to create a Walk with multiple Steps.
      */
     @SuppressWarnings( "unchecked" )
     public static <V, E> Builder<V, E> from( final V from ) {

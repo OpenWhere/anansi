@@ -29,6 +29,8 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * Static factory methods for building Traversers.
+ *
+ * @author rconner
  */
 @Beta
 public class Traversers {
@@ -43,10 +45,10 @@ public class Traversers {
     /**
      * Returns a Traverser that returns an empty Iterable for all inputs.
      *
-     * @param <V>
-     * @param <E>
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a Traverser that returns an empty Iterable for all inputs.
      */
     @SuppressWarnings( "unchecked" )
     public static <V, E> Traverser<V, E> empty() {
@@ -65,11 +67,11 @@ public class Traversers {
     /**
      * Returns a pre-order traverser with <strong>NO</strong> cycle detection.
      *
-     * @param adjacency
-     * @param <V>
-     * @param <E>
+     * @param adjacency the adjacency function to use
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a pre-order traverser with <strong>NO</strong> cycle detection.
      */
     public static <V, E> Traverser<V, E> preOrder( final Traverser<V, E> adjacency ) {
         Preconditions.checkNotNull( adjacency );
@@ -80,11 +82,11 @@ public class Traversers {
      * Returns a post-order traverser with <strong>NO</strong> cycle detection. If a cycle is present, some call to
      * next() will infinitely loop (most likely resulting in an OutOfMemoryError).
      *
-     * @param adjacency
-     * @param <V>
-     * @param <E>
+     * @param adjacency the adjacency function to use
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a post-order traverser with <strong>NO</strong> cycle detection.
      */
     public static <V, E> Traverser<V, E> postOrder( final Traverser<V, E> adjacency ) {
         Preconditions.checkNotNull( adjacency );
@@ -94,11 +96,11 @@ public class Traversers {
     /**
      * Returns a breadth-first traverser with <strong>NO</strong> cycle detection.
      *
-     * @param adjacency
-     * @param <V>
-     * @param <E>
+     * @param adjacency the adjacency function to use
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a breadth-first traverser with <strong>NO</strong> cycle detection.
      */
     public static <V, E> Traverser<V, E> breadthFirst( final Traverser<V, E> adjacency ) {
         Preconditions.checkNotNull( adjacency );
@@ -109,11 +111,11 @@ public class Traversers {
      * Returns a traverser to reachable leaves with <strong>NO</strong> cycle detection. If a cycle is present, some
      * call to next() will infinitely loop (most likely resulting in an OutOfMemoryError).
      *
-     * @param adjacency
-     * @param <V>
-     * @param <E>
+     * @param adjacency the adjacency function to use
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a traverser to reachable leaves with <strong>NO</strong> cycle detection.
      */
     public static <V, E> Traverser<V, E> leaves( final Traverser<V, E> adjacency ) {
         Preconditions.checkNotNull( adjacency );
@@ -128,7 +130,8 @@ public class Traversers {
      * path separators, periods (property reference) and brackets (array indexing) are escaped with preceding
      * backslashes if they appear as Map keys.
      *
-     * @return
+     * @return a Traverser which will return the (adjacency Walks to) immediate Iterable elements, array elements, or
+     * Map values for any such non-empty input.
      */
     public static Traverser<Object, String> elements() {
         return Elements.ELEMENT_ADJACENCY;
@@ -137,7 +140,7 @@ public class Traversers {
     /**
      * Returns a {@link #leaves(Traverser)} Traverser which uses {@link #elements()} as an adjacency Traverser.
      *
-     * @return
+     * @return a {@code leaves(Traverser)} Traverser which uses {@code elements()} as an adjacency Traverser.
      */
     public static Traverser<Object, String> leafElements() {
         return Elements.LEAF_ELEMENTS_TRAVERSER;
@@ -146,9 +149,9 @@ public class Traversers {
     /**
      * Returns an idiomatic String path for the given Walk produced by {@link #leafElements()}.
      *
-     * @param walk
+     * @param walk the Walk for which to return the idiomatic String path.
      *
-     * @return
+     * @return an idiomatic String path for the given Walk produced by {@code leafElements()}.
      */
     public static String elementPath( final Walk<Object, String> walk ) {
         return Elements.path( walk );

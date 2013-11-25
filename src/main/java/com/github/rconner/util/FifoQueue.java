@@ -34,6 +34,8 @@ import java.util.NoSuchElementException;
 /**
  * A minimal FIFO queue implementation, which does <strong>not</strong> implement {@link java.util.Collection}. This
  * implementation is not thread-safe, and does not even have a fail-fast iterator.
+ *
+ * @author rconner
  */
 @Beta
 public final class FifoQueue<E> implements Iterable<E> {

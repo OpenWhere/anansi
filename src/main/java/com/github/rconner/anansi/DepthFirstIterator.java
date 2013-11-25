@@ -28,7 +28,7 @@ import com.google.common.annotations.Beta;
 /**
  * An Iterator used in depth-first traversals.
  *
- * @param <T>
+ * @param <T> the type of elements returned by this iterator
  *
  * @author rconner
  */
@@ -36,10 +36,11 @@ import com.google.common.annotations.Beta;
 public interface DepthFirstIterator<T> extends PruningIterator<T> {
 
     /**
-     * Returns {@code true} if the last object returned by {@link #next} is being traversed away from the start object,
-     * {@code false} if the traversal is on its way back out.
+     * Returns {@code true} if the last object returned by {@link #next()} is being traversed away from the start
+     * object, {@code false} if the traversal is on its way back out.
      *
-     * @return
+     * @return {@code true} if the last object returned by {@code next()} is being traversed away from the start object,
+     *         {@code false} if the traversal is on its way back out.
      */
     boolean isDescending();
 

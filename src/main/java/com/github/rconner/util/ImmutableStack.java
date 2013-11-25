@@ -45,6 +45,8 @@ import java.util.NoSuchElementException;
  * instance sharing the storage for all the elements below the top one.
  * <p/>
  * Instances of this class do not implement {@link #equals(Object)} or {@link #hashCode()}.
+ *
+ * @author rconner
  */
 @Beta
 public abstract class ImmutableStack<E> implements Iterable<E> {

@@ -30,6 +30,11 @@ import java.util.Iterator;
 /**
  * A step during a traversal, a helper class. Holds an iterator (created by a delegate adjacency function) and a
  * Walk.Builder at that point in the traversal.
+ *
+ * @param <V> the vertex type
+ * @param <E> the edge type
+ *
+ * @author rconner
  */
 final class TraversalMove<V, E> {
     final Iterator<Walk<V, E>> iterator;
@@ -43,11 +48,11 @@ final class TraversalMove<V, E> {
     /**
      * Returns a move &quot;to&quot; the start node in a traversal.
      *
-     * @param start
-     * @param <V>
-     * @param <E>
+     * @param start the start node in a traversal
+     * @param <V> the vertex type
+     * @param <E> the edge type
      *
-     * @return
+     * @return a move &quot;to&quot; the start node in a traversal.
      */
     static <V, E> TraversalMove<V, E> start( final V start ) {
         return new TraversalMove<V, E>(
@@ -58,10 +63,10 @@ final class TraversalMove<V, E> {
      * Returns a new move with the given walk appended, with the iterator from the adjacency function applied to the
      * walk&apos;s end vertex.
      *
-     * @param adjacency
-     * @param walk
+     * @param adjacency the adjacency function to apply to the walk&apos;s end vertex
+     * @param walk the walk to append to the new move
      *
-     * @return
+     * @return a new move with the given walk appended.
      */
     TraversalMove<V, E> with( final Traverser<V, E> adjacency, final Walk<V, E> walk ) {
         return new TraversalMove<V, E>( adjacency.apply( walk.getTo() ).iterator(), builder.add( walk ) );

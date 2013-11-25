@@ -32,8 +32,10 @@ import java.util.NoSuchElementException;
 /**
  * Package implementation of the Traverser returned by {@link Traversers#leaves(Traverser)}.
  *
- * @param <V>
- * @param <E>
+ * @param <V> the vertex type
+ * @param <E> the edge type
+ *
+ * @author rconner
  */
 final class LeafTraverser<V, E> implements Traverser<V, E> {
     private final Traverser<V, E> adjacency;

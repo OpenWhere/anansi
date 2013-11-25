@@ -31,8 +31,8 @@ import com.google.common.base.Function;
  * Implementations should endeavor to return Iterables that are lazily evaluated, and should document their behavior in
  * any case.
  *
- * @param <V>
- * @param <E>
+ * @param <V> the vertex type
+ * @param <E> the edge type
  *
  * @author rconner
  */
