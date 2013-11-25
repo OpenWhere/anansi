@@ -176,10 +176,6 @@ public final class Walk<V, E> {
             return new Builder<V, E>( from, next );
         }
 
-        public boolean isEmpty() {
-            return stack.isEmpty();
-        }
-
         @SuppressWarnings( "unchecked" )
         public Walk<V, E> build() {
             if( stack.isEmpty() ) {
