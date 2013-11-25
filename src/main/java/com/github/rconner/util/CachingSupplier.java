@@ -33,6 +33,9 @@ import java.lang.ref.WeakReference;
  * A Supplier which caches the instance retrieved from a delegate Supplier in a {@link WeakReference}. If the reference
  * is clear on a call to {@code get()}, it is retrieved again from the delegate. Note that the delegate Supplier cannot
  * return null. Instances of this class are internally thread-safe and will never invoke the delegate concurrently.
+ * <p/>
+ * This class is not currently used, but was designed to help ImmutableStack.reverse() to be lazy, allow its value to
+ * be reused, and allow its value to be garbage collected.
  *
  * @param <T>
  */
