@@ -25,6 +25,7 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
@@ -38,6 +39,8 @@ import com.google.common.collect.ImmutableSet;
  */
 @Beta
 public final class Walk<V, E> {
+    private static final Joiner joiner = Joiner.on( ", " );
+
     private final V from;
     private final V to;
     private final Iterable<Step<V, E>> via;
@@ -83,6 +86,16 @@ public final class Walk<V, E> {
         return via;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append( getFrom() ).append( "=>" ).append( getTo() );
+        builder.append( " via [" );
+        joiner.appendTo( builder, getVia() );
+        builder.append( "]" );
+        return builder.toString();
+    }
+
     public static final class Step<V, E> {
         private final V to;
         private final E over;
@@ -98,6 +111,11 @@ public final class Walk<V, E> {
 
         public E getOver() {
             return over;
+        }
+
+        @Override
+        public String toString() {
+            return "to (" + to + ") over (" + over + ')';
         }
     }
 
