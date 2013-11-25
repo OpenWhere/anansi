@@ -105,4 +105,11 @@ public final class ImmutableStackTest {
         assertStackContains( stack.push( 101 ).push( null ).push( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
         assertStackContains( stack, 2, 3, 5, null, 11 );
     }
+
+    @Test
+    public void stackToString() {
+        final ImmutableStack<Integer> stack = ImmutableStack.of();
+        assertThat( stack.toString(), is( "[]" ) );
+        assertThat( stack.push( 101 ).push( 102 ).toString(), is( "[102, 101]" ) );
+    }
 }
