@@ -151,4 +151,18 @@ public final class FifoQueueTest {
         assertIterablesEqual( queue, expected );
         assertThat( queue.size(), is( expected.size() ) );
     }
+
+    @Test
+    public void queueToString() {
+        final FifoQueue<Integer> queue = FifoQueue.of();
+        assertThat( queue.toString(), is( "[]" ) );
+        queue.enqueue( 101 );
+        assertThat( queue.toString(), is( "[101]" ) );
+        queue.enqueue( 102 );
+        assertThat( queue.toString(), is( "[101, 102]" ) );
+        queue.dequeue();
+        assertThat( queue.toString(), is( "[102]" ) );
+        queue.dequeue();
+        assertThat( queue.toString(), is( "[]" ) );
+    }
 }
