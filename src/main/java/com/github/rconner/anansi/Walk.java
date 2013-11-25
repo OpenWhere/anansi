@@ -123,14 +123,14 @@ public final class Walk<V, E> {
      * Creates a new, empty, immutable Walk. This should only be used when a Walk literally has travelled over no edges,
      * the Walk to the root of a breadth- or depth-first traversal for example.
      *
-     * @param to the last vertex in the Walk.
+     * @param vertex the first and last vertex in the Walk.
      * @param <V> the vertex type
      * @param <E> the edge type
      *
      * @return a new, empty, immutable Walk.
      */
-    public static <V, E> Walk<V, E> empty( final V to ) {
-        return new Walk<V, E>( to, to, ImmutableSet.<Step<V, E>>of() );
+    public static <V, E> Walk<V, E> empty( final V vertex ) {
+        return new Walk<V, E>( vertex, vertex, ImmutableSet.<Step<V, E>>of() );
     }
 
     /**
