@@ -89,8 +89,7 @@ public final class FifoQueueTest {
     }
 
     @Test
-    @SuppressWarnings( "unchecked" )
-    public void testEmpty() {
+    public void queueEmpty() {
         final FifoQueue<Integer> queue = FifoQueue.of();
         assertQueueContains( queue );
         queue.enqueue( 101 );
@@ -100,7 +99,7 @@ public final class FifoQueueTest {
     }
 
     @Test
-    public void testSingle() {
+    public void queueOneElement() {
         final FifoQueue<Integer> queue = FifoQueue.of( 42 );
         assertQueueContains( queue, 42 );
         queue.enqueue( 101 );
@@ -110,7 +109,7 @@ public final class FifoQueueTest {
     }
 
     @Test
-    public void testMany() {
+    public void queueManyElements() {
         final FifoQueue<Integer> queue = FifoQueue.of( 2, 3, 5, null, 11 );
         assertQueueContains( queue, 2, 3, 5, null, 11 );
         queue.enqueue( 101 );
@@ -121,8 +120,7 @@ public final class FifoQueueTest {
     }
 
     @Test
-    @SuppressWarnings( "MethodWithMultipleLoops" )
-    public void testRandomMutations() {
+    public void queueRandomMutations() {
         final FifoQueue<Integer> queue = new FifoQueue<Integer>();
         final LinkedList<Integer> expected = Lists.newLinkedList();
         final Random random = new Random();

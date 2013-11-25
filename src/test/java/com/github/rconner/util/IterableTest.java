@@ -39,8 +39,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Helper methods for other tests, and tests for those methods (which is why this class is named ...Test, so maven will
- * pick it up).
+ * Helper methods for other tests, and tests for those methods (which is why this class is named ...Test, so the test
+ * runner will pick it up).
  */
 public final class IterableTest {
 
@@ -58,7 +58,7 @@ public final class IterableTest {
     }
 
     @Test
-    public void testAssertIteratorEmpty() {
+    public void assertIteratorEmpty() {
         assertIteratorEmpty( Iterators.emptyIterator() );
     }
 
@@ -73,7 +73,7 @@ public final class IterableTest {
     }
 
     @Test
-    public void testAssertIteratorContains() {
+    public void assertIteratorContains() {
         assertIteratorContains( Iterators.emptyIterator() );
         assertIteratorContains( Arrays.asList( 2 ).iterator(), 2 );
         assertIteratorContains( Arrays.asList( 3, 5 ).iterator(), 3, 5 );
@@ -85,7 +85,7 @@ public final class IterableTest {
     }
 
     @Test
-    public void testAssertIterablesEqual() {
+    public void assertIterablesEqual() {
         assertIterablesEqual( Collections.emptyList(), ImmutableSet.of() );
         assertIterablesEqual( Arrays.asList( 2 ), Lists.newArrayList( 2 ) );
         assertIterablesEqual( Arrays.asList( 7, 11, 13, 17, 19 ), Lists.newArrayList( 7, 11, 13, 17, 19 ) );

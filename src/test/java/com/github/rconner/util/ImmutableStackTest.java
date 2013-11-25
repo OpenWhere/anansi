@@ -83,8 +83,7 @@ public final class ImmutableStackTest {
     }
 
     @Test
-    @SuppressWarnings( "unchecked" )
-    public void testEmpty() {
+    public void stackEmpty() {
         final ImmutableStack<Integer> stack = ImmutableStack.of();
         assertStackContains( stack );
         assertStackContains( stack.push( 101 ).push( 102 ), 102, 101 );
@@ -92,7 +91,7 @@ public final class ImmutableStackTest {
     }
 
     @Test
-    public void testSingle() {
+    public void stackOneElement() {
         final ImmutableStack<Integer> stack = ImmutableStack.of( 42 );
         assertStackContains( stack, 42 );
         assertStackContains( stack.push( 101 ).push( 102 ), 102, 101, 42 );
@@ -100,7 +99,7 @@ public final class ImmutableStackTest {
     }
 
     @Test
-    public void testMany() {
+    public void stackManyElements() {
         final ImmutableStack<Integer> stack = ImmutableStack.of( 11, null, 5, 3, 2 );
         assertStackContains( stack, 2, 3, 5, null, 11 );
         assertStackContains( stack.push( 101 ).push( null ).push( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
