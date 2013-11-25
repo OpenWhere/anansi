@@ -49,8 +49,7 @@ public final class TraversersTest {
     private final Multimap<String, Walk<String, String>> emptyGraph = ImmutableMultimap.of();
 
     private final Multimap<String, Walk<String, String>> singletomGraph = ImmutableMultimap.of(
-            "A", Walk.single(
-            "A", "B", "A->B" ) );
+            "A", Walk.single( "A", "B", "A->B" ) );
 
     // Warning! Do not perform a post-order traversal on this graph.
     private final Multimap<String, Walk<String, String>> loop = ImmutableMultimap.of(
