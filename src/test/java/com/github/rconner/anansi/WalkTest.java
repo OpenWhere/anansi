@@ -104,4 +104,17 @@ public final class WalkTest {
         assertWalkContains( subWalkTo23, 17, "to 19", 19, "to 21", 21, "to 23", 23 );
         assertWalkContains( walkTo23, 11, null, 13, null, 15, "to 17", 17, "to 19", 19, "to 21", 21, "to 23", 23 );
     }
+
+    @Test
+    public void walkToString() {
+        // Not asserting content of toString here, just that it doesn't throw.
+        Walk.empty( 2 ).toString();
+        Walk.single( 2, 3 ).toString();
+        Walk.single( 2, 3, "2->3" ).toString();
+
+        Walk.Builder<Integer, String> builder = Walk.from( 11 );
+        builder.build().toString();
+        builder = builder.add( Walk.single( 11, 13, "11->13" ) );
+        builder.build().toString();
+    }
 }
