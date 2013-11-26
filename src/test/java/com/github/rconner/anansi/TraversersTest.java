@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
@@ -90,6 +91,9 @@ public final class TraversersTest {
         };
     }
 
+    private static Traverser<String, String> mutableAdjacencyFor( final Multimap<String, Walk<String, String>> graph ) {
+        return adjacencyFor( ArrayListMultimap.create( graph ) );
+    }
 
     static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
         Iterator<Walk<V, E>> iterator = traversal.iterator();
