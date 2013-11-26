@@ -117,7 +117,11 @@ public final class TraversersTest {
 
     // empty()
 
-    // TODO
+    @Test
+    public void empty() {
+        final Traverser<String, String> traverser = Traversers.empty();
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { } );
+    }
 
     // preOrder( Traverser )
 
