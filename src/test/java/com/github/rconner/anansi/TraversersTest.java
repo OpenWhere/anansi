@@ -177,10 +177,8 @@ public final class TraversersTest {
                                                   { "A", "A->C", "C", "C->G", "G" } } );
     }
 
-    @Test
-    public void preOrderDag() {
-        final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( dag ) );
-        assertTraversalContains( traverser.apply( "A" ),
+    private static void assertPreOrderFullDag( Iterable<Walk<String, String>> traversal ) {
+        assertTraversalContains( traversal,
                                  new Object[][] { { "A" },
                                                   { "A", "A->B", "B" },
                                                   { "A", "A->B", "B", "B->D", "D" },
@@ -191,7 +189,203 @@ public final class TraversersTest {
                                                   { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
+    @Test
+    public void preOrderDag() {
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( dag ) );
+        assertPreOrderFullDag( traverser.apply( "A" ) );
+    }
 
+    @Test( expected = UnsupportedOperationException.class )
+    public void preOrderRemoveRoot() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        iterator.remove();
+    }
+
+    @Test
+    public void preOrderRemoveB() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        iterator.remove();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->C", "C" },
+                                             { "A", "A->C", "C", "C->D", "D" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure was actually changed
+        assertTraversalContains( Traversers.preOrder( adjacency ).apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->C", "C", "C->D", "D" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+    }
+
+    @Test
+    public void preOrderRemoveD() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->D", "D" );
+        iterator.remove();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->E", "E" },
+                                             { "A", "A->C", "C" },
+                                             { "A", "A->C", "C", "C->D", "D" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure was actually changed
+        assertTraversalContains( Traversers.preOrder( adjacency ).apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->C", "C", "C->D", "D" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+    }
+
+    @Test
+    public void preOrderRemoveE() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->D", "D" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->D", "D", "D->G", "G" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->E", "E" );
+        iterator.remove();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->C", "C" },
+                                             { "A", "A->C", "C", "C->D", "D" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure was actually changed
+        assertTraversalContains( Traversers.preOrder( adjacency ).apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->C", "C", "C->D", "D" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void preOrderRemoveTwice() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        iterator.remove();
+        iterator.remove();
+    }
+
+    @Test
+    public void preOrderPruneRoot() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        ( (PruningIterator) iterator ).prune();
+        assertIteratorEmpty( iterator );
+    }
+
+    @Test
+    public void preOrderPruneB() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        ( (PruningIterator) iterator ).prune();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->C", "C" },
+                                             { "A", "A->C", "C", "C->D", "D" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure is unchanged
+        assertPreOrderFullDag( Traversers.preOrder( adjacency ).apply( "A" ) );
+    }
+
+    @Test
+    public void preOrderPruneD() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->D", "D" );
+        ( (PruningIterator) iterator ).prune();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->E", "E" },
+                                             { "A", "A->C", "C" },
+                                             { "A", "A->C", "C", "C->D", "D" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure is unchanged
+        assertPreOrderFullDag( Traversers.preOrder( adjacency ).apply( "A" ) );
+    }
+
+    @Test
+    public void preOrderPruneE() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->D", "D" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->D", "D", "D->G", "G" );
+        assertNextWalkIs( iterator, "A", "A->B", "B", "B->E", "E" );
+        ( (PruningIterator) iterator ).prune();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->C", "C" },
+                                             { "A", "A->C", "C", "C->D", "D" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure is unchanged
+        assertPreOrderFullDag( Traversers.preOrder( adjacency ).apply( "A" ) );
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void preOrderPruneTwice() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        ( (PruningIterator) iterator ).prune();
+        ( (PruningIterator) iterator ).prune();
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void preOrderRemoveThenPrune() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        ( (PruningIterator) iterator ).remove();
+        ( (PruningIterator) iterator ).prune();
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void preOrderPruneThenRemove() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalkIs( iterator, "A" );
+        assertNextWalkIs( iterator, "A", "A->B", "B" );
+        ( (PruningIterator) iterator ).prune();
+        ( (PruningIterator) iterator ).remove();
+    }
 
     // postOrder( Traverser )
 
