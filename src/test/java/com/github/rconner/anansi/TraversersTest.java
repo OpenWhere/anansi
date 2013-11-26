@@ -394,6 +394,7 @@ public final class TraversersTest {
         }
     }
 
+    @SuppressWarnings( "unchecked" )
     @Test
     public void nestedElements() {
         final Map<?, ?> map = ImmutableMap.builder()
