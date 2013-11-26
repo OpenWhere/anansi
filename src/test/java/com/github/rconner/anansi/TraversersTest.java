@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.github.rconner.anansi.WalkTest.assertWalkContains;
+import static com.github.rconner.util.IterableTest.assertIteratorEmpty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -95,31 +96,29 @@ public final class TraversersTest {
         return adjacencyFor( ArrayListMultimap.create( graph ) );
     }
 
-    static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
-        Iterator<Walk<V, E>> iterator = traversal.iterator();
-        for( Object[] expectedWalk : expectedWalks ) {
-            assertNextWalkIs( iterator, expectedWalk );
-        }
-        assertThat( iterator.hasNext(), is( false ) );
-        try {
-            iterator.next();
-            fail( "Should have thrown a NoSuchElementException." );
-        } catch( NoSuchElementException ignored ) {
-            // success
-        }
-    }
-
-    static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
-        Iterator<Walk<V, E>> iterator = traversal.iterator();
-        for( Object[] expectedWalk : expectedWalks ) {
-            assertNextWalkIs( iterator, expectedWalk );
-        }
-        assertThat( iterator.hasNext(), is( true ) );
-    }
 
     static <V, E> void assertNextWalkIs( final Iterator<Walk<V, E>> iterator, final Object... expectedWalk ) {
         assertThat( iterator.hasNext(), is( true ) );
         assertWalkContains( iterator.next(), expectedWalk );
+    }
+
+    static <V, E> void assertNextWalksAre( final Iterator<Walk<V, E>> iterator, final Object[][] expectedWalks ) {
+        for( Object[] expectedWalk : expectedWalks ) {
+            assertNextWalkIs( iterator, expectedWalk );
+        }
+    }
+
+    static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
+        Iterator<Walk<V, E>> iterator = traversal.iterator();
+        assertNextWalksAre( iterator, expectedWalks );
+        assertThat( iterator.hasNext(), is( false ) );
+        assertIteratorEmpty( iterator );
+    }
+
+    static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
+        Iterator<Walk<V, E>> iterator = traversal.iterator();
+        assertNextWalksAre( iterator, expectedWalks );
+        assertThat( iterator.hasNext(), is( true ) );
     }
 
     // empty()
