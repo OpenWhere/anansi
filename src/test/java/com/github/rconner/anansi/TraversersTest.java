@@ -94,8 +94,7 @@ public final class TraversersTest {
     static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] actualWalks ) {
         Iterator<Walk<V, E>> iterator = traversal.iterator();
         for( Object[] actualWalk : actualWalks ) {
-            assertThat( iterator.hasNext(), is( true ) );
-            assertWalkContains( iterator.next(), actualWalk );
+            assertNextWalkIs( iterator, actualWalk );
         }
         assertThat( iterator.hasNext(), is( false ) );
         try {
@@ -109,10 +108,14 @@ public final class TraversersTest {
     static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] actualWalks ) {
         Iterator<Walk<V, E>> iterator = traversal.iterator();
         for( Object[] actualWalk : actualWalks ) {
-            assertThat( iterator.hasNext(), is( true ) );
-            assertWalkContains( iterator.next(), actualWalk );
+            assertNextWalkIs( iterator, actualWalk );
         }
         assertThat( iterator.hasNext(), is( true ) );
+    }
+
+    static <V, E> void assertNextWalkIs( final Iterator<Walk<V, E>> iterator, final Object... actualWalk ) {
+        assertThat( iterator.hasNext(), is( true ) );
+        assertWalkContains( iterator.next(), actualWalk );
     }
 
     // empty()
