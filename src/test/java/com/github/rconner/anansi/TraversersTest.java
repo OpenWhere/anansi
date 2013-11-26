@@ -46,9 +46,9 @@ public final class TraversersTest {
     // Lacking a key (vertex) means that there are no walks leaving that vertex. There is no way, using this
     // representation, to denote whether or not a vertex is present. Any vertex is present.
 
-    private final Multimap<String, Walk<String, String>> emptyGraph = ImmutableMultimap.of();
+    private final Multimap<String, Walk<String, String>> empty = ImmutableMultimap.of();
 
-    private final Multimap<String, Walk<String, String>> singletomGraph = ImmutableMultimap.of(
+    private final Multimap<String, Walk<String, String>> singleEdge = ImmutableMultimap.of(
             "A", Walk.single( "A", "B", "A->B" ) );
 
     // Warning! Do not perform a post-order traversal on this graph.
@@ -118,13 +118,13 @@ public final class TraversersTest {
 
     @Test
     public void preOrderEmpty() {
-        final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( emptyGraph ) );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( empty ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void preOrderSingleton() {
-        final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( singletomGraph ) );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
     }
 
@@ -185,13 +185,13 @@ public final class TraversersTest {
 
     @Test
     public void postOrderEmpty() {
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( emptyGraph ) );
+        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( empty ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void postOrderSingleton() {
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( singletomGraph ) );
+        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" }, { "A" } } );
     }
 
@@ -227,13 +227,13 @@ public final class TraversersTest {
 
     @Test
     public void breadthFirstEmpty() {
-        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( emptyGraph ) );
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( empty ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void breadthFirstSingleton() {
-        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( singletomGraph ) );
+        final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
     }
 
@@ -294,13 +294,13 @@ public final class TraversersTest {
 
     @Test
     public void leavesEmpty() {
-        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( emptyGraph ) );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( empty ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
     }
 
     @Test
     public void leavesSingleton() {
-        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( singletomGraph ) );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" } } );
     }
 
