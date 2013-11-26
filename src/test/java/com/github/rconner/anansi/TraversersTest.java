@@ -91,10 +91,10 @@ public final class TraversersTest {
     }
 
 
-    static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] actualWalks ) {
+    static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
         Iterator<Walk<V, E>> iterator = traversal.iterator();
-        for( Object[] actualWalk : actualWalks ) {
-            assertNextWalkIs( iterator, actualWalk );
+        for( Object[] expectedWalk : expectedWalks ) {
+            assertNextWalkIs( iterator, expectedWalk );
         }
         assertThat( iterator.hasNext(), is( false ) );
         try {
@@ -105,17 +105,17 @@ public final class TraversersTest {
         }
     }
 
-    static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] actualWalks ) {
+    static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
         Iterator<Walk<V, E>> iterator = traversal.iterator();
-        for( Object[] actualWalk : actualWalks ) {
-            assertNextWalkIs( iterator, actualWalk );
+        for( Object[] expectedWalk : expectedWalks ) {
+            assertNextWalkIs( iterator, expectedWalk );
         }
         assertThat( iterator.hasNext(), is( true ) );
     }
 
-    static <V, E> void assertNextWalkIs( final Iterator<Walk<V, E>> iterator, final Object... actualWalk ) {
+    static <V, E> void assertNextWalkIs( final Iterator<Walk<V, E>> iterator, final Object... expectedWalk ) {
         assertThat( iterator.hasNext(), is( true ) );
-        assertWalkContains( iterator.next(), actualWalk );
+        assertWalkContains( iterator.next(), expectedWalk );
     }
 
     // empty()
@@ -384,9 +384,9 @@ public final class TraversersTest {
     }
 
     static void assertElementsContains(
-            final Iterable<Walk<Object, String>> traversal, final Object[][] actualElements ) {
+            final Iterable<Walk<Object, String>> traversal, final Object[][] expectedElements ) {
         Iterator<Walk<Object, String>> iterator = traversal.iterator();
-        for( Object[] element : actualElements ) {
+        for( Object[] element : expectedElements ) {
             assertThat( iterator.hasNext(), is( true ) );
             final Walk<Object, String> walk = iterator.next();
             assertThat( Traversers.elementPath( walk ), is( element[ 0 ] ) );
