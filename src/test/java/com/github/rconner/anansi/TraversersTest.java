@@ -115,6 +115,11 @@ public final class TraversersTest {
         assertThat( iterator.hasNext(), is( true ) );
     }
 
+    // empty()
+
+    // TODO
+
+    // preOrder( Traverser )
 
     @Test
     public void preOrderEmpty() {
@@ -183,6 +188,8 @@ public final class TraversersTest {
     // FIXME: Test pre-order prune()
 
 
+    // postOrder( Traverser )
+
     @Test
     public void postOrderEmpty() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( empty ) );
@@ -224,6 +231,8 @@ public final class TraversersTest {
                 { "A" } } );
     }
 
+
+    // breadthFirst( Traverser )
 
     @Test
     public void breadthFirstEmpty() {
@@ -292,6 +301,8 @@ public final class TraversersTest {
     // FIXME: Test breadth-first prune()
 
 
+    // leaves( Traverser )
+
     @Test
     public void leavesEmpty() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( empty ) );
@@ -327,6 +338,13 @@ public final class TraversersTest {
 
 
     // These all return something precisely because an empty map/iterable/array *is* a leaf.
+
+    // TODO
+    // elements()
+
+
+    // leafElements()
+    // elementPath()
 
     @Test
     public void elementsEmptyMap() {
