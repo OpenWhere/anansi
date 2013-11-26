@@ -52,14 +52,14 @@ public class Traversers {
      */
     @SuppressWarnings( "unchecked" )
     public static <V, E> Traverser<V, E> empty() {
-        return ( Traverser<V, E> ) EmptyTraverser.INSTANCE;
+        return (Traverser<V, E>) EmptyTraverser.INSTANCE;
     }
 
-    private static final class EmptyTraverser<V, E> implements Traverser<V, E> {
-        static final Traverser<?, ?> INSTANCE = new EmptyTraverser<Object, Object>();
+    private enum EmptyTraverser implements Traverser<Object, Object> {
+        INSTANCE;
 
         @Override
-        public Iterable<Walk<V, E>> apply( final V input ) {
+        public Iterable<Walk<Object, Object>> apply( final Object vertex ) {
             return ImmutableSet.of();
         }
     }
