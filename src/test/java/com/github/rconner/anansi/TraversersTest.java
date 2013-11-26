@@ -146,56 +146,51 @@ public final class TraversersTest {
     @Test
     public void preOrderLoop() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( loop ) );
-        assertTraversalBegins(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->A", "A" },
-                { "A", "A->A", "A", "A->A", "A" },
-                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
+        assertTraversalBegins( traverser.apply( "A" ),
+                               new Object[][] { { "A" },
+                                                { "A", "A->A", "A" },
+                                                { "A", "A->A", "A", "A->A", "A" },
+                                                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
     }
 
     @Test
     public void preOrderCycle() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( cycle ) );
-        assertTraversalBegins(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->B", "B" },
-                { "A", "A->B", "B", "B->C", "C" },
-                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
-                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
+        assertTraversalBegins( traverser.apply( "A" ),
+                               new Object[][] { { "A" },
+                                                { "A", "A->B", "B" },
+                                                { "A", "A->B", "B", "B->C", "C" },
+                                                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
+                                                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
     }
 
     @Test
     public void preOrderTree() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( tree ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->B", "B" },
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->C", "C" },
-                { "A", "A->C", "C", "C->F", "F" },
-                { "A", "A->C", "C", "C->G", "G" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->C", "C", "C->F", "F" },
+                                                  { "A", "A->C", "C", "C->G", "G" } } );
     }
 
     @Test
     public void preOrderDag() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( dag ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->B", "B" },
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->C", "C" },
-                { "A", "A->C", "C", "C->D", "D" },
-                { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->C", "C", "C->D", "D" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
-    // FIXME: Test pre-order prune()
 
 
     // postOrder( Traverser )
@@ -215,32 +210,31 @@ public final class TraversersTest {
     @Test
     public void postOrderTree() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( tree ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->B", "B" },
-                { "A", "A->C", "C", "C->F", "F" },
-                { "A", "A->C", "C", "C->G", "G" },
-                { "A", "A->C", "C" },
-                { "A" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->C", "C", "C->F", "F" },
+                                                  { "A", "A->C", "C", "C->G", "G" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A" } } );
     }
 
     @Test
     public void postOrderDag() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( dag ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->B", "B" },
-                { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                { "A", "A->C", "C", "C->D", "D" },
-                { "A", "A->C", "C" },
-                { "A" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                                  { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
+                                                  { "A", "A->C", "C", "C->D", "D" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A" } } );
     }
 
+    // TODO: remove()
 
     // breadthFirst( Traverser )
 
@@ -259,57 +253,52 @@ public final class TraversersTest {
     @Test
     public void breadthFirstLoop() {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( loop ) );
-        assertTraversalBegins(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->A", "A" },
-                { "A", "A->A", "A", "A->A", "A" },
-                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
+        assertTraversalBegins( traverser.apply( "A" ),
+                               new Object[][] { { "A" },
+                                                { "A", "A->A", "A" },
+                                                { "A", "A->A", "A", "A->A", "A" },
+                                                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
     }
 
     @Test
     public void breadthFirstCycle() {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( cycle ) );
-        assertTraversalBegins(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->B", "B" },
-                { "A", "A->B", "B", "B->C", "C" },
-                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
-                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
+        assertTraversalBegins( traverser.apply( "A" ),
+                               new Object[][] { { "A" },
+                                                { "A", "A->B", "B" },
+                                                { "A", "A->B", "B", "B->C", "C" },
+                                                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
+                                                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
     }
 
     @Test
     public void breadthFirstTree() {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( tree ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->B", "B" },
-                { "A", "A->C", "C" },
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->C", "C", "C->F", "F" },
-                { "A", "A->C", "C", "C->G", "G" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C", "C->F", "F" },
+                                                  { "A", "A->C", "C", "C->G", "G" } } );
     }
 
     @Test
     public void breadthFirstDag() {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( dag ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A" },
-                { "A", "A->B", "B" },
-                { "A", "A->C", "C" },
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->C", "C", "C->D", "D" },
-                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A" },
+                                                  { "A", "A->B", "B" },
+                                                  { "A", "A->C", "C" },
+                                                  { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C", "C->D", "D" },
+                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
-    // FIXME: Test breadth-first prune()
-
+    // TODO: remove(), prune()
 
     // leaves( Traverser )
 
@@ -328,24 +317,23 @@ public final class TraversersTest {
     @Test
     public void leavesTree() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( tree ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A", "A->B", "B", "B->D", "D" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->C", "C", "C->F", "F" },
-                { "A", "A->C", "C", "C->G", "G" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C", "C->F", "F" },
+                                                  { "A", "A->C", "C", "C->G", "G" } } );
     }
 
     @Test
     public void leavesDag() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( dag ) );
-        assertTraversalContains(
-                traverser.apply( "A" ), new Object[][] {
-                { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                { "A", "A->B", "B", "B->E", "E" },
-                { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+        assertTraversalContains( traverser.apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
+    // TODO: remove()
 
     // These all return something precisely because an empty map/iterable/array *is* a leaf.
 
@@ -426,32 +414,31 @@ public final class TraversersTest {
                         .build() )
                 .build();
 
-        assertElementsContains(
-                Traversers.leafElements().apply( map ), new Object[][] {
-                { "string", "A String" },
-                { "integer", 42 },
-                { "list[0]", "zero" },
-                { "list[1]", "one" },
-                { "list[2]", "two" },
-                { "list[3]", "three" },
-                { "array[0]", "four" },
-                { "array[1]", "five" },
-                { "array[2]", "six" },
-                { "boolean\\.array[0]", false },
-                { "boolean\\.array[1]", true },
-                { "boolean\\.array[2]", true },
-                { "boolean\\.array[3]", false },
-                { "boolean\\.array[4]", true },
-                { "map.foo\\[abc\\]bar", "Another String" },
-                { "map.people[0].name", "Alice" },
-                { "map.people[0].age", 37 },
-                { "map.people[1].name", "Bob" },
-                { "map.people[1].age", 55 },
-                { "map.people[2].name", "Carol" },
-                { "map.people[2].age", 23 },
-                { "map.people[3].name", "Dave" },
-                { "map.people[3].age", 27 },
-                { "map.owner.name", "Elise" },
-                { "map.owner.age", 43 } } );
+        assertElementsContains( Traversers.leafElements().apply( map ),
+                                new Object[][] { { "string", "A String" },
+                                                 { "integer", 42 },
+                                                 { "list[0]", "zero" },
+                                                 { "list[1]", "one" },
+                                                 { "list[2]", "two" },
+                                                 { "list[3]", "three" },
+                                                 { "array[0]", "four" },
+                                                 { "array[1]", "five" },
+                                                 { "array[2]", "six" },
+                                                 { "boolean\\.array[0]", false },
+                                                 { "boolean\\.array[1]", true },
+                                                 { "boolean\\.array[2]", true },
+                                                 { "boolean\\.array[3]", false },
+                                                 { "boolean\\.array[4]", true },
+                                                 { "map.foo\\[abc\\]bar", "Another String" },
+                                                 { "map.people[0].name", "Alice" },
+                                                 { "map.people[0].age", 37 },
+                                                 { "map.people[1].name", "Bob" },
+                                                 { "map.people[1].age", 55 },
+                                                 { "map.people[2].name", "Carol" },
+                                                 { "map.people[2].age", 23 },
+                                                 { "map.people[3].name", "Dave" },
+                                                 { "map.people[3].age", 27 },
+                                                 { "map.owner.name", "Elise" },
+                                                 { "map.owner.age", 43 } } );
     }
 }
