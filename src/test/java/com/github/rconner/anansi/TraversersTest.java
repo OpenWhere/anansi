@@ -195,6 +195,14 @@ public final class TraversersTest {
         assertPreOrderFullDag( traverser.apply( "A" ) );
     }
 
+    @Test( expected = IllegalStateException.class )
+    public void preOrderRemoveBeforeNext() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        iterator.remove();
+    }
+
     @Test( expected = UnsupportedOperationException.class )
     public void preOrderRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
@@ -284,6 +292,14 @@ public final class TraversersTest {
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         iterator.remove();
         iterator.remove();
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void preOrderPruneBeforeNext() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        ( (PruningIterator) iterator ).prune();
     }
 
     @Test
