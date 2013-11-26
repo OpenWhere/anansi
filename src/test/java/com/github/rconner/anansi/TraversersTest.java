@@ -132,7 +132,7 @@ public final class TraversersTest {
     }
 
     @Test
-    public void preOrderSingleton() {
+    public void preOrderSingleEdge() {
         final Traverser<String, String> traverser = Traversers.preOrder( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
     }
@@ -201,7 +201,7 @@ public final class TraversersTest {
     }
 
     @Test
-    public void postOrderSingleton() {
+    public void postOrderSingleEdge() {
         final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" }, { "A" } } );
     }
@@ -245,7 +245,7 @@ public final class TraversersTest {
     }
 
     @Test
-    public void breadthFirstSingleton() {
+    public void breadthFirstSingleEdge() {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
     }
@@ -314,7 +314,7 @@ public final class TraversersTest {
     }
 
     @Test
-    public void leavesSingleton() {
+    public void leavesSingleEdge() {
         final Traverser<String, String> traverser = Traversers.leaves( adjacencyFor( singleEdge ) );
         assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" } } );
     }
