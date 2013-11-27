@@ -99,6 +99,7 @@ test {
 // configure cobertura plugin
 
 cobertura {
+    coverageIgnoreMethodAnnotations = [ 'com.github.rconner.util.NoCoverage' ]
     coverageFormats = [ 'html', 'xml' ]
 }
 
