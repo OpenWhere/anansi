@@ -439,6 +439,14 @@ public final class TraversersTest {
     }
 
     @Test( expected = IllegalStateException.class )
+    public void postOrderRemoveBeforeNext() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        iterator.remove();
+    }
+
+    @Test( expected = IllegalStateException.class )
     public void postOrderRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
