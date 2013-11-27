@@ -91,6 +91,7 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
             return move.builder.build();
         }
 
+        // TODO: Does not fail atomically
         @Override
         public void remove() {
             Preconditions.checkState( canMutate );
