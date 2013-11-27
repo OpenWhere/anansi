@@ -764,7 +764,7 @@ public final class TraversersTest {
         Walk<Object, String> walk = iterator.next();
         assertThat( walk.getTo(), is( root ) );
         assertThat( Traversers.elementPath( walk ), is( "" ) );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertIteratorEmpty( iterator );
     }
 
     @Test
@@ -774,7 +774,7 @@ public final class TraversersTest {
         Walk<Object, String> walk = iterator.next();
         assertThat( walk.getTo(), is( root ) );
         assertThat( Traversers.elementPath( walk ), is( "" ) );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertIteratorEmpty( iterator );
     }
 
     @Test
@@ -784,7 +784,7 @@ public final class TraversersTest {
         Walk<Object, String> walk = iterator.next();
         assertThat( walk.getTo(), is( root ) );
         assertThat( Traversers.elementPath( walk ), is( "" ) );
-        assertThat( iterator.hasNext(), is( false ) );
+        assertIteratorEmpty( iterator );
     }
 
     static void assertElementsContains(
@@ -796,13 +796,7 @@ public final class TraversersTest {
             assertThat( Traversers.elementPath( walk ), is( element[ 0 ] ) );
             assertThat( walk.getTo(), is( element[ 1 ] ) );
         }
-        assertThat( iterator.hasNext(), is( false ) );
-        try {
-            iterator.next();
-            fail( "Should have thrown a NoSuchElementException." );
-        } catch( NoSuchElementException ignored ) {
-            // success
-        }
+        assertIteratorEmpty( iterator );
     }
 
     @SuppressWarnings( "unchecked" )
