@@ -758,27 +758,27 @@ public final class TraversersTest {
     // elementPath()
 
     @Test
-    public void elementsEmptyMap() {
+    public void leafElementsEmptyMap() {
         Object root = Collections.emptyMap();
         Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( root ).iterator();
         Walk<Object, String> walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) root ) );
+        assertThat( walk.getTo(), is( root ) );
         assertThat( Traversers.elementPath( walk ), is( "" ) );
         assertThat( iterator.hasNext(), is( false ) );
     }
 
     @Test
-    public void elementsEmptyList() {
+    public void leafElementsEmptyList() {
         Object root = Collections.emptyList();
         Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( root ).iterator();
         Walk<Object, String> walk = iterator.next();
-        assertThat( walk.getTo(), is( ( Object ) root ) );
+        assertThat( walk.getTo(), is( root ) );
         assertThat( Traversers.elementPath( walk ), is( "" ) );
         assertThat( iterator.hasNext(), is( false ) );
     }
 
     @Test
-    public void elementsEmptyArray() {
+    public void leafElementsEmptyArray() {
         Object root = new int[ 0 ];
         Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( root ).iterator();
         Walk<Object, String> walk = iterator.next();
@@ -807,7 +807,7 @@ public final class TraversersTest {
 
     @SuppressWarnings( "unchecked" )
     @Test
-    public void nestedElements() {
+    public void leafElementsComplex() {
         final Map<?, ?> map = ImmutableMap.builder()
                 .put( "string", "A String" )
                 .put( "integer", 42 )
