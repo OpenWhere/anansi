@@ -193,24 +193,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
 
         @Override
         public Iterator<E> iterator() {
-            return new UnmodifiableIterator<E>() {
-                private ImmutableStack<E> stack = Stack.this;
-
-                @Override
-                public boolean hasNext() {
-                    return !stack.isEmpty();
-                }
-
-                @Override
-                public E next() {
-                    if( stack.isEmpty() ) {
-                        throw new NoSuchElementException();
-                    }
-                    final E top = stack.peek();
-                    stack = stack.pop();
-                    return top;
-                }
-            };
+            return new StackIterator<E>( this );
         }
 
         // TODO: Make this lazy, and keep the result around. But how lazy, and what parts, needs to be decided.
@@ -245,6 +228,29 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
             JOINER.appendTo( sb, this );
             sb.append( ']' );
             return sb.toString();
+        }
+    }
+
+    private static class StackIterator<E> extends UnmodifiableIterator<E> {
+        private ImmutableStack<E> stack;
+
+        private StackIterator( final ImmutableStack<E> stack ) {
+            this.stack = stack;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public E next() {
+            if( stack.isEmpty() ) {
+                throw new NoSuchElementException();
+            }
+            final E top = stack.peek();
+            stack = stack.pop();
+            return top;
         }
     }
 
