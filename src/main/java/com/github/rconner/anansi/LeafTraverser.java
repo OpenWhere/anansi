@@ -55,11 +55,7 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
     }
 
     private static final class LeafIterator<V, E> implements Iterator<Walk<V, E>> {
-        /**
-         * The supplied adjacency function.
-         */
         private final Traverser<V, E> adjacency;
-
         private ImmutableStack<TraversalMove<V, E>> moveStack;
 
         @SuppressWarnings( "unchecked" )

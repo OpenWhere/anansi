@@ -55,16 +55,8 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
     }
 
     private static final class PreOrderIterator<V, E> implements PruningIterator<Walk<V, E>> {
-        /**
-         * The supplied adjacency function.
-         */
         private final Traverser<V, E> adjacency;
-
         private ImmutableStack<TraversalMove<V, E>> moveStack;
-
-        /**
-         * True if this iterator is in a valid state for calling remove() or prune().
-         */
         private boolean canMutate = false;
 
         @SuppressWarnings( "unchecked" )
