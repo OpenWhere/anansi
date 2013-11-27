@@ -77,10 +77,10 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
     /**
      * Creates a new ImmutableStack with the given elements, in order from bottom to top.
      *
-     * @param elements
-     * @param <E>
+     * @param elements the elements for which to create a new ImmutableStack
+     * @param <E> the type of element
      *
-     * @return
+     * @return a new ImmutableStack with the given elements, in order from bottom to top.
      */
     public static <E> ImmutableStack<E> of( final E... elements ) {
         @SuppressWarnings( "unchecked" )
