@@ -233,13 +233,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
                 array[ i ] = stack.peek();
                 stack = stack.pop();
             }
-
-            return new Iterable<E>() {
-                @Override
-                public Iterator<E> iterator() {
-                    return new ArrayIterator<E>( array );
-                }
-            };
+            return new ArrayIterable<E>( array );
         }
 
         private static final Joiner JOINER = Joiner.on( ", " ).useForNull( "null" );
@@ -254,27 +248,32 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
     }
 
-    private static final class ArrayIterator<E> extends UnmodifiableIterator<E> {
+    private static class ArrayIterable<E> implements Iterable<E> {
         private final Object[] array;
-        private int index;
 
-        ArrayIterator( final Object... array ) {
-            //noinspection AssignmentToCollectionOrArrayFieldFromParameter
+        private ArrayIterable( final Object[] array ) {
             this.array = array;
         }
 
         @Override
-        public boolean hasNext() {
-            return index < array.length;
-        }
+        public Iterator<E> iterator() {
+            return new UnmodifiableIterator<E>() {
+                private int index;
 
-        @Override
-        @SuppressWarnings( "unchecked" )
-        public E next() {
-            if( index >= array.length ) {
-                throw new NoSuchElementException();
-            }
-            return ( E ) array[ index++ ];
+                @Override
+                public boolean hasNext() {
+                    return index < array.length;
+                }
+
+                @SuppressWarnings( "unchecked" )
+                @Override
+                public E next() {
+                    if( index >= array.length ) {
+                        throw new NoSuchElementException();
+                    }
+                    return (E) array[ index++ ];
+                }
+            };
         }
     }
 }
