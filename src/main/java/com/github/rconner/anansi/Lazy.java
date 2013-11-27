@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ray A. Conner
+ * Copyright (c) 2012-2013 Ray A. Conner
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -40,6 +41,7 @@ public class Lazy {
     /**
      * Prevent instantiation.
      */
+    @NoCoverage
     private Lazy() {
     }
 

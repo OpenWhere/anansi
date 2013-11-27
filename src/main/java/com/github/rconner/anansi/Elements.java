@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.NoCoverage;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.UnmodifiableIterator;
 
@@ -43,6 +44,7 @@ class Elements {
     /**
      * Prevent instantiation.
      */
+    @NoCoverage
     private Elements() {
     }
 

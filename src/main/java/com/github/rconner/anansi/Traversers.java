@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -38,9 +39,9 @@ public class Traversers {
     /**
      * Prevent instantiation.
      */
+    @NoCoverage
     private Traversers() {
     }
-
 
     /**
      * Returns a Traverser that returns an empty Iterable for all inputs.
