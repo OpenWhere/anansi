@@ -99,7 +99,6 @@ test {
 // configure cobertura plugin
 
 cobertura {
-    coverageSourceDirs = [ project.sourceSets.main.java.srcDirs ]
     coverageFormats = [ 'html', 'xml' ]
 }
 
