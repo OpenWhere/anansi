@@ -808,17 +808,16 @@ public final class TraversersTest {
                 .put( "list", Arrays.asList( "zero", "one", "two", "three" ) )
                 .put( "array", new Object[] { "four", "five", "six" } )
                 .put( "boolean.array", new boolean[] { false, true, true, false, true } )
-                .put(
-                        "map", ImmutableMap.builder()
-                        .put( "foo[abc]bar", "Another String" )
-                        .put(
-                                "people", Arrays.asList(
-                                ImmutableMap.of( "name", "Alice", "age", 37 ),
-                                ImmutableMap.of( "name", "Bob", "age", 55 ),
-                                ImmutableMap.of( "name", "Carol", "age", 23 ),
-                                ImmutableMap.of( "name", "Dave", "age", 27 ) ) )
-                        .put( "owner", ImmutableMap.of( "name", "Elise", "age", 43 ) )
-                        .build() )
+                .put( "map",
+                      ImmutableMap.builder()
+                              .put( "foo[abc]bar", "Another String" )
+                              .put( "people",
+                                    Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
+                                                   ImmutableMap.of( "name", "Bob", "age", 55 ),
+                                                   ImmutableMap.of( "name", "Carol", "age", 23 ),
+                                                   ImmutableMap.of( "name", "Dave", "age", 27 ) ) )
+                              .put( "owner", ImmutableMap.of( "name", "Elise", "age", 43 ) )
+                              .build() )
                 .build();
 
         assertElementsContains( Traversers.leafElements().apply( map ),
