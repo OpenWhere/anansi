@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ray A. Conner
+ * Copyright (c) 2012-2013 Ray A. Conner
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -23,9 +23,8 @@
 
 package com.github.rconner.anansi;
 
-import com.google.common.collect.Iterators;
-
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A step during a traversal, a helper class. Holds an iterator (created by a delegate adjacency function) and a
@@ -55,8 +54,7 @@ final class TraversalMove<V, E> {
      * @return a move &quot;to&quot; the start node in a traversal.
      */
     static <V, E> TraversalMove<V, E> start( final V start ) {
-        return new TraversalMove<V, E>(
-                Iterators.singletonIterator( Walk.<V, E>empty( start ) ), Walk.<V, E>from( start ) );
+        return new TraversalMove<V, E>( rootIterator( Walk.<V, E>empty( start ) ), Walk.<V, E>from( start ) );
     }
 
     /**
@@ -70,5 +68,30 @@ final class TraversalMove<V, E> {
      */
     TraversalMove<V, E> with( final Traverser<V, E> adjacency, final Walk<V, E> walk ) {
         return new TraversalMove<V, E>( adjacency.apply( walk.getTo() ).iterator(), builder.add( walk ) );
+    }
+
+    private static <T> Iterator<T> rootIterator( final T value ) {
+        return new Iterator<T>() {
+            boolean done;
+
+            @Override
+            public boolean hasNext() {
+                return !done;
+            }
+
+            @Override
+            public T next() {
+                if( done ) {
+                    throw new NoSuchElementException();
+                }
+                done = true;
+                return value;
+            }
+
+            @Override
+            public void remove() {
+                throw new IllegalStateException();
+            }
+        };
     }
 }

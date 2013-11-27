@@ -203,7 +203,7 @@ public final class TraversersTest {
         iterator.remove();
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test( expected = IllegalStateException.class )
     public void preOrderRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
@@ -438,7 +438,7 @@ public final class TraversersTest {
                                                   { "A" } } );
     }
 
-    @Test( expected = UnsupportedOperationException.class )
+    @Test( expected = IllegalStateException.class )
     public void postOrderRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
