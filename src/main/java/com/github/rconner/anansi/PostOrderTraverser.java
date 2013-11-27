@@ -24,7 +24,6 @@
 package com.github.rconner.anansi;
 
 import com.github.rconner.util.ImmutableStack;
-import com.google.common.base.Preconditions;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -90,7 +89,6 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public void remove() {
-            Preconditions.checkState( !moveStack.isEmpty() );
             moveStack.peek().iterator.remove();
         }
     }
