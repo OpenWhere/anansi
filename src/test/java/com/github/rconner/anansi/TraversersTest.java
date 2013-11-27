@@ -654,7 +654,99 @@ public final class TraversersTest {
                                                   { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
     }
 
-    // TODO: remove()
+    @Test( expected = IllegalStateException.class )
+    public void leavesRemoveBeforeNext() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        iterator.remove();
+    }
+
+    @Test
+    public void leavesRemoveFirstG() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+        iterator.remove();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->E", "E" },
+                                             { "A", "A->C", "C", "C->D", "D" } } );
+
+        // Check that data structure was actually changed
+        assertTraversalContains( Traversers.leaves( adjacency ).apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C", "C->D", "D" } } );
+    }
+
+    @Test
+    public void leavesRemoveSecondG() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                             { "A", "A->B", "B", "B->E", "E" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+        iterator.remove();
+        assertIteratorEmpty( iterator );
+
+        // Check that data structure was actually changed
+        assertTraversalContains( Traversers.leaves( adjacency ).apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D" },
+                                                  { "A", "A->B", "B", "B->E", "E" },
+                                                  { "A", "A->C", "C", "C->D", "D" } } );
+    }
+
+    @Test
+    public void leavesRemoveE() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                             { "A", "A->B", "B", "B->E", "E" } } );
+        iterator.remove();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+
+        // Check that data structure was actually changed
+        assertTraversalContains( Traversers.leaves( adjacency ).apply( "A" ),
+                                 new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void leavesRemoveTwice() {
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                             { "A", "A->B", "B", "B->E", "E" } } );
+        iterator.remove();
+        iterator.remove();
+    }
+
+    @Test( expected = IllegalStateException.class )
+    public void leavesNextAfterLastThenRemove() {
+        // This use case is slightly different, because it exercises different logic in the traverser.
+        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
+        final Traverser<String, String> traverser = Traversers.leaves( adjacency );
+        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        assertNextWalksAre( iterator,
+                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
+                                             { "A", "A->B", "B", "B->E", "E" },
+                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+        try {
+            iterator.next();
+        } catch( NoSuchElementException ignored ) {
+            // expected
+        }
+        iterator.remove();
+    }
 
     // These all return something precisely because an empty map/iterable/array *is* a leaf.
 
