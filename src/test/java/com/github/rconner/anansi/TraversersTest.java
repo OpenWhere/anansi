@@ -40,7 +40,6 @@ import static com.github.rconner.anansi.WalkTest.assertWalkContains;
 import static com.github.rconner.util.IterableTest.assertIteratorEmpty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public final class TraversersTest {
 
@@ -748,8 +747,6 @@ public final class TraversersTest {
         iterator.remove();
     }
 
-    // These all return something precisely because an empty map/iterable/array *is* a leaf.
-
     // TODO
     // elements()
 
@@ -757,38 +754,8 @@ public final class TraversersTest {
     // leafElements()
     // elementPath()
 
-    @Test
-    public void leafElementsEmptyMap() {
-        Object root = Collections.emptyMap();
-        Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( root ).iterator();
-        Walk<Object, String> walk = iterator.next();
-        assertThat( walk.getTo(), is( root ) );
-        assertThat( Traversers.elementPath( walk ), is( "" ) );
-        assertIteratorEmpty( iterator );
-    }
-
-    @Test
-    public void leafElementsEmptyList() {
-        Object root = Collections.emptyList();
-        Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( root ).iterator();
-        Walk<Object, String> walk = iterator.next();
-        assertThat( walk.getTo(), is( root ) );
-        assertThat( Traversers.elementPath( walk ), is( "" ) );
-        assertIteratorEmpty( iterator );
-    }
-
-    @Test
-    public void leafElementsEmptyArray() {
-        Object root = new int[ 0 ];
-        Iterator<Walk<Object, String>> iterator = Traversers.leafElements().apply( root ).iterator();
-        Walk<Object, String> walk = iterator.next();
-        assertThat( walk.getTo(), is( root ) );
-        assertThat( Traversers.elementPath( walk ), is( "" ) );
-        assertIteratorEmpty( iterator );
-    }
-
-    static void assertElementsContains(
-            final Iterable<Walk<Object, String>> traversal, final Object[][] expectedElements ) {
+    private static void assertLeavesAre( final Iterable<Walk<Object, String>> traversal,
+                                         final Object[][] expectedElements ) {
         Iterator<Walk<Object, String>> iterator = traversal.iterator();
         for( Object[] element : expectedElements ) {
             assertThat( iterator.hasNext(), is( true ) );
@@ -798,6 +765,63 @@ public final class TraversersTest {
         }
         assertIteratorEmpty( iterator );
     }
+
+    // Test roots that are leaves. Note that an empty map/iterable/array *is* a leaf.
+
+    @Test
+    public void leafElementsNull() {
+        Object root = null;
+        assertLeavesAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
+    }
+
+    @Test
+    public void leafElementsString() {
+        Object root = "abc";
+        assertLeavesAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
+    }
+
+    @Test
+    public void leafElementsEmptyMap() {
+        Object root = Collections.emptyMap();
+        assertLeavesAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
+    }
+
+    @Test
+    public void leafElementsEmptyList() {
+        Object root = Collections.emptyList();
+        assertLeavesAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
+    }
+
+    @Test
+    public void leafElementsEmptyArray() {
+        Object root = new int[ 0 ];
+        assertLeavesAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
+    }
+
+    // Test roots that are non-empty maps/iterables/arrays
+
+    @Test
+    public void leafElementsMap() {
+        Object root = ImmutableMap.of( "name", "Alice", "age", 37, "deceased", false );
+        assertLeavesAre( Traversers.leafElements().apply( root ),
+                         new Object[][] { { "name", "Alice" }, { "age", 37 }, { "deceased", false } } );
+    }
+
+    @Test
+    public void leafElementsList() {
+        Object root = Arrays.asList( "Alice", 37, false );
+        assertLeavesAre( Traversers.leafElements().apply( root ),
+                         new Object[][] { { "[0]", "Alice" }, { "[1]", 37 }, { "[2]", false } } );
+    }
+
+    @Test
+    public void leafElementsArray() {
+        Object root = new int[] { 42, 99, 256 };
+        assertLeavesAre( Traversers.leafElements().apply( root ),
+                         new Object[][] { { "[0]", 42 }, { "[1]", 99 }, { "[2]", 256 } } );
+    }
+
+    // Test a more complex graph
 
     @SuppressWarnings( "unchecked" )
     @Test
@@ -820,31 +844,31 @@ public final class TraversersTest {
                               .build() )
                 .build();
 
-        assertElementsContains( Traversers.leafElements().apply( map ),
-                                new Object[][] { { "string", "A String" },
-                                                 { "integer", 42 },
-                                                 { "list[0]", "zero" },
-                                                 { "list[1]", "one" },
-                                                 { "list[2]", "two" },
-                                                 { "list[3]", "three" },
-                                                 { "array[0]", "four" },
-                                                 { "array[1]", "five" },
-                                                 { "array[2]", "six" },
-                                                 { "boolean\\.array[0]", false },
-                                                 { "boolean\\.array[1]", true },
-                                                 { "boolean\\.array[2]", true },
-                                                 { "boolean\\.array[3]", false },
-                                                 { "boolean\\.array[4]", true },
-                                                 { "map.foo\\[abc\\]bar", "Another String" },
-                                                 { "map.people[0].name", "Alice" },
-                                                 { "map.people[0].age", 37 },
-                                                 { "map.people[1].name", "Bob" },
-                                                 { "map.people[1].age", 55 },
-                                                 { "map.people[2].name", "Carol" },
-                                                 { "map.people[2].age", 23 },
-                                                 { "map.people[3].name", "Dave" },
-                                                 { "map.people[3].age", 27 },
-                                                 { "map.owner.name", "Elise" },
-                                                 { "map.owner.age", 43 } } );
+        assertLeavesAre( Traversers.leafElements().apply( map ),
+                         new Object[][] { { "string", "A String" },
+                                          { "integer", 42 },
+                                          { "list[0]", "zero" },
+                                          { "list[1]", "one" },
+                                          { "list[2]", "two" },
+                                          { "list[3]", "three" },
+                                          { "array[0]", "four" },
+                                          { "array[1]", "five" },
+                                          { "array[2]", "six" },
+                                          { "boolean\\.array[0]", false },
+                                          { "boolean\\.array[1]", true },
+                                          { "boolean\\.array[2]", true },
+                                          { "boolean\\.array[3]", false },
+                                          { "boolean\\.array[4]", true },
+                                          { "map.foo\\[abc\\]bar", "Another String" },
+                                          { "map.people[0].name", "Alice" },
+                                          { "map.people[0].age", 37 },
+                                          { "map.people[1].name", "Bob" },
+                                          { "map.people[1].age", 55 },
+                                          { "map.people[2].name", "Carol" },
+                                          { "map.people[2].age", 23 },
+                                          { "map.people[3].name", "Dave" },
+                                          { "map.people[3].age", 27 },
+                                          { "map.owner.name", "Elise" },
+                                          { "map.owner.age", 43 } } );
     }
 }
