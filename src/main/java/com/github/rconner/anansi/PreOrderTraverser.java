@@ -91,12 +91,15 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
             return move.builder.build();
         }
 
-        // TODO: Does not fail atomically
         @Override
         public void remove() {
             Preconditions.checkState( canMutate );
+            // The operations make more sense like this:
+            //   moveStack = moveStack.pop();
+            //   moveStack.peek().iterator.remove();
+            // But that doesn't fail atomically.
+            moveStack.pop().peek().iterator.remove();
             moveStack = moveStack.pop();
-            moveStack.peek().iterator.remove();
             canMutate = false;
         }
 
