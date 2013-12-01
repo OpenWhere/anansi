@@ -310,6 +310,9 @@ public final class TraversersTest {
         assertNextWalkIs( iterator, "A" );
         ( (PruningIterator) iterator ).prune();
         assertIteratorEmpty( iterator );
+
+        // Check that data structure is unchanged
+        assertPreOrderFullDag( Traversers.preOrder( adjacency ).apply( "A" ) );
     }
 
     @Test
