@@ -58,15 +58,19 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
         private final Traverser<V, E> adjacency;
         @SuppressWarnings( "unchecked" )
         private final FifoQueue<TraversalMove<V, E>> moveQueue = FifoQueue.of();
+        private TraversalMove<V, E> nextTail = null;
         private boolean canMutate = false;
 
         BreadthFirstIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            moveQueue.enqueue( TraversalMove.<V, E>start( start ) );
+            nextTail = TraversalMove.<V, E>start( start );
         }
 
         @Override
         public boolean hasNext() {
+            if( nextTail != null && nextTail.iterator.hasNext() ) {
+                return true;
+            }
             for( final TraversalMove<V, E> move : moveQueue ) {
                 if( move.iterator.hasNext() ) {
                     return true;
@@ -77,6 +81,10 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
+            if( nextTail != null ) {
+                moveQueue.enqueue( nextTail );
+                nextTail = null;
+            }
             while( !moveQueue.isEmpty() && !moveQueue.head().iterator.hasNext() ) {
                 moveQueue.dequeue();
             }
@@ -85,26 +93,23 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
             }
             TraversalMove<V, E> move = moveQueue.head();
             move = move.with( adjacency, move.iterator.next() );
-            moveQueue.enqueue( move );
+            nextTail = move;
             canMutate = true;
             return move.builder.build();
         }
 
-        // TODO: Does not fail atomically
         @Override
         public void remove() {
             Preconditions.checkState( canMutate );
             moveQueue.head().iterator.remove();
-            // FIXME: replace this
-            moveQueue.removeTail();
+            nextTail = null;
             canMutate = false;
         }
 
         @Override
         public void prune() {
             Preconditions.checkState( canMutate );
-            // FIXME: replace this
-            moveQueue.removeTail();
+            nextTail = null;
             canMutate = false;
         }
     }
