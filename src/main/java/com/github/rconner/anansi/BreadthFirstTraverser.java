@@ -63,7 +63,7 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
 
         BreadthFirstIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            nextTail = TraversalMove.<V, E>start( start );
+            nextTail = TraversalMove.start( start );
         }
 
         @Override
