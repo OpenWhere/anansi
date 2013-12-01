@@ -90,18 +90,21 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
             return move.builder.build();
         }
 
+        // TODO: Does not fail atomically
         @Override
         public void remove() {
             Preconditions.checkState( canMutate );
             moveQueue.head().iterator.remove();
-            // FIXME: need to remove last queue element
+            // FIXME: replace this
+            moveQueue.removeTail();
             canMutate = false;
         }
 
         @Override
         public void prune() {
             Preconditions.checkState( canMutate );
-            // FIXME: need to remove last queue element
+            // FIXME: replace this
+            moveQueue.removeTail();
             canMutate = false;
         }
     }

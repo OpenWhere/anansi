@@ -84,6 +84,33 @@ public final class FifoQueue<E> implements Iterable<E> {
         return head.element;
     }
 
+    /**
+     * A special-purpose method for supporting breadth-first traversal prune operations. Ideally, a queue would not
+     * implement this. This operation is O(n), unlike the other basic operations on this data structure.
+     *
+     * FIXME: Instead, we could complicate BFS by having it keep track of the next thing to go on the end of the queue.
+     *
+     * @return
+     */
+    public E removeTail() {
+        if( head == null ) {
+            throw new NoSuchElementException();
+        }
+        Node<E> node = head;
+        Node<E> prev = null;
+        while( node.next != null ) {
+            prev = node;
+            node = node.next;
+        }
+        final E element = node.element;
+        tail = prev;
+        if( tail == null ) {
+            head = null;
+        }
+        size--;
+        return element;
+    }
+
     public boolean contains( final Object object ) {
         Node<E> node = head;
         while( node != null ) {
