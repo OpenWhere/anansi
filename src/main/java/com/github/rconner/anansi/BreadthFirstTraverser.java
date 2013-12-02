@@ -92,7 +92,7 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
                 throw new NoSuchElementException();
             }
             TraversalMove<V, E> move = moveQueue.head();
-            move = move.with( adjacency, move.iterator.next() );
+            move = move.next( adjacency );
             nextTail = move;
             canMutate = true;
             return move.builder.build();

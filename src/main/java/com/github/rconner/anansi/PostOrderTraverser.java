@@ -72,7 +72,7 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
         public Walk<V, E> next() {
             TraversalMove<V, E> move = moveStack.peek();
             while( move.iterator.hasNext() ) {
-                move = move.with( adjacency, move.iterator.next() );
+                move = move.next( adjacency );
                 moveStack = moveStack.push( move );
             }
             if( moveStack.size() == 1 ) {

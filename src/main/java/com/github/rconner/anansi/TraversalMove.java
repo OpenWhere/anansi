@@ -58,15 +58,15 @@ final class TraversalMove<V, E> {
     }
 
     /**
-     * Returns a new move with the given walk appended, with the iterator from the adjacency function applied to the
+     * Returns a new move with the next walk appended, with the iterator from the adjacency function applied to the
      * walk&apos;s end vertex.
      *
-     * @param adjacency the adjacency function to apply to the walk&apos;s end vertex
-     * @param walk the walk to append to the new move
+     * @param adjacency the adjacency function to apply to the next walk&apos;s end vertex
      *
-     * @return a new move with the given walk appended.
+     * @return a new move with the next walk appended.
      */
-    TraversalMove<V, E> with( final Traverser<V, E> adjacency, final Walk<V, E> walk ) {
+    TraversalMove<V, E> next( final Traverser<V, E> adjacency ) {
+        final Walk<V, E> walk = iterator.next();
         return new TraversalMove<V, E>( adjacency.apply( walk.getTo() ).iterator(), builder.add( walk ) );
     }
 

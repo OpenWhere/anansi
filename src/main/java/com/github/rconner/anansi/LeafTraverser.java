@@ -84,7 +84,7 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
             }
             TraversalMove<V, E> move = moveStack.peek();
             while( move.iterator.hasNext() ) {
-                move = move.with( adjacency, move.iterator.next() );
+                move = move.next( adjacency );
                 moveStack = moveStack.push( move );
             }
             moveStack = moveStack.pop();
