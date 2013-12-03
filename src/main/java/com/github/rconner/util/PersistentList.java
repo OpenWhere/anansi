@@ -36,10 +36,10 @@ import java.util.NoSuchElementException;
  * Note that it is not necessary for the contained elements to also be immutable; just remember that shared mutable
  * objects require synchronization even if they are contained in immutable data structures.
  * <p/>
- * A {@link #add(Object)} operation returns a new list. A {@link #rest()} operation returns the list upon which {@link
+ * An {@link #add(Object)} operation returns a new list. A {@link #rest()} operation returns the list upon which {@link
  * #add(Object)} was called to add the first element. Because instances are immutable, storage can be (and is) reused. A
- * single list instance can have many independent elements pushed onto it, with each push resulting in a new list
- * instance sharing the storage for all the elements beyond the first one.
+ * single list instance can have many independent elements added to it, with each add resulting in a new list instance
+ * sharing the storage for all the elements beyond the first one.
  * <p/>
  * Instances of this class do not implement {@link #equals(Object)} or {@link #hashCode()}.
  *
@@ -88,7 +88,7 @@ public abstract class PersistentList<E> implements Iterable<E> {
      * @return a new PersistentList with the given elements.
      */
     public static <E> PersistentList<E> of( final E element ) {
-        return PersistentList.<E>of().add( element );
+        return new SingleList<E>( element );
     }
 
     /**
@@ -125,7 +125,7 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
         @Override
         public PersistentList<Object> add( final Object element ) {
-            return new List<Object>( element, this );
+            return new SingleList<Object>( element );
         }
 
         @Override
@@ -146,6 +146,54 @@ public abstract class PersistentList<E> implements Iterable<E> {
         @Override
         public String toString() {
             return "[]";
+        }
+    }
+
+    private static final class SingleList<E> extends PersistentList<E> {
+        private final E element;
+
+        SingleList( final E element ) {
+            this.element = element;
+        }
+
+        @Override
+        public E first() {
+            return element;
+        }
+
+        @SuppressWarnings( "unchecked" )
+        @Override
+        public PersistentList<E> rest() {
+            return (PersistentList<E>) EmptyList.INSTANCE;
+        }
+
+        @Override
+        public PersistentList<E> add( final E element ) {
+            return new List<E>( element, this );
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public Iterator<E> iterator() {
+            return Iterators.singletonIterator( element );
+        }
+
+        @Override
+        public PersistentList<E> reverse() {
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder();
+            sb.append( '[' );
+            sb.append( element );
+            sb.append( ']' );
+            return sb.toString();
         }
     }
 
