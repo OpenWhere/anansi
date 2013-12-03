@@ -25,7 +25,6 @@ package com.github.rconner.util;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 
@@ -68,7 +67,7 @@ public abstract class PersistentList<E> implements Iterable<E> {
     @Override
     public abstract Iterator<E> iterator();
 
-    public abstract Iterable<E> reverse();
+    public abstract PersistentList<E> reverse();
 
     /**
      * Creates a new empty PersistentList.
@@ -147,8 +146,8 @@ public abstract class PersistentList<E> implements Iterable<E> {
         }
 
         @Override
-        public Iterable<Object> reverse() {
-            return ImmutableSet.of();
+        public PersistentList<Object> reverse() {
+            return this;
         }
 
         @Override
@@ -200,25 +199,16 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
         // TODO: Make this lazy, and keep the result around. But how lazy, and what parts, needs to be decided.
 
-        // The array doesn't need to be constructed until Iterable.iterator() is called, or it can even wait until
-        // Iterator.hasNext() or next() is called. That could be accomplished by wrapping this with Lazy.iterable()
-        // and moving the code that builds the array.
-
-        // The Iterable could be kept, or the backing array, or both. Once the backing array is built, you don't
-        // need the list any more, so this iterable could be static instead of inner.
+        // The result doesn't need to be constructed until Iterable.iterator() is called, or it can even wait until
+        // Iterator.hasNext() or next() is called. Note that x.reverse().reverse() == x.
 
         @Override
-        public Iterable<E> reverse() {
-            // There's no way to do this without saving all the elements, at least no way that isn't O(n^2).
-            // An ImmutableList would work, except they don't allow null elements.
-
-            final Object[] array = new Object[ size ];
-            PersistentList<E> list = this;
-            for( int i = size - 1; i >= 0; i-- ) {
-                array[ i ] = list.first();
-                list = list.rest();
+        public PersistentList<E> reverse() {
+            PersistentList<E> list = PersistentList.of();
+            for( final E element : this ) {
+                list = list.add( element );
             }
-            return new ArrayIterable<E>( array );
+            return list;
         }
 
         private static final Joiner JOINER = Joiner.on( ", " ).useForNull( "null" );
@@ -253,35 +243,6 @@ public abstract class PersistentList<E> implements Iterable<E> {
             final E top = list.first();
             list = list.rest();
             return top;
-        }
-    }
-
-    private static class ArrayIterable<E> implements Iterable<E> {
-        private final Object[] array;
-
-        private ArrayIterable( final Object[] array ) {
-            this.array = array;
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return new UnmodifiableIterator<E>() {
-                private int index;
-
-                @Override
-                public boolean hasNext() {
-                    return index < array.length;
-                }
-
-                @SuppressWarnings( "unchecked" )
-                @Override
-                public E next() {
-                    if( index >= array.length ) {
-                        throw new NoSuchElementException();
-                    }
-                    return (E) array[ index++ ];
-                }
-            };
         }
     }
 }
