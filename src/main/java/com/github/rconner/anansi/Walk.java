@@ -86,16 +86,6 @@ public final class Walk<V, E> {
         return via;
     }
 
-    // TODO: rename
-    /**
-     * Returns the {@link Step Steps} in this Walk.
-     *
-     * @return the {@code Steps} in this Walk.
-     */
-    public Iterable<Step<V, E>> getViaFromStart() {
-        return via.reverse();
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -204,6 +194,6 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending the given Walk.
      */
     public Walk<V, E> append( final Walk<V, E> walk ) {
-        return new Walk<V, E>( from, walk.getTo(), via.addAll( walk.getViaFromStart() ) );
+        return new Walk<V, E>( from, walk.getTo(), via.addAll( walk.getVia().reverse() ) );
     }
 }
