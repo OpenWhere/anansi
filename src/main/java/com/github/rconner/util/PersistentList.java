@@ -60,6 +60,14 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
     public abstract PersistentList<E> add( E element );
 
+    public PersistentList<E> addAll( final Iterable<E> elements ) {
+        PersistentList<E> list = this;
+        for( final E element : elements ) {
+            list = list.add( element );
+        }
+        return list;
+    }
+
     public abstract boolean isEmpty();
 
     @Override

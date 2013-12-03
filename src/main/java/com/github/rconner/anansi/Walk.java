@@ -195,8 +195,6 @@ public final class Walk<V, E> {
         return append( to, null );
     }
 
-    // TODO: Implement stack.append()
-
     /**
      * Creates a new Walk starting with this Walk and appending the given Walk. The appended Walk would normally start
      * where this Walk ends, but this condition is not checked.
@@ -206,10 +204,6 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending the given Walk.
      */
     public Walk<V, E> append( final Walk<V, E> walk ) {
-        PersistentList<Step<V, E>> stack = via;
-        for( final Step<V, E> step : walk.getViaFromStart() ) {
-            stack = stack.add( step );
-        }
-        return new Walk<V, E>( from, walk.getTo(), stack );
+        return new Walk<V, E>( from, walk.getTo(), via.addAll( walk.getViaFromStart() ) );
     }
 }
