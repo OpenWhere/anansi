@@ -25,7 +25,6 @@ package com.github.rconner.util;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
@@ -62,8 +61,6 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
     public abstract ImmutableStack<E> pop();
 
     public abstract E peek();
-
-    public abstract boolean contains( Object object );
 
     public abstract int size();
 
@@ -110,11 +107,6 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         @Override
         public Object peek() {
             throw new EmptyStackException();
-        }
-
-        @Override
-        public boolean contains( final Object object ) {
-            return false;
         }
 
         @Override
@@ -167,18 +159,6 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         @Override
         public E peek() {
             return top;
-        }
-
-        @Override
-        public boolean contains( final Object object ) {
-            ImmutableStack<E> stack = this;
-            while( !stack.isEmpty() ) {
-                if( Objects.equal( object, stack.peek() ) ) {
-                    return true;
-                }
-                stack = stack.pop();
-            }
-            return false;
         }
 
         @Override

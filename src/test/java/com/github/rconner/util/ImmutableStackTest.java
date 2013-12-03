@@ -40,11 +40,6 @@ public final class ImmutableStackTest {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
-        for( final E element : elements ) {
-            assertThat( stack.contains( element ), is( true ) );
-        }
-        assertThat( stack.contains( new Object() ), is( false ) );
-
         assertIteratorContains( stack.iterator(), elements );
         assertIteratorContains( stack.iterator(), elements );
 
