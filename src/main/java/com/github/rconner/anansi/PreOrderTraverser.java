@@ -94,8 +94,8 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
         public void remove() {
             Preconditions.checkState( canMutate );
             // The operations make more sense like this:
-            //   moveStack = moveStack.pop();
-            //   moveStack.peek().iterator.remove();
+            //   moveStack = moveStack.rest();
+            //   moveStack.first().iterator.remove();
             // But that doesn't fail atomically.
             moveStack.rest().first().iterator.remove();
             moveStack = moveStack.rest();
