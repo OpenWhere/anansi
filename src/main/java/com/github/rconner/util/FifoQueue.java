@@ -41,7 +41,6 @@ public final class FifoQueue<E> implements Iterable<E> {
 
     private Node<E> head;
     private Node<E> tail;
-    private int size;
 
     public static <E> FifoQueue<E> of( final E... elements ) {
         final FifoQueue<E> queue = new FifoQueue<E>();
@@ -60,7 +59,6 @@ public final class FifoQueue<E> implements Iterable<E> {
             tail.next = node;
             tail = node;
         }
-        size++;
     }
 
     public E dequeue() {
@@ -72,7 +70,6 @@ public final class FifoQueue<E> implements Iterable<E> {
         if( head == null ) {
             tail = null;
         }
-        size--;
         return element;
     }
 
@@ -83,12 +80,8 @@ public final class FifoQueue<E> implements Iterable<E> {
         return head.element;
     }
 
-    public int size() {
-        return size;
-    }
-
     public boolean isEmpty() {
-        return size == 0;
+        return head == null;
     }
 
     @Override

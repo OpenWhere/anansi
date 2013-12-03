@@ -46,8 +46,6 @@ public final class FifoQueueTest {
         assertIteratorContains( queue.iterator(), elements );
         assertIteratorContains( queue.iterator(), elements );
 
-        assertThat( queue.size(), is( elements.length ) );
-
         if( elements.length == 0 ) {
             assertThat( queue.isEmpty(), is( true ) );
             try {
@@ -70,7 +68,6 @@ public final class FifoQueueTest {
         // Test them again to make sure following the head/tail references didn't change state.
 
         assertIteratorContains( queue.iterator(), elements );
-        assertThat( queue.size(), is( elements.length ) );
     }
 
     private static <E> void testDequeue( final FifoQueue<E> queue, final E... elements ) {
@@ -127,7 +124,6 @@ public final class FifoQueueTest {
             expected.addLast( element );
         }
         assertIterablesEqual( queue, expected );
-        assertThat( queue.size(), is( expected.size() ) );
 
         // Randomly enqueue and dequeue.
         // The number of iterations here must be no more than the number of initial values,
@@ -144,7 +140,6 @@ public final class FifoQueueTest {
             }
         }
         assertIterablesEqual( queue, expected );
-        assertThat( queue.size(), is( expected.size() ) );
     }
 
     @Test
