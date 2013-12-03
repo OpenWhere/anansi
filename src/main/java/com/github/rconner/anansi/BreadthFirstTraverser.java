@@ -56,7 +56,6 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
 
     private static final class BreadthFirstIterator<V, E> implements PruningIterator<Walk<V, E>> {
         private final Traverser<V, E> adjacency;
-        @SuppressWarnings( "unchecked" )
         private final FifoQueue<TraversalMove<V, E>> moveQueue = FifoQueue.of();
         private TraversalMove<V, E> nextTail = null;
 
