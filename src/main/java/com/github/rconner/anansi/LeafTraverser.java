@@ -88,7 +88,7 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
                 moveStack = moveStack.push( move );
             }
             moveStack = moveStack.pop();
-            return move.builder.build();
+            return move.walk;
         }
 
         @Override

@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 
 /**
  * A step during a traversal, a helper class. Holds an iterator (created by a delegate adjacency function) and a
- * Walk.Builder at that point in the traversal.
+ * Walk at that point in the traversal.
  *
  * @param <V> the vertex type
  * @param <E> the edge type
@@ -37,11 +37,11 @@ import java.util.NoSuchElementException;
  */
 final class TraversalMove<V, E> {
     final Iterator<Walk<V, E>> iterator;
-    final Walk.Builder<V, E> builder;
+    final Walk<V, E> walk;
 
-    TraversalMove( final Iterator<Walk<V, E>> iterator, final Walk.Builder<V, E> builder ) {
+    TraversalMove( final Iterator<Walk<V, E>> iterator, final Walk<V, E> walk ) {
         this.iterator = iterator;
-        this.builder = builder;
+        this.walk = walk;
     }
 
     /**
@@ -54,7 +54,7 @@ final class TraversalMove<V, E> {
      * @return a move &quot;to&quot; the start node in a traversal.
      */
     static <V, E> TraversalMove<V, E> start( final V start ) {
-        return new TraversalMove<V, E>( rootIterator( Walk.<V, E>empty( start ) ), Walk.<V, E>from( start ) );
+        return new TraversalMove<V, E>( rootIterator( Walk.<V, E>empty( start ) ), Walk.<V, E>empty( start ) );
     }
 
     /**
@@ -66,8 +66,8 @@ final class TraversalMove<V, E> {
      * @return a new move with the next walk appended.
      */
     TraversalMove<V, E> next( final Traverser<V, E> adjacency ) {
-        final Walk<V, E> walk = iterator.next();
-        return new TraversalMove<V, E>( adjacency.apply( walk.getTo() ).iterator(), builder.add( walk ) );
+        final Walk<V, E> nextWalk = iterator.next();
+        return new TraversalMove<V, E>( adjacency.apply( nextWalk.getTo() ).iterator(), this.walk.append( nextWalk ) );
     }
 
     private static <T> Iterator<T> rootIterator( final T value ) {

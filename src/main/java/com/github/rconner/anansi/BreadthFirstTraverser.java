@@ -91,7 +91,7 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
                 throw new NoSuchElementException();
             }
             nextTail = moveQueue.head().next( adjacency );
-            return nextTail.builder.build();
+            return nextTail.walk;
         }
 
         @Override

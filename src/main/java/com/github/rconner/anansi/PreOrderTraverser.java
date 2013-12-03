@@ -88,7 +88,7 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
             move = move.next( adjacency );
             moveStack = moveStack.push( move );
             canMutate = true;
-            return move.builder.build();
+            return move.walk;
         }
 
         @Override

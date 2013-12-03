@@ -79,7 +79,7 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
                 throw new NoSuchElementException();
             }
             moveStack = moveStack.pop();
-            return move.builder.build();
+            return move.walk;
         }
 
         @Override

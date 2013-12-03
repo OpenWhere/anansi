@@ -70,7 +70,7 @@ class Elements {
 
     static String path( final Walk<Object, String> walk ) {
         final StringBuilder sb = new StringBuilder();
-        for( final Walk.Step<Object, String> step : walk.getVia() ) {
+        for( final Walk.Step<Object, String> step : walk.getViaFromStart() ) {
             sb.append( step.getOver() );
         }
         if( sb.length() > 0 && sb.charAt( 0 ) == '.' ) {

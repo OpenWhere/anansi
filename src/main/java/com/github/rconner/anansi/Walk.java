@@ -26,11 +26,9 @@ package com.github.rconner.anansi;
 import com.github.rconner.util.ImmutableStack;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 
 /**
- * A walk from one vertex to another, via an Iterable of {@link Step Steps}.
+ * An immutable walk from one vertex to another, via an Iterable of {@link Step Steps}.
  *
  * @param <V> the vertex type
  * @param <E> the edge type
@@ -43,16 +41,16 @@ public final class Walk<V, E> {
 
     private final V from;
     private final V to;
-    private final Iterable<Step<V, E>> via;
+    private final ImmutableStack<Step<V, E>> via;
 
     /**
-     * The only Walk constructor, private to prevent direct instantiation by clients.
+     * The only Walk constructor, package-private to prevent direct instantiation by clients.
      *
      * @param from the first vertex in this Walk.
      * @param to the last Vertex in this Walk.
-     * @param via the Steps in this Walk.
+     * @param via the Steps in this Walk, in reverse order.
      */
-    Walk( final V from, final V to, final Iterable<Step<V, E>> via ) {
+    Walk( final V from, final V to, final ImmutableStack<Step<V, E>> via ) {
         this.from = from;
         this.to = to;
         this.via = via;
@@ -67,9 +65,11 @@ public final class Walk<V, E> {
         return from;
     }
 
+    // TODO: remove this since it's easy to get now?
+
     /**
      * Return the last vertex in this Walk. This is a convenience method, returning the value of {@link Step#getTo()}
-     * for the last {@code Step} returned by {@link #getVia()}.
+     * for the first {@code Step} returned by {@link #getVia()} (the last {@code Step} in this Walk)
      *
      * @return the last vertex in this Walk.
      */
@@ -78,12 +78,22 @@ public final class Walk<V, E> {
     }
 
     /**
+     * Returns the {@link Step Steps} in this Walk in reverse order.
+     *
+     * @return the {@code Steps} in this Walk in reverse order.
+     */
+    public ImmutableStack<Step<V, E>> getVia() {
+        return via;
+    }
+
+    // TODO: rename
+    /**
      * Returns the {@link Step Steps} in this Walk.
      *
      * @return the {@code Steps} in this Walk.
      */
-    public Iterable<Step<V, E>> getVia() {
-        return via;
+    public Iterable<Step<V, E>> getViaFromStart() {
+        return via.reverse();
     }
 
     @Override
@@ -120,21 +130,21 @@ public final class Walk<V, E> {
     }
 
     /**
-     * Creates a new, empty, immutable Walk. This should only be used when a Walk literally has travelled over no edges,
-     * the Walk to the root of a breadth- or depth-first traversal for example.
+     * Creates a new empty Walk. This should only be used when a Walk literally has travelled over no edges, the Walk to
+     * the root of a breadth- or depth-first traversal for example.
      *
      * @param vertex the first and last vertex in the Walk.
      * @param <V> the vertex type
      * @param <E> the edge type
      *
-     * @return a new, empty, immutable Walk.
+     * @return a new empty Walk.
      */
     public static <V, E> Walk<V, E> empty( final V vertex ) {
-        return new Walk<V, E>( vertex, vertex, ImmutableSet.<Step<V, E>>of() );
+        return new Walk<V, E>( vertex, vertex, ImmutableStack.<Step<V, E>>of() );
     }
 
     /**
-     * Creates a new, immutable Walk with a single Step.
+     * Creates a new Walk with a single Step.
      *
      * @param from the first vertex in the Walk.
      * @param to the last vertex in the Walk.
@@ -142,64 +152,64 @@ public final class Walk<V, E> {
      * @param <V> the vertex type
      * @param <E> the edge type
      *
-     * @return a new, immutable Walk with a single Step.
+     * @return a new Walk with a single Step.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to, final E over ) {
-        return new Walk<V, E>( from, to, ImmutableSet.of( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, to, ImmutableStack.of( new Step<V, E>( to, over ) ) );
     }
 
     /**
-     * Creates a new, immutable Walk with a single Step with an over of null.
+     * Creates a new Walk with a single Step with an over of null.
      *
      * @param from the first vertex in the Walk.
      * @param to the last vertex in the Walk.
      * @param <V> the vertex type
      * @param <E> the edge type
      *
-     * @return a new, immutable Walk with a single Step with an over of null.
+     * @return a new Walk with a single Step with an over of null.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to ) {
         return single( from, to, null );
     }
 
     /**
-     * Creates an immutable builder used to create a Walk with multiple Steps.
+     * Creates a new Walk starting with this Walk and appending a single Step.
      *
-     * @param from the first vertex in the Walk.
-     * @param <V> the vertex type
-     * @param <E> the edge type
+     * @param to the to vertex in the final Step of the new Walk.
+     * @param over the single edge over which the the final Step of the new Walk steps.
      *
-     * @return an immutable builder used to create a Walk with multiple Steps.
+     * @return a new Walk starting with this Walk and appending a single Step.
      */
-    @SuppressWarnings( "unchecked" )
-    public static <V, E> Builder<V, E> from( final V from ) {
-        return new Builder<V, E>( from, ImmutableStack.<Step<V, E>>of() );
+    public Walk<V, E> append( final V to, final E over ) {
+        return new Walk<V, E>( from, to, via.push( new Step<V, E>( to, over ) ) );
     }
 
-    public static final class Builder<V, E> {
-        private final V from;
-        private final ImmutableStack<Step<V, E>> stack;
+    /**
+     * Creates a new Walk starting with this Walk and appending a single Step with an over of null.
+     *
+     * @param to the to vertex in the final Step of the new Walk.
+     *
+     * @return a new Walk starting with this Walk and appending a single Step with an over of null.
+     */
+    public Walk<V, E> append( final V to ) {
+        return append( to, null );
+    }
 
-        Builder( final V from, final ImmutableStack<Step<V, E>> stack ) {
-            this.from = from;
-            this.stack = stack;
-        }
+    // TODO: Implement stack.append()
 
-        public Builder<V, E> add( final Walk<V, E> walk ) {
-            Preconditions.checkNotNull( walk );
-            ImmutableStack<Step<V, E>> next = stack;
-            for( final Step<V, E> step : walk.getVia() ) {
-                next = next.push( step );
-            }
-            return new Builder<V, E>( from, next );
+    /**
+     * Creates a new Walk starting with this Walk and appending the given Walk. The appended Walk would normally start
+     * where this Walk ends, but this condition is not checked.
+     *
+     * @param walk the Walk to append to this Walk.
+     *
+     * @return a new Walk starting with this Walk and appending the given Walk.
+     */
+    public Walk<V, E> append( final Walk<V, E> walk ) {
+        ImmutableStack<Step<V, E>> stack = via;
+        for( final Step<V, E> step : walk.getViaFromStart() ) {
+            stack = stack.push( step );
         }
-
-        @SuppressWarnings( "unchecked" )
-        public Walk<V, E> build() {
-            if( stack.isEmpty() ) {
-                return Walk.empty( from );
-            }
-            return new Walk( from, stack.peek().getTo(), stack.reverse() );
-        }
+        return new Walk<V, E>( from, walk.getTo(), stack );
     }
 }
