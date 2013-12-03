@@ -60,8 +60,6 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
     public abstract PersistentList<E> add( E element );
 
-    public abstract int size();
-
     public abstract boolean isEmpty();
 
     @Override
@@ -131,11 +129,6 @@ public abstract class PersistentList<E> implements Iterable<E> {
         }
 
         @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
         public boolean isEmpty() {
             return true;
         }
@@ -159,12 +152,10 @@ public abstract class PersistentList<E> implements Iterable<E> {
     private static final class List<E> extends PersistentList<E> {
         private final E top;
         private final PersistentList<E> rest;
-        private final int size;
 
         List( final E top, final PersistentList<E> rest ) {
             this.top = top;
             this.rest = rest;
-            size = rest.size() + 1;
         }
 
         @Override
@@ -180,11 +171,6 @@ public abstract class PersistentList<E> implements Iterable<E> {
         @Override
         public PersistentList<E> add( final E element ) {
             return new List<E>( element, this );
-        }
-
-        @Override
-        public int size() {
-            return size;
         }
 
         @Override

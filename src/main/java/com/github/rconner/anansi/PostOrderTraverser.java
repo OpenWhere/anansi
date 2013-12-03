@@ -64,7 +64,7 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public boolean hasNext() {
-            return moveStack.size() > 1 || moveStack.first().iterator.hasNext();
+            return !moveStack.rest().isEmpty() || moveStack.first().iterator.hasNext();
         }
 
         @Override
@@ -74,7 +74,7 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
                 move = move.next( adjacency );
                 moveStack = moveStack.add( move );
             }
-            if( moveStack.size() == 1 ) {
+            if( moveStack.rest().isEmpty() ) {
                 throw new NoSuchElementException();
             }
             moveStack = moveStack.rest();

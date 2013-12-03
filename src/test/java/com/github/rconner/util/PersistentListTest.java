@@ -48,8 +48,6 @@ public final class PersistentListTest {
         assertIteratorContains( reverse.iterator(), expectedReverse );
         assertIteratorContains( reverse.iterator(), expectedReverse );
 
-        assertThat( stack.size(), is( elements.length ) );
-
         if( elements.length == 0 ) {
             assertThat( stack.isEmpty(), is( true ) );
             try {
@@ -74,7 +72,6 @@ public final class PersistentListTest {
 
         assertIteratorContains( stack.iterator(), elements );
         assertIteratorContains( stack.reverse().iterator(), expectedReverse );
-        assertThat( stack.size(), is( elements.length ) );
     }
 
     @Test
