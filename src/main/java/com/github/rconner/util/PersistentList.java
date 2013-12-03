@@ -29,7 +29,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 
-import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -119,12 +118,12 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
         @Override
         public Object first() {
-            throw new EmptyStackException();
+            throw new NoSuchElementException();
         }
 
         @Override
         public PersistentList<Object> rest() {
-            throw new EmptyStackException();
+            throw new NoSuchElementException();
         }
 
         @Override

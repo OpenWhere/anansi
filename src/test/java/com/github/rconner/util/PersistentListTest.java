@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.EmptyStackException;
+import java.util.NoSuchElementException;
 
 import static com.github.rconner.util.IterableTest.assertIteratorContains;
 import static org.hamcrest.CoreMatchers.is;
@@ -54,14 +54,14 @@ public final class PersistentListTest {
             assertThat( stack.isEmpty(), is( true ) );
             try {
                 stack.first();
-                fail( "Should throw EmptyStackException." );
-            } catch( EmptyStackException ignored ) {
+                fail( "Should throw NoSuchElementException." );
+            } catch( NoSuchElementException ignored ) {
                 // expected
             }
             try {
                 stack.rest();
-                fail( "Should throw EmptyStackException." );
-            } catch( EmptyStackException ignored ) {
+                fail( "Should throw NoSuchElementException." );
+            } catch( NoSuchElementException ignored ) {
                 // expected
             }
         } else {
