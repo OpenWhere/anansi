@@ -23,7 +23,7 @@
 
 package com.github.rconner.anansi;
 
-import com.github.rconner.util.ImmutableStack;
+import com.github.rconner.util.PersistentList;
 import com.google.common.base.Preconditions;
 
 import java.util.Iterator;
@@ -56,12 +56,12 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
 
     private static final class PreOrderIterator<V, E> implements PruningIterator<Walk<V, E>> {
         private final Traverser<V, E> adjacency;
-        private ImmutableStack<TraversalMove<V, E>> moveStack;
+        private PersistentList<TraversalMove<V, E>> moveStack;
         private boolean canMutate = false;
 
         PreOrderIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );
+            moveStack = PersistentList.of( TraversalMove.<V, E>start( start ) );
         }
 
         @Override
@@ -76,16 +76,16 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
-            while( !moveStack.isEmpty() && !moveStack.peek().iterator.hasNext() ) {
-                moveStack = moveStack.pop();
+            while( !moveStack.isEmpty() && !moveStack.first().iterator.hasNext() ) {
+                moveStack = moveStack.rest();
             }
             if( moveStack.isEmpty() ) {
                 canMutate = false;
                 throw new NoSuchElementException();
             }
-            TraversalMove<V, E> move = moveStack.peek();
+            TraversalMove<V, E> move = moveStack.first();
             move = move.next( adjacency );
-            moveStack = moveStack.push( move );
+            moveStack = moveStack.add( move );
             canMutate = true;
             return move.walk;
         }
@@ -97,15 +97,15 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
             //   moveStack = moveStack.pop();
             //   moveStack.peek().iterator.remove();
             // But that doesn't fail atomically.
-            moveStack.pop().peek().iterator.remove();
-            moveStack = moveStack.pop();
+            moveStack.rest().first().iterator.remove();
+            moveStack = moveStack.rest();
             canMutate = false;
         }
 
         @Override
         public void prune() {
             Preconditions.checkState( canMutate );
-            moveStack = moveStack.pop();
+            moveStack = moveStack.rest();
             canMutate = false;
         }
     }

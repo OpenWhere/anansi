@@ -23,7 +23,7 @@
 
 package com.github.rconner.anansi;
 
-import com.github.rconner.util.ImmutableStack;
+import com.github.rconner.util.PersistentList;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
 
@@ -41,7 +41,7 @@ public final class Walk<V, E> {
 
     private final V from;
     private final V to;
-    private final ImmutableStack<Step<V, E>> via;
+    private final PersistentList<Step<V, E>> via;
 
     /**
      * The only Walk constructor, package-private to prevent direct instantiation by clients.
@@ -50,7 +50,7 @@ public final class Walk<V, E> {
      * @param to the last Vertex in this Walk.
      * @param via the Steps in this Walk, in reverse order.
      */
-    Walk( final V from, final V to, final ImmutableStack<Step<V, E>> via ) {
+    Walk( final V from, final V to, final PersistentList<Step<V, E>> via ) {
         this.from = from;
         this.to = to;
         this.via = via;
@@ -82,7 +82,7 @@ public final class Walk<V, E> {
      *
      * @return the {@code Steps} in this Walk in reverse order.
      */
-    public ImmutableStack<Step<V, E>> getVia() {
+    public PersistentList<Step<V, E>> getVia() {
         return via;
     }
 
@@ -140,7 +140,7 @@ public final class Walk<V, E> {
      * @return a new empty Walk.
      */
     public static <V, E> Walk<V, E> empty( final V vertex ) {
-        return new Walk<V, E>( vertex, vertex, ImmutableStack.<Step<V, E>>of() );
+        return new Walk<V, E>( vertex, vertex, PersistentList.<Step<V, E>>of() );
     }
 
     /**
@@ -155,7 +155,7 @@ public final class Walk<V, E> {
      * @return a new Walk with a single Step.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to, final E over ) {
-        return new Walk<V, E>( from, to, ImmutableStack.of( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, to, PersistentList.of( new Step<V, E>( to, over ) ) );
     }
 
     /**
@@ -181,7 +181,7 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending a single Step.
      */
     public Walk<V, E> append( final V to, final E over ) {
-        return new Walk<V, E>( from, to, via.push( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, to, via.add( new Step<V, E>( to, over ) ) );
     }
 
     /**
@@ -206,9 +206,9 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending the given Walk.
      */
     public Walk<V, E> append( final Walk<V, E> walk ) {
-        ImmutableStack<Step<V, E>> stack = via;
+        PersistentList<Step<V, E>> stack = via;
         for( final Step<V, E> step : walk.getViaFromStart() ) {
-            stack = stack.push( step );
+            stack = stack.add( step );
         }
         return new Walk<V, E>( from, walk.getTo(), stack );
     }

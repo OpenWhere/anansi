@@ -23,7 +23,7 @@
 
 package com.github.rconner.anansi;
 
-import com.github.rconner.util.ImmutableStack;
+import com.github.rconner.util.PersistentList;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -55,35 +55,35 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
 
     private static final class PostOrderIterator<V, E> implements Iterator<Walk<V, E>> {
         private final Traverser<V, E> adjacency;
-        private ImmutableStack<TraversalMove<V, E>> moveStack;
+        private PersistentList<TraversalMove<V, E>> moveStack;
 
         PostOrderIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );
+            moveStack = PersistentList.of( TraversalMove.<V, E>start( start ) );
         }
 
         @Override
         public boolean hasNext() {
-            return moveStack.size() > 1 || moveStack.peek().iterator.hasNext();
+            return moveStack.size() > 1 || moveStack.first().iterator.hasNext();
         }
 
         @Override
         public Walk<V, E> next() {
-            TraversalMove<V, E> move = moveStack.peek();
+            TraversalMove<V, E> move = moveStack.first();
             while( move.iterator.hasNext() ) {
                 move = move.next( adjacency );
-                moveStack = moveStack.push( move );
+                moveStack = moveStack.add( move );
             }
             if( moveStack.size() == 1 ) {
                 throw new NoSuchElementException();
             }
-            moveStack = moveStack.pop();
+            moveStack = moveStack.rest();
             return move.walk;
         }
 
         @Override
         public void remove() {
-            moveStack.peek().iterator.remove();
+            moveStack.first().iterator.remove();
         }
     }
 }

@@ -34,33 +34,33 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * A minimal immutable stack implementation, which does <strong>not</strong> implement {@link java.util.Collection}.
+ * A minimal persistent list implementation, which does <strong>not</strong> implement {@link java.util.Collection}.
  * Note that it is not necessary for the contained elements to also be immutable; just remember that shared mutable
  * objects require synchronization even if they are contained in immutable data structures.
  * <p/>
- * A {@link #push(Object)} operation returns a new stack. A {@link #pop()} operation returns the stack upon which {@link
- * #push(Object)} was called to add the top element. Because instances are immutable, storage can be (and is) reused. A
- * single stack instance can have many independent elements pushed onto it, with each push resulting in a new stack
- * instance sharing the storage for all the elements below the top one.
+ * A {@link #add(Object)} operation returns a new list. A {@link #rest()} operation returns the list upon which {@link
+ * #add(Object)} was called to add the first element. Because instances are immutable, storage can be (and is) reused. A
+ * single list instance can have many independent elements pushed onto it, with each push resulting in a new list
+ * instance sharing the storage for all the elements beyond the first one.
  * <p/>
  * Instances of this class do not implement {@link #equals(Object)} or {@link #hashCode()}.
  *
  * @author rconner
  */
 @Beta
-public abstract class ImmutableStack<E> implements Iterable<E> {
+public abstract class PersistentList<E> implements Iterable<E> {
 
     /**
      * Prevent instantiation.
      */
-    private ImmutableStack() {
+    private PersistentList() {
     }
 
-    public abstract ImmutableStack<E> push( E element );
+    public abstract E first();
 
-    public abstract ImmutableStack<E> pop();
+    public abstract PersistentList<E> rest();
 
-    public abstract E peek();
+    public abstract PersistentList<E> add( E element );
 
     public abstract int size();
 
@@ -72,64 +72,64 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
     public abstract Iterable<E> reverse();
 
     /**
-     * Creates a new empty ImmutableStack.
+     * Creates a new empty PersistentList.
      *
      * @param <E> the type of element
      *
-     * @return a new empty ImmutableStack.
+     * @return a new empty PersistentList.
      */
     @SuppressWarnings( "unchecked" )
-    public static <E> ImmutableStack<E> of() {
-        return (ImmutableStack<E>) EMPTY_STACK;
+    public static <E> PersistentList<E> of() {
+        return (PersistentList<E>) EmptyList.INSTANCE;
     }
 
     /**
-     * Creates a new ImmutableStack with the given element.
+     * Creates a new PersistentList with the given element.
      *
-     * @param element the single element in the newly created ImmutableStack
+     * @param element the single element in the newly created PersistentList
      * @param <E> the type of element
      *
-     * @return a new ImmutableStack with the given elements.
+     * @return a new PersistentList with the given elements.
      */
-    public static <E> ImmutableStack<E> of( final E element ) {
-        return ImmutableStack.<E>of().push( element );
+    public static <E> PersistentList<E> of( final E element ) {
+        return PersistentList.<E>of().add( element );
     }
 
     /**
-     * Creates a new ImmutableStack with the given elements, in order from bottom to top.
+     * Creates a new PersistentList with the given elements, in order from bottom to top.
      *
-     * @param elements the elements for which to create a new ImmutableStack
+     * @param elements the elements for which to create a new PersistentList
      * @param <E> the type of element
      *
-     * @return a new ImmutableStack with the given elements, in order from bottom to top.
+     * @return a new PersistentList with the given elements, in order from bottom to top.
      */
-    public static <E> ImmutableStack<E> of( final E... elements ) {
-        ImmutableStack<E> stack = of();
+    public static <E> PersistentList<E> of( final E... elements ) {
+        PersistentList<E> list = of();
         for( final E element : elements ) {
-            stack = stack.push( element );
+            list = list.add( element );
         }
-        return stack;
+        return list;
     }
 
-    private static final ImmutableStack<Object> EMPTY_STACK = new EmptyStack();
+    private static final class EmptyList extends PersistentList<Object> {
+        private static final PersistentList<Object> INSTANCE = new EmptyList();
 
-    private static final class EmptyStack extends ImmutableStack<Object> {
-        EmptyStack() {
+        EmptyList() {
         }
 
         @Override
-        public ImmutableStack<Object> push( final Object element ) {
-            return new Stack<Object>( element, this );
-        }
-
-        @Override
-        public ImmutableStack<Object> pop() {
+        public Object first() {
             throw new EmptyStackException();
         }
 
         @Override
-        public Object peek() {
+        public PersistentList<Object> rest() {
             throw new EmptyStackException();
+        }
+
+        @Override
+        public PersistentList<Object> add( final Object element ) {
+            return new List<Object>( element, this );
         }
 
         @Override
@@ -158,30 +158,30 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
     }
 
-    private static final class Stack<E> extends ImmutableStack<E> {
+    private static final class List<E> extends PersistentList<E> {
         private final E top;
-        private final ImmutableStack<E> rest;
+        private final PersistentList<E> rest;
         private final int size;
 
-        Stack( final E top, final ImmutableStack<E> rest ) {
+        List( final E top, final PersistentList<E> rest ) {
             this.top = top;
             this.rest = rest;
             size = rest.size() + 1;
         }
 
         @Override
-        public ImmutableStack<E> push( final E element ) {
-            return new Stack<E>( element, this );
+        public E first() {
+            return top;
         }
 
         @Override
-        public ImmutableStack<E> pop() {
+        public PersistentList<E> rest() {
             return rest;
         }
 
         @Override
-        public E peek() {
-            return top;
+        public PersistentList<E> add( final E element ) {
+            return new List<E>( element, this );
         }
 
         @Override
@@ -196,7 +196,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
 
         @Override
         public Iterator<E> iterator() {
-            return new StackIterator<E>( this );
+            return new ListIterator<E>( this );
         }
 
         // TODO: Make this lazy, and keep the result around. But how lazy, and what parts, needs to be decided.
@@ -206,7 +206,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         // and moving the code that builds the array.
 
         // The Iterable could be kept, or the backing array, or both. Once the backing array is built, you don't
-        // need the stack any more, so this iterable could be static instead of inner.
+        // need the list any more, so this iterable could be static instead of inner.
 
         @Override
         public Iterable<E> reverse() {
@@ -214,10 +214,10 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
             // An ImmutableList would work, except they don't allow null elements.
 
             final Object[] array = new Object[ size ];
-            ImmutableStack<E> stack = this;
+            PersistentList<E> list = this;
             for( int i = size - 1; i >= 0; i-- ) {
-                array[ i ] = stack.peek();
-                stack = stack.pop();
+                array[ i ] = list.first();
+                list = list.rest();
             }
             return new ArrayIterable<E>( array );
         }
@@ -234,25 +234,25 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
         }
     }
 
-    private static class StackIterator<E> extends UnmodifiableIterator<E> {
-        private ImmutableStack<E> stack;
+    private static class ListIterator<E> extends UnmodifiableIterator<E> {
+        private PersistentList<E> list;
 
-        private StackIterator( final ImmutableStack<E> stack ) {
-            this.stack = stack;
+        private ListIterator( final PersistentList<E> list ) {
+            this.list = list;
         }
 
         @Override
         public boolean hasNext() {
-            return !stack.isEmpty();
+            return !list.isEmpty();
         }
 
         @Override
         public E next() {
-            if( stack.isEmpty() ) {
+            if( list.isEmpty() ) {
                 throw new NoSuchElementException();
             }
-            final E top = stack.peek();
-            stack = stack.pop();
+            final E top = list.first();
+            list = list.rest();
             return top;
         }
     }

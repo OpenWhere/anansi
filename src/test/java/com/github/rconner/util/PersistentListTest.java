@@ -34,9 +34,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public final class ImmutableStackTest {
+public final class PersistentListTest {
 
-    private static <E> void assertStackContains( final ImmutableStack<E> stack, final E... elements ) {
+    private static <E> void assertStackContains( final PersistentList<E> stack, final E... elements ) {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
@@ -53,21 +53,21 @@ public final class ImmutableStackTest {
         if( elements.length == 0 ) {
             assertThat( stack.isEmpty(), is( true ) );
             try {
-                stack.peek();
+                stack.first();
                 fail( "Should throw EmptyStackException." );
             } catch( EmptyStackException ignored ) {
                 // expected
             }
             try {
-                stack.pop();
+                stack.rest();
                 fail( "Should throw EmptyStackException." );
             } catch( EmptyStackException ignored ) {
                 // expected
             }
         } else {
             assertThat( stack.isEmpty(), is( false ) );
-            assertThat( stack.peek(), is( elements[ 0 ] ) );
-            assertStackContains( stack.pop(), Arrays.copyOfRange( elements, 1, elements.length ) );
+            assertThat( stack.first(), is( elements[ 0 ] ) );
+            assertStackContains( stack.rest(), Arrays.copyOfRange( elements, 1, elements.length ) );
         }
 
         // Test them again to make sure following the head/tail references didn't change state.
@@ -79,32 +79,32 @@ public final class ImmutableStackTest {
 
     @Test
     public void stackEmpty() {
-        final ImmutableStack<Integer> stack = ImmutableStack.of();
+        final PersistentList<Integer> stack = PersistentList.of();
         assertStackContains( stack );
-        assertStackContains( stack.push( 101 ).push( 102 ), 102, 101 );
+        assertStackContains( stack.add( 101 ).add( 102 ), 102, 101 );
         assertStackContains( stack );
     }
 
     @Test
     public void stackOneElement() {
-        final ImmutableStack<Integer> stack = ImmutableStack.of( 42 );
+        final PersistentList<Integer> stack = PersistentList.of( 42 );
         assertStackContains( stack, 42 );
-        assertStackContains( stack.push( 101 ).push( 102 ), 102, 101, 42 );
+        assertStackContains( stack.add( 101 ).add( 102 ), 102, 101, 42 );
         assertStackContains( stack, 42 );
     }
 
     @Test
     public void stackManyElements() {
-        final ImmutableStack<Integer> stack = ImmutableStack.of( 11, null, 5, 3, 2 );
+        final PersistentList<Integer> stack = PersistentList.of( 11, null, 5, 3, 2 );
         assertStackContains( stack, 2, 3, 5, null, 11 );
-        assertStackContains( stack.push( 101 ).push( null ).push( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
+        assertStackContains( stack.add( 101 ).add( null ).add( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
         assertStackContains( stack, 2, 3, 5, null, 11 );
     }
 
     @Test
     public void stackToString() {
-        final ImmutableStack<Integer> stack = ImmutableStack.of();
+        final PersistentList<Integer> stack = PersistentList.of();
         assertThat( stack.toString(), is( "[]" ) );
-        assertThat( stack.push( 101 ).push( 102 ).toString(), is( "[102, 101]" ) );
+        assertThat( stack.add( 101 ).add( 102 ).toString(), is( "[102, 101]" ) );
     }
 }

@@ -23,7 +23,7 @@
 
 package com.github.rconner.anansi;
 
-import com.github.rconner.util.ImmutableStack;
+import com.github.rconner.util.PersistentList;
 import com.google.common.base.Preconditions;
 
 import java.util.Iterator;
@@ -56,11 +56,11 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
 
     private static final class LeafIterator<V, E> implements Iterator<Walk<V, E>> {
         private final Traverser<V, E> adjacency;
-        private ImmutableStack<TraversalMove<V, E>> moveStack;
+        private PersistentList<TraversalMove<V, E>> moveStack;
 
         LeafIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            moveStack = ImmutableStack.of( TraversalMove.<V, E>start( start ) );
+            moveStack = PersistentList.of( TraversalMove.<V, E>start( start ) );
         }
 
         @Override
@@ -75,25 +75,25 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
-            while( !moveStack.isEmpty() && !moveStack.peek().iterator.hasNext() ) {
-                moveStack = moveStack.pop();
+            while( !moveStack.isEmpty() && !moveStack.first().iterator.hasNext() ) {
+                moveStack = moveStack.rest();
             }
             if( moveStack.isEmpty() ) {
                 throw new NoSuchElementException();
             }
-            TraversalMove<V, E> move = moveStack.peek();
+            TraversalMove<V, E> move = moveStack.first();
             while( move.iterator.hasNext() ) {
                 move = move.next( adjacency );
-                moveStack = moveStack.push( move );
+                moveStack = moveStack.add( move );
             }
-            moveStack = moveStack.pop();
+            moveStack = moveStack.rest();
             return move.walk;
         }
 
         @Override
         public void remove() {
             Preconditions.checkState( !moveStack.isEmpty() );
-            moveStack.peek().iterator.remove();
+            moveStack.first().iterator.remove();
         }
     }
 }
