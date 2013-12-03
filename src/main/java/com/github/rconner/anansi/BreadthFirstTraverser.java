@@ -89,13 +89,12 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
                 moveQueue.dequeue();
             }
             if( moveQueue.isEmpty() ) {
+                canMutate = false;
                 throw new NoSuchElementException();
             }
-            TraversalMove<V, E> move = moveQueue.head();
-            move = move.next( adjacency );
-            nextTail = move;
+            nextTail = moveQueue.head().next( adjacency );
             canMutate = true;
-            return move.builder.build();
+            return nextTail.builder.build();
         }
 
         @Override
