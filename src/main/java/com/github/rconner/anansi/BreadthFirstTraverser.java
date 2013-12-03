@@ -59,11 +59,10 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
         @SuppressWarnings( "unchecked" )
         private final FifoQueue<TraversalMove<V, E>> moveQueue = FifoQueue.of();
         private TraversalMove<V, E> nextTail = null;
-        private boolean canMutate = false;
 
         BreadthFirstIterator( final V start, final Traverser<V, E> adjacency ) {
             this.adjacency = adjacency;
-            nextTail = TraversalMove.start( start );
+            moveQueue.enqueue( TraversalMove.<V, E>start( start ) );
         }
 
         @Override
@@ -89,27 +88,23 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
                 moveQueue.dequeue();
             }
             if( moveQueue.isEmpty() ) {
-                canMutate = false;
                 throw new NoSuchElementException();
             }
             nextTail = moveQueue.head().next( adjacency );
-            canMutate = true;
             return nextTail.builder.build();
         }
 
         @Override
         public void remove() {
-            Preconditions.checkState( canMutate );
+            Preconditions.checkState( nextTail != null );
             moveQueue.head().iterator.remove();
             nextTail = null;
-            canMutate = false;
         }
 
         @Override
         public void prune() {
-            Preconditions.checkState( canMutate );
+            Preconditions.checkState( nextTail != null );
             nextTail = null;
-            canMutate = false;
         }
     }
 }
