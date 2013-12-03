@@ -25,7 +25,6 @@ package com.github.rconner.util;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.Iterator;
@@ -82,17 +81,6 @@ public final class FifoQueue<E> implements Iterable<E> {
             throw new NoSuchElementException();
         }
         return head.element;
-    }
-
-    public boolean contains( final Object object ) {
-        Node<E> node = head;
-        while( node != null ) {
-            if( Objects.equal( object, node.element ) ) {
-                return true;
-            }
-            node = node.next;
-        }
-        return false;
     }
 
     public int size() {

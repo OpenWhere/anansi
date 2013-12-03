@@ -43,11 +43,6 @@ public final class FifoQueueTest {
 
         // These are repeated intentionally, to make sure invoking iterator() or reverse() does not change state.
 
-        for( final E element : elements ) {
-            assertThat( queue.contains( element ), is( true ) );
-        }
-        assertThat( queue.contains( new Object() ), is( false ) );
-
         assertIteratorContains( queue.iterator(), elements );
         assertIteratorContains( queue.iterator(), elements );
 
