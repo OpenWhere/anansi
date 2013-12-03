@@ -63,7 +63,6 @@ public final class WalkTest {
     }
 
     @Test
-    @SuppressWarnings( "unchecked" )
     public void builder() {
         final Walk<Integer, String> rootWalk = Walk.empty( 11 );
         assertWalkContains( rootWalk, 11 );

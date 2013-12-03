@@ -72,6 +72,30 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
     public abstract Iterable<E> reverse();
 
     /**
+     * Creates a new empty ImmutableStack.
+     *
+     * @param <E> the type of element
+     *
+     * @return a new empty ImmutableStack.
+     */
+    @SuppressWarnings( "unchecked" )
+    public static <E> ImmutableStack<E> of() {
+        return (ImmutableStack<E>) EMPTY_STACK;
+    }
+
+    /**
+     * Creates a new ImmutableStack with the given element.
+     *
+     * @param element the single element in the newly created ImmutableStack
+     * @param <E> the type of element
+     *
+     * @return a new ImmutableStack with the given elements.
+     */
+    public static <E> ImmutableStack<E> of( final E element ) {
+        return ImmutableStack.<E>of().push( element );
+    }
+
+    /**
      * Creates a new ImmutableStack with the given elements, in order from bottom to top.
      *
      * @param elements the elements for which to create a new ImmutableStack
@@ -80,8 +104,7 @@ public abstract class ImmutableStack<E> implements Iterable<E> {
      * @return a new ImmutableStack with the given elements, in order from bottom to top.
      */
     public static <E> ImmutableStack<E> of( final E... elements ) {
-        @SuppressWarnings( "unchecked" )
-        ImmutableStack<E> stack = ( ImmutableStack<E> ) EMPTY_STACK;
+        ImmutableStack<E> stack = of();
         for( final E element : elements ) {
             stack = stack.push( element );
         }
