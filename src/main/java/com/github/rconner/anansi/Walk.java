@@ -40,19 +40,16 @@ public final class Walk<V, E> {
     private static final Joiner joiner = Joiner.on( ", " );
 
     private final V from;
-    private final V to;
     private final PersistentList<Step<V, E>> via;
 
     /**
      * The only Walk constructor, package-private to prevent direct instantiation by clients.
      *
      * @param from the first vertex in this Walk.
-     * @param to the last Vertex in this Walk.
      * @param via the Steps in this Walk, in reverse order.
      */
-    Walk( final V from, final V to, final PersistentList<Step<V, E>> via ) {
+    Walk( final V from, final PersistentList<Step<V, E>> via ) {
         this.from = from;
-        this.to = to;
         this.via = via;
     }
 
@@ -65,16 +62,15 @@ public final class Walk<V, E> {
         return from;
     }
 
-    // TODO: remove this since it's easy to get now?
-
     /**
      * Return the last vertex in this Walk. This is a convenience method, returning the value of {@link Step#getTo()}
-     * for the first {@code Step} returned by {@link #getVia()} (the last {@code Step} in this Walk)
+     * for the first {@code Step} returned by {@link #getVia()} (the last {@code Step} in this Walk), if it exists. If
+     * no steps exist, returns {@link #getFrom()}.
      *
      * @return the last vertex in this Walk.
      */
     public V getTo() {
-        return to;
+        return via.isEmpty() ? from : via.first().getTo();
     }
 
     /**
@@ -130,7 +126,7 @@ public final class Walk<V, E> {
      * @return a new empty Walk.
      */
     public static <V, E> Walk<V, E> empty( final V vertex ) {
-        return new Walk<V, E>( vertex, vertex, PersistentList.<Step<V, E>>of() );
+        return new Walk<V, E>( vertex, PersistentList.<Step<V, E>>of() );
     }
 
     /**
@@ -145,7 +141,7 @@ public final class Walk<V, E> {
      * @return a new Walk with a single Step.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to, final E over ) {
-        return new Walk<V, E>( from, to, PersistentList.of( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, PersistentList.of( new Step<V, E>( to, over ) ) );
     }
 
     /**
@@ -171,7 +167,7 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending a single Step.
      */
     public Walk<V, E> append( final V to, final E over ) {
-        return new Walk<V, E>( from, to, via.add( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, via.add( new Step<V, E>( to, over ) ) );
     }
 
     /**
@@ -194,6 +190,6 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending the given Walk.
      */
     public Walk<V, E> append( final Walk<V, E> walk ) {
-        return new Walk<V, E>( from, walk.getTo(), via.addAll( walk.getVia().reverse() ) );
+        return new Walk<V, E>( from, via.addAll( walk.getVia().reverse() ) );
     }
 }
