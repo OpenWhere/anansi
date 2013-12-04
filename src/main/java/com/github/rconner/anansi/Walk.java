@@ -84,7 +84,7 @@ public final class Walk<V, E> {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append( getFrom() ).append( "=>" ).append( getTo() );
         builder.append( " via [" );
         joiner.appendTo( builder, getVia() );
