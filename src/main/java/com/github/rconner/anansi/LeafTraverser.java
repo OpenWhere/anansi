@@ -81,11 +81,10 @@ final class LeafTraverser<V, E> implements Traverser<V, E> {
             if( moveStack.isEmpty() ) {
                 throw new NoSuchElementException();
             }
-            TraversalMove<V, E> move = moveStack.first();
-            while( move.iterator.hasNext() ) {
-                move = move.next( adjacency );
-                moveStack = moveStack.add( move );
+            while( moveStack.first().iterator.hasNext() ) {
+                moveStack = moveStack.add( moveStack.first().next( adjacency ) );
             }
+            final TraversalMove<V, E> move = moveStack.first();
             moveStack = moveStack.rest();
             return move.walk;
         }

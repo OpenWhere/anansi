@@ -69,14 +69,13 @@ final class PostOrderTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
-            TraversalMove<V, E> move = moveStack.first();
-            while( move.iterator.hasNext() ) {
-                move = move.next( adjacency );
-                moveStack = moveStack.add( move );
+            while( moveStack.first().iterator.hasNext() ) {
+                moveStack = moveStack.add( moveStack.first().next( adjacency ) );
             }
             if( moveStack.rest().isEmpty() ) {
                 throw new NoSuchElementException();
             }
+            final TraversalMove<V, E> move = moveStack.first();
             moveStack = moveStack.rest();
             return move.walk;
         }

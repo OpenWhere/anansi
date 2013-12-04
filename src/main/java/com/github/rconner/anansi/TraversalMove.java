@@ -54,7 +54,8 @@ final class TraversalMove<V, E> {
      * @return a move &quot;to&quot; the start node in a traversal.
      */
     static <V, E> TraversalMove<V, E> start( final V start ) {
-        return new TraversalMove<V, E>( rootIterator( Walk.<V, E>empty( start ) ), Walk.<V, E>empty( start ) );
+        final Walk<V, E> walk = Walk.empty( start );
+        return new TraversalMove<V, E>( rootIterator( walk ), walk );
     }
 
     /**

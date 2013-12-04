@@ -83,11 +83,9 @@ final class PreOrderTraverser<V, E> implements Traverser<V, E> {
                 canMutate = false;
                 throw new NoSuchElementException();
             }
-            TraversalMove<V, E> move = moveStack.first();
-            move = move.next( adjacency );
-            moveStack = moveStack.add( move );
+            moveStack = moveStack.add( moveStack.first().next( adjacency ) );
             canMutate = true;
-            return move.walk;
+            return moveStack.first().walk;
         }
 
         @Override
