@@ -1178,7 +1178,7 @@ public final class TraversersTest {
 
     @Test
     public void elementsSimpleList() {
-        final Object root = Arrays.asList( "Alice", 37, false );
+        final Object root = Arrays.<Object>asList( "Alice", 37, false );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "[0]", "Alice" }, { "[1]", 37 }, { "[2]", false } } );
     }
@@ -1192,8 +1192,8 @@ public final class TraversersTest {
 
     @Test
     public void elementsMap() {
-        final Map root = ImmutableMap.of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
-                                    "ages", Arrays.asList( 37, 42, 32 ) );
+        final Map<String, Object> root = ImmutableMap.<String, Object>of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
+                                                                          "ages", Arrays.asList( 37, 42, 32 ) );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "names", root.get( "names" ) },
                                              { "ages", root.get( "ages" ) } } );
@@ -1202,8 +1202,8 @@ public final class TraversersTest {
     @SuppressWarnings( "unchecked" )
     @Test
     public void elementsList() {
-        final List root = Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
-                                   ImmutableMap.of( "name", "Becky", "age", 42 ) );
+        final List<Object> root = Arrays.<Object>asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
+                                                         ImmutableMap.of( "name", "Becky", "age", 42 ) );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "[0]", root.get( 0 ) },
                                              { "[1]", root.get( 1 ) } } );
@@ -1262,7 +1262,7 @@ public final class TraversersTest {
 
     @Test
     public void leafElementsSimpleList() {
-        final Object root = Arrays.asList( "Alice", 37, false );
+        final Object root = Arrays.<Object>asList( "Alice", 37, false );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "[0]", "Alice" }, { "[1]", 37 }, { "[2]", false } } );
     }
@@ -1276,8 +1276,8 @@ public final class TraversersTest {
 
     @Test
     public void leafElementsMap() {
-        final Map root = ImmutableMap.of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
-                                    "ages", Arrays.asList( 37, 42, 32 ) );
+        final Map<String, Object> root = ImmutableMap.<String, Object>of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
+                                                                          "ages", Arrays.asList( 37, 42, 32 ) );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "names[0]", "Alice" },
                                              { "names[1]", "Becky" },
@@ -1290,8 +1290,8 @@ public final class TraversersTest {
     @SuppressWarnings( "unchecked" )
     @Test
     public void leafElementsList() {
-        final List root = Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
-                                   ImmutableMap.of( "name", "Becky", "age", 42 ) );
+        final List<Object> root = Arrays.<Object>asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
+                                                         ImmutableMap.of( "name", "Becky", "age", 42 ) );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "[0].name", "Alice" },
                                              { "[0].age", 37 },
