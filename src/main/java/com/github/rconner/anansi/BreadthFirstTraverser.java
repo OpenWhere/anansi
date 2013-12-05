@@ -107,3 +107,165 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
         }
     }
 }
+
+/*
+
+This is a step-by-step example of iterating with this traverser. The example graph is below, child order is alphabetic.
+
+          A
+         / \
+        B   C
+       / \ / \
+      E   D   F
+
+The iteration order will be (walks from A to):
+  A, B, C, D, E, D, F
+
+The root walk will be written as:
+  A:-
+walk.to = A in this degenerate case, and there are no steps.
+
+A single step walk may be written as from:->to, echoing the Walk structure of [ from, Stack<steps> ]. For example:
+  B:->D
+
+A multi-step walk will be written as from:[->to, ->to, ...], with steps ordered from stack top to bottom. For example:
+  A:[->E, ->B]
+
+The state of the Iterator is the state of its move queue and the value of nextTail, which will be written as:
+
+              move.iterator       move.walk.via (move.walk.from is always A)
+     |-head   [ B:->D, B:->E * ]    [->B]
+queue|        [ * C:->D, C:->F ]    [->C]
+     |-tail   [ ]                   [->D, ->B]
+nextTail      T [ ]                 [->E, ->B]
+
+Or as just "empty" if there are no moves in the queue. The "*" in the iterator precedes the next walk to be returned.
+
+In the step-by-step below, colloquial language will be used rather than the actual method names.
+
+"nextTail = next move" means:
+  walk = head.iterator.next()
+  nextTail = [ children(walk.to), head.walk.append( walk ) ]
+So, advance the head iterator and set nextTail to the move for its children.
+
+
+@init
+                                    [ * A:- ]             []
+                                    T null
+
+next()
+  enqueue nextTail if not null      no change
+
+  dequeue exhausted iterators       no change
+
+  nextTail = next move              [ A:- * ]             []
+                                    T [ * A:->B, A:->C ]  []
+
+  return nextTail.walk = A:-
+
+next()
+  enqueue nextTail if not null      [ A:- * ]             []
+                                    [ * A:->B, A:->C ]    []
+                                    T null
+
+  dequeue exhausted iterators       [ * A:->B, A:->C ]    []
+                                    T null
+
+  nextTail = next move              [ A:->B, * A:->C ]    []
+                                    T [ * B:->D, B:->E ]  [->B]
+
+  return nextTail.walk = A:[->B]
+
+next()
+  enqueue nextTail if not null      [ A:->B, * A:->C ]    []
+                                    [ * B:->D, B:->E ]    [->B]
+                                    T null
+
+  dequeue exhausted iterators       no change
+
+  nextTail = next move              [ A:->B, A:->C * ]    []
+                                    [ * B:->D, B:->E ]    [->B]
+                                    T [ * C:->D, C:->F ]  [->C]
+
+  return nextTail.walk = A:[->C]
+
+next()
+  enqueue nextTail if not null      [ A:->B, A:->C * ]    []
+                                    [ * B:->D, B:->E ]    [->B]
+                                    [ * C:->D, C:->F ]    [->C]
+                                    T null
+
+  dequeue exhausted iterators       [ * B:->D, B:->E ]    [->B]
+                                    [ * C:->D, C:->F ]    [->C]
+                                    T null
+
+  nextTail = next move              [ B:->D, * B:->E ]    [->B]
+                                    [ * C:->D, C:->F ]    [->C]
+                                    T [ ]                 [->D, ->B]
+
+  return nextTail.walk = A:[->D, ->B]
+
+next()
+  enqueue nextTail if not null      [ B:->D, * B:->E ]    [->B]
+                                    [ * C:->D, C:->F ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    T null
+
+  dequeue exhausted iterators       no change
+
+  nextTail = next move              [ B:->D, B:->E * ]    [->B]
+                                    [ * C:->D, C:->F ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    T [ ]                 [->E, ->B]
+
+  return nextTail.walk = A:[->E, ->B]
+
+next()
+  enqueue nextTail if not null      [ B:->D, B:->E * ]    [->B]
+                                    [ * C:->D, C:->F ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    [ ]                   [->E, ->B]
+                                    T null
+
+  dequeue exhausted iterators       [ * C:->D, C:->F ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    [ ]                   [->E, ->B]
+                                    T null
+
+  nextTail = next move              [ C:->D, * C:->F ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    [ ]                   [->E, ->B]
+                                    T [ ]                 [->D, ->C]
+
+  return nextTail.walk = A:[->D, ->C]
+
+next()
+  enqueue nextTail if not null      [ C:->D, * C:->F ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    [ ]                   [->E, ->B]
+                                    [ ]                   [->D, ->C]
+                                    T null
+
+  dequeue exhausted iterators       no change
+
+  nextTail = next move              [ C:->D, C:->F * ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    [ ]                   [->E, ->B]
+                                    [ ]                   [->D, ->C]
+                                    T [ ]                 [->F, ->C]
+
+  return nextTail.walk = A:[->F, ->C]
+
+next()
+  enqueue nextTail if not null      [ C:->D, C:->F * ]    [->C]
+                                    [ ]                   [->D, ->B]
+                                    [ ]                   [->E, ->B]
+                                    [ ]                   [->D, ->C]
+                                    [ ]                   [->F, ->C]
+                                    T null
+
+  dequeue exhausted iterators       empty
+
+  throw NoSuchElementException
+
+*/
