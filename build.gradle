@@ -65,11 +65,13 @@ buildscript {
 }
 
 compileJava {
+    options.encoding = 'UTF-8'
     options.debug( debugLevel : 'source,lines,vars' )
     options.compilerArgs = [ '-Xlint:all' ]
 }
 
 compileTestJava {
+    options.encoding = 'UTF-8'
     options.debug( debugLevel: 'source,lines,vars' )
     options.compilerArgs = [ '-Xlint:all' ]
 }
