@@ -208,6 +208,8 @@ public abstract class PersistentList<E> implements Iterable<E> {
     private static final class List<E> extends PersistentList<E> {
         private final E first;
         private final PersistentList<E> rest;
+        // Must be volatile to be used by the double-check locking idiom in reverse()
+        private volatile PersistentList<E> reverse;
 
         List( final E first, final PersistentList<E> rest ) {
             this.first = first;
@@ -239,18 +241,23 @@ public abstract class PersistentList<E> implements Iterable<E> {
             return new ListIterator<E>( this );
         }
 
-        // TODO: Make this lazy, and keep the result around. But how lazy, and what parts, needs to be decided.
-
-        // The result doesn't need to be constructed until Iterable.iterator() is called, or it can even wait until
-        // Iterator.hasNext() or next() is called. Note that x.reverse().reverse() == x.
-
         @Override
         public PersistentList<E> reverse() {
-            PersistentList<E> list = PersistentList.of();
-            for( final E element : this ) {
-                list = list.add( element );
+            PersistentList<E> result = reverse;
+            if( result == null ) {
+                synchronized( this ) {
+                    result = reverse;
+                    if( result == null ) {
+                        result = PersistentList.of();
+                        for( final E element : this ) {
+                            result = result.add( element );
+                        }
+                        ( (List<E>) result ).reverse = this;
+                        reverse = result;
+                    }
+                }
             }
-            return list;
+            return result;
         }
 
         private static final Joiner JOINER = Joiner.on( ", " ).useForNull( "null" );

@@ -72,6 +72,9 @@ public final class PersistentListTest {
 
         assertIteratorContains( stack.iterator(), elements );
         assertIteratorContains( stack.reverse().iterator(), expectedReverse );
+
+        // Check that x.reverse().reverse() == x
+        assertThat( stack.reverse().reverse(), is( stack ) );
     }
 
     @Test
