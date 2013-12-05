@@ -101,8 +101,8 @@ These are the essential classes/interfaces involved:
 
     Walk<V,E> {
         V from;
-        V to;  // convenience, same as via.last.to
-        [ Step<V,E> ] via;
+        V to;  // convenience, same as via.top.to
+        Stack<Step<V,E>> via; // steps in reverse order, the top is the last step
     }
 
     Traverser<V,E> {
@@ -111,7 +111,7 @@ These are the essential classes/interfaces involved:
 
 There is some implementation-specific way of creating Traversers that answer the question "Given V, what is adjacent to
 it?". Using that (or any Traverser created by this library), you can construct more complex Traversers for performing
-things like a pre-order depth-first traversal.
+things like a pre-order traversal.
 
 Repeating this for emphasis: An adjacency function is a Traverser; give it a vertex and it will return an Iterable of
 (short) Walks to adjacent vertices. A depth-first search is also a Traverser; give it a vertex and it will return an
@@ -141,8 +141,8 @@ All of that is the easy reasoning, and leads to roughly this model (pseudo-code,
 
     Walk<V,E> {
         V from;
-        V to;  // convenience, same as via.last.to
-        [ Step<V,E> ] via;
+        V to;  // convenience, same as via.top.to
+        Stack<Step<V,E>> via; // steps in reverse order, the top is the last step
     }
 
 Where this gets difficult is that we also want to:
