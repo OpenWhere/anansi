@@ -102,6 +102,8 @@ public final class TraversersTest {
         assertWalkContains( iterator.next(), expectedWalk );
     }
 
+    static final Object[][] EMPTY_EXPECTED_WALKS = new Object[][] { };
+
     static <V, E> void assertNextWalksAre( final Iterator<Walk<V, E>> iterator, final Object[][] expectedWalks ) {
         for( final Object[] expectedWalk : expectedWalks ) {
             assertNextWalkIs( iterator, expectedWalk );
@@ -126,7 +128,7 @@ public final class TraversersTest {
     @Test
     public void empty() {
         final Traverser<String, String> traverser = Traversers.empty();
-        assertTraversalContains( traverser.apply( "A" ), new Object[][] { } );
+        assertTraversalContains( traverser.apply( "A" ), EMPTY_EXPECTED_WALKS );
     }
 
     // preOrder( Traverser )
@@ -771,7 +773,7 @@ public final class TraversersTest {
                                              { "A", "A->C", "C", "C->D", "D" },
                                              { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
         iterator.remove();
-        assertNextWalksAre( iterator, new Object[][] { } );
+        assertNextWalksAre( iterator, EMPTY_EXPECTED_WALKS );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
@@ -797,7 +799,7 @@ public final class TraversersTest {
                                              { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
         iterator.remove();
-        assertNextWalksAre( iterator, new Object[][] { } );
+        assertNextWalksAre( iterator, EMPTY_EXPECTED_WALKS );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
@@ -833,7 +835,7 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalkIs( iterator, "A" );
         ( (PruningIterator) iterator ).prune();
-        assertNextWalksAre( iterator, new Object[][] { } );
+        assertNextWalksAre( iterator, EMPTY_EXPECTED_WALKS );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -939,7 +941,7 @@ public final class TraversersTest {
                                              { "A", "A->C", "C", "C->D", "D" },
                                              { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
         ( (PruningIterator) iterator ).prune();
-        assertNextWalksAre( iterator, new Object[][] { } );
+        assertNextWalksAre( iterator, EMPTY_EXPECTED_WALKS );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -959,7 +961,7 @@ public final class TraversersTest {
                                              { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
         ( (PruningIterator) iterator ).prune();
-        assertNextWalksAre( iterator, new Object[][] { } );
+        assertNextWalksAre( iterator, EMPTY_EXPECTED_WALKS );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -1138,31 +1140,31 @@ public final class TraversersTest {
     @Test
     public void elementsNull() {
         final Object root = null;
-        assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
+        assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsString() {
         final Object root = "abc";
-        assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
+        assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsEmptyMap() {
         final Object root = Collections.emptyMap();
-        assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
+        assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsEmptyList() {
         final Object root = Collections.emptyList();
-        assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
+        assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsEmptyArray() {
         final Object root = new int[ 0 ];
-        assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
+        assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
