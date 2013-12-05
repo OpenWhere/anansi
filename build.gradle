@@ -65,12 +65,12 @@ buildscript {
 }
 
 compileJava {
-    options.debug = true
+    options.debug( debugLevel : 'source,lines,vars' )
     options.compilerArgs = [ '-Xlint:all' ]
 }
 
 compileTestJava {
-    options.debug = true
+    options.debug( debugLevel: 'source,lines,vars' )
     options.compilerArgs = [ '-Xlint:all' ]
 }
 
