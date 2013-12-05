@@ -37,7 +37,7 @@ import com.google.common.base.Joiner;
  */
 @Beta
 public final class Walk<V, E> {
-    private static final Joiner joiner = Joiner.on( ", " );
+    private static final Joiner JOINER = Joiner.on( ", " );
 
     private final V from;
     private final PersistentList<Step<V, E>> via;
@@ -87,7 +87,7 @@ public final class Walk<V, E> {
         final StringBuilder builder = new StringBuilder();
         builder.append( getFrom() ).append( "=>" ).append( getTo() );
         builder.append( " via [" );
-        joiner.appendTo( builder, getVia() );
+        JOINER.appendTo( builder, getVia() );
         builder.append( "]" );
         return builder.toString();
     }
