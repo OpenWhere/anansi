@@ -207,17 +207,17 @@ public abstract class PersistentList<E> implements Iterable<E> {
     }
 
     private static final class List<E> extends PersistentList<E> {
-        private final E top;
+        private final E first;
         private final PersistentList<E> rest;
 
-        List( final E top, final PersistentList<E> rest ) {
-            this.top = top;
+        List( final E first, final PersistentList<E> rest ) {
+            this.first = first;
             this.rest = rest;
         }
 
         @Override
         public E first() {
-            return top;
+            return first;
         }
 
         @Override
@@ -283,9 +283,9 @@ public abstract class PersistentList<E> implements Iterable<E> {
             if( list.isEmpty() ) {
                 throw new NoSuchElementException();
             }
-            final E top = list.first();
+            final E first = list.first();
             list = list.rest();
-            return top;
+            return first;
         }
     }
 }
