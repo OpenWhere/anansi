@@ -1161,9 +1161,11 @@ public final class TraversersTest {
         assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
+    private static final int[] EMPTY_INT_ARRAY = new int[ 0 ];
+
     @Test
     public void elementsEmptyArray() {
-        final Object root = new int[ 0 ];
+        final Object root = EMPTY_INT_ARRAY;
         assertPathWalksAre( Traversers.elements().apply( root ), EMPTY_EXPECTED_WALKS );
     }
 
@@ -1247,7 +1249,7 @@ public final class TraversersTest {
 
     @Test
     public void leafElementsEmptyArray() {
-        final Object root = new int[ 0 ];
+        final Object root = EMPTY_INT_ARRAY;
         assertPathWalksAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
     }
 
