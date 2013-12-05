@@ -35,13 +35,13 @@ public class TraversalMoveTest {
 
     @Test
     public void rootIteratorNotExhausted() {
-        TraversalMove<String, String> move = TraversalMove.start( "A" );
+        final TraversalMove<String, String> move = TraversalMove.start( "A" );
         move.iterator.next();
     }
 
     @Test( expected = NoSuchElementException.class )
     public void rootIteratorExhausted() {
-        TraversalMove<String, String> move = TraversalMove.start( "A" );
+        final TraversalMove<String, String> move = TraversalMove.start( "A" );
         move.iterator.next();
         move.iterator.next();
     }

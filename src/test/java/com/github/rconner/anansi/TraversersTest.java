@@ -103,20 +103,20 @@ public final class TraversersTest {
     }
 
     static <V, E> void assertNextWalksAre( final Iterator<Walk<V, E>> iterator, final Object[][] expectedWalks ) {
-        for( Object[] expectedWalk : expectedWalks ) {
+        for( final Object[] expectedWalk : expectedWalks ) {
             assertNextWalkIs( iterator, expectedWalk );
         }
     }
 
     static <V, E> void assertTraversalContains( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
-        Iterator<Walk<V, E>> iterator = traversal.iterator();
+        final Iterator<Walk<V, E>> iterator = traversal.iterator();
         assertNextWalksAre( iterator, expectedWalks );
         assertThat( iterator.hasNext(), is( false ) );
         assertIteratorEmpty( iterator );
     }
 
     static <V, E> void assertTraversalBegins( final Iterable<Walk<V, E>> traversal, final Object[][] expectedWalks ) {
-        Iterator<Walk<V, E>> iterator = traversal.iterator();
+        final Iterator<Walk<V, E>> iterator = traversal.iterator();
         assertNextWalksAre( iterator, expectedWalks );
         assertThat( iterator.hasNext(), is( true ) );
     }
@@ -177,7 +177,7 @@ public final class TraversersTest {
                                                   { "A", "A->C", "C", "C->G", "G" } } );
     }
 
-    private static void assertPreOrderFullDag( Iterable<Walk<String, String>> traversal ) {
+    private static void assertPreOrderFullDag( final Iterable<Walk<String, String>> traversal ) {
         assertTraversalContains( traversal,
                                  new Object[][] { { "A" },
                                                   { "A", "A->B", "B" },
@@ -199,7 +199,7 @@ public final class TraversersTest {
     public void preOrderRemoveBeforeNext() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         iterator.remove();
     }
 
@@ -207,7 +207,7 @@ public final class TraversersTest {
     public void preOrderRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalkIs( iterator, "A" );
         iterator.remove();
     }
@@ -216,7 +216,7 @@ public final class TraversersTest {
     public void preOrderRemoveB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         iterator.remove();
         assertNextWalksAre( iterator,
@@ -236,7 +236,7 @@ public final class TraversersTest {
     public void preOrderRemoveD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" }, { "A", "A->B", "B" }, { "A", "A->B", "B", "B->D", "D" } } );
         iterator.remove();
@@ -260,7 +260,7 @@ public final class TraversersTest {
     public void preOrderRemoveE() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -288,7 +288,7 @@ public final class TraversersTest {
     public void preOrderRemoveTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         iterator.remove();
         iterator.remove();
@@ -298,7 +298,7 @@ public final class TraversersTest {
     public void preOrderPruneBeforeNext() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         ( (PruningIterator) iterator ).prune();
     }
 
@@ -306,7 +306,7 @@ public final class TraversersTest {
     public void preOrderPruneRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalkIs( iterator, "A" );
         ( (PruningIterator) iterator ).prune();
         assertIteratorEmpty( iterator );
@@ -319,7 +319,7 @@ public final class TraversersTest {
     public void preOrderPruneB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextWalksAre( iterator,
@@ -335,7 +335,7 @@ public final class TraversersTest {
     public void preOrderPruneD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" }, { "A", "A->B", "B" }, { "A", "A->B", "B", "B->D", "D" } } );
         ( (PruningIterator) iterator ).prune();
@@ -353,7 +353,7 @@ public final class TraversersTest {
     public void preOrderPruneE() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -374,7 +374,7 @@ public final class TraversersTest {
     public void preOrderPruneTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).prune();
         ( (PruningIterator) iterator ).prune();
@@ -384,7 +384,7 @@ public final class TraversersTest {
     public void preOrderRemoveThenPrune() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).remove();
         ( (PruningIterator) iterator ).prune();
@@ -394,7 +394,7 @@ public final class TraversersTest {
     public void preOrderPruneThenRemove() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.preOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).prune();
         ( (PruningIterator) iterator ).remove();
@@ -445,7 +445,7 @@ public final class TraversersTest {
     public void postOrderRemoveBeforeNext() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         iterator.remove();
     }
 
@@ -453,7 +453,7 @@ public final class TraversersTest {
     public void postOrderRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->D", "D" },
@@ -470,7 +470,7 @@ public final class TraversersTest {
     public void postOrderRemoveB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->D", "D" },
@@ -495,7 +495,7 @@ public final class TraversersTest {
     public void postOrderRemoveD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->D", "D" } } );
@@ -522,7 +522,7 @@ public final class TraversersTest {
     public void postOrderRemoveE() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->D", "D" },
@@ -550,7 +550,7 @@ public final class TraversersTest {
     public void postOrderRemoveTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->D", "D" },
@@ -608,7 +608,7 @@ public final class TraversersTest {
                                                   { "A", "A->C", "C", "C->G", "G" } } );
     }
 
-    private static void assertBreadthFirstFullDag( Iterable<Walk<String, String>> traversal ) {
+    private static void assertBreadthFirstFullDag( final Iterable<Walk<String, String>> traversal ) {
         assertTraversalContains( traversal,
                                  new Object[][] { { "A" },
                                                   { "A", "A->B", "B" },
@@ -630,7 +630,7 @@ public final class TraversersTest {
     public void breadthFirstRemoveBeforeNext() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         iterator.remove();
     }
 
@@ -638,7 +638,7 @@ public final class TraversersTest {
     public void breadthFirstRemoveRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalkIs( iterator, "A" );
         iterator.remove();
     }
@@ -646,7 +646,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         iterator.remove();
         assertNextWalksAre( iterator,
@@ -665,7 +665,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveC() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" }, { "A", "A->C", "C" } } );
         iterator.remove();
         assertNextWalksAre( iterator,
@@ -685,7 +685,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveFirstD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -710,7 +710,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveE() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -737,7 +737,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveSecondD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -761,7 +761,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveFirstG() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -786,7 +786,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstRemoveSecondG() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -812,7 +812,7 @@ public final class TraversersTest {
     @Test( expected = IllegalStateException.class )
     public void breadthFirstRemoveTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         iterator.remove();
         iterator.remove();
@@ -822,7 +822,7 @@ public final class TraversersTest {
     public void breadthFirstPruneBeforeNext() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         ( (PruningIterator) iterator ).prune();
     }
 
@@ -830,7 +830,7 @@ public final class TraversersTest {
     public void breadthFirstPruneRoot() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalkIs( iterator, "A" );
         ( (PruningIterator) iterator ).prune();
         assertNextWalksAre( iterator, new Object[][] { } );
@@ -842,7 +842,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextWalksAre( iterator,
@@ -857,7 +857,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneC() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" }, { "A", "A->C", "C" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextWalksAre( iterator,
@@ -872,7 +872,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneFirstD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -891,7 +891,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneE() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -911,7 +911,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneSecondD() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -929,7 +929,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneFirstG() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -948,7 +948,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstPruneSecondG() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A" },
                                              { "A", "A->B", "B" },
@@ -968,7 +968,7 @@ public final class TraversersTest {
     @Test( expected = IllegalStateException.class )
     public void breadthFirstPruneTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).prune();
         ( (PruningIterator) iterator ).prune();
@@ -978,7 +978,7 @@ public final class TraversersTest {
     public void breadthFirstRemoveThenPrune() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).remove();
         ( (PruningIterator) iterator ).prune();
@@ -988,7 +988,7 @@ public final class TraversersTest {
     public void breadthFirstPruneThenRemove() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
         ( (PruningIterator) iterator ).prune();
         ( (PruningIterator) iterator ).remove();
@@ -1031,7 +1031,7 @@ public final class TraversersTest {
     public void leavesRemoveBeforeNext() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.leaves( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         iterator.remove();
     }
 
@@ -1039,7 +1039,7 @@ public final class TraversersTest {
     public void leavesRemoveFirstG() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.leaves( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
         iterator.remove();
@@ -1058,7 +1058,7 @@ public final class TraversersTest {
     public void leavesRemoveSecondG() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.leaves( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->E", "E" },
@@ -1077,7 +1077,7 @@ public final class TraversersTest {
     public void leavesRemoveE() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.leaves( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->E", "E" } } );
@@ -1095,7 +1095,7 @@ public final class TraversersTest {
     public void leavesRemoveTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.leaves( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->E", "E" } } );
@@ -1108,7 +1108,7 @@ public final class TraversersTest {
         // This use case is slightly different, because it exercises different logic in the traverser.
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.leaves( adjacency );
-        Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
         assertNextWalksAre( iterator,
                             new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
                                              { "A", "A->B", "B", "B->E", "E" },
@@ -1125,8 +1125,8 @@ public final class TraversersTest {
 
     private static void assertPathWalksAre( final Iterable<Walk<Object, String>> traversal,
                                             final Object[][] expectedElements ) {
-        Iterator<Walk<Object, String>> iterator = traversal.iterator();
-        for( Object[] element : expectedElements ) {
+        final Iterator<Walk<Object, String>> iterator = traversal.iterator();
+        for( final Object[] element : expectedElements ) {
             assertThat( iterator.hasNext(), is( true ) );
             final Walk<Object, String> walk = iterator.next();
             assertThat( Traversers.elementPath( walk ), is( element[ 0 ] ) );
@@ -1137,58 +1137,58 @@ public final class TraversersTest {
 
     @Test
     public void elementsNull() {
-        Object root = null;
+        final Object root = null;
         assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
     }
 
     @Test
     public void elementsString() {
-        Object root = "abc";
+        final Object root = "abc";
         assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
     }
 
     @Test
     public void elementsEmptyMap() {
-        Object root = Collections.emptyMap();
+        final Object root = Collections.emptyMap();
         assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
     }
 
     @Test
     public void elementsEmptyList() {
-        Object root = Collections.emptyList();
+        final Object root = Collections.emptyList();
         assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
     }
 
     @Test
     public void elementsEmptyArray() {
-        Object root = new int[ 0 ];
+        final Object root = new int[ 0 ];
         assertPathWalksAre( Traversers.elements().apply( root ), new Object[][] { } );
     }
 
     @Test
     public void elementsSimpleMap() {
-        Object root = ImmutableMap.of( "name", "Alice", "age", 37, "deceased", false );
+        final Object root = ImmutableMap.of( "name", "Alice", "age", 37, "deceased", false );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "name", "Alice" }, { "age", 37 }, { "deceased", false } } );
     }
 
     @Test
     public void elementsSimpleList() {
-        Object root = Arrays.asList( "Alice", 37, false );
+        final Object root = Arrays.asList( "Alice", 37, false );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "[0]", "Alice" }, { "[1]", 37 }, { "[2]", false } } );
     }
 
     @Test
     public void elementsSimpleArray() {
-        Object root = new int[] { 42, 99, 256 };
+        final Object root = new int[] { 42, 99, 256 };
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "[0]", 42 }, { "[1]", 99 }, { "[2]", 256 } } );
     }
 
     @Test
     public void elementsMap() {
-        Map root = ImmutableMap.of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
+        final Map root = ImmutableMap.of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
                                     "ages", Arrays.asList( 37, 42, 32 ) );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "names", root.get( "names" ) },
@@ -1198,7 +1198,7 @@ public final class TraversersTest {
     @SuppressWarnings( "unchecked" )
     @Test
     public void elementsList() {
-        List root = Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
+        final List root = Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
                                    ImmutableMap.of( "name", "Becky", "age", 42 ) );
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "[0]", root.get( 0 ) },
@@ -1207,7 +1207,7 @@ public final class TraversersTest {
 
     @Test
     public void elementsArray() {
-        Object[] root = new Object[] { ImmutableMap.of( "name", "Alice", "age", 37 ),
+        final Object[] root = new Object[] { ImmutableMap.of( "name", "Alice", "age", 37 ),
                                        ImmutableMap.of( "name", "Becky", "age", 42 ) };
         assertPathWalksAre( Traversers.elements().apply( root ),
                             new Object[][] { { "[0]", root[ 0 ] },
@@ -1221,58 +1221,58 @@ public final class TraversersTest {
 
     @Test
     public void leafElementsNull() {
-        Object root = null;
+        final Object root = null;
         assertPathWalksAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
     }
 
     @Test
     public void leafElementsString() {
-        Object root = "abc";
+        final Object root = "abc";
         assertPathWalksAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
     }
 
     @Test
     public void leafElementsEmptyMap() {
-        Object root = Collections.emptyMap();
+        final Object root = Collections.emptyMap();
         assertPathWalksAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
     }
 
     @Test
     public void leafElementsEmptyList() {
-        Object root = Collections.emptyList();
+        final Object root = Collections.emptyList();
         assertPathWalksAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
     }
 
     @Test
     public void leafElementsEmptyArray() {
-        Object root = new int[ 0 ];
+        final Object root = new int[ 0 ];
         assertPathWalksAre( Traversers.leafElements().apply( root ), new Object[][] { { "", root } } );
     }
 
     @Test
     public void leafElementsSimpleMap() {
-        Object root = ImmutableMap.of( "name", "Alice", "age", 37, "deceased", false );
+        final Object root = ImmutableMap.of( "name", "Alice", "age", 37, "deceased", false );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "name", "Alice" }, { "age", 37 }, { "deceased", false } } );
     }
 
     @Test
     public void leafElementsSimpleList() {
-        Object root = Arrays.asList( "Alice", 37, false );
+        final Object root = Arrays.asList( "Alice", 37, false );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "[0]", "Alice" }, { "[1]", 37 }, { "[2]", false } } );
     }
 
     @Test
     public void leafElementsSimpleArray() {
-        Object root = new int[] { 42, 99, 256 };
+        final Object root = new int[] { 42, 99, 256 };
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "[0]", 42 }, { "[1]", 99 }, { "[2]", 256 } } );
     }
 
     @Test
     public void leafElementsMap() {
-        Map root = ImmutableMap.of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
+        final Map root = ImmutableMap.of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
                                     "ages", Arrays.asList( 37, 42, 32 ) );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "names[0]", "Alice" },
@@ -1286,7 +1286,7 @@ public final class TraversersTest {
     @SuppressWarnings( "unchecked" )
     @Test
     public void leafElementsList() {
-        List root = Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
+        final List root = Arrays.asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
                                    ImmutableMap.of( "name", "Becky", "age", 42 ) );
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "[0].name", "Alice" },
@@ -1297,7 +1297,7 @@ public final class TraversersTest {
 
     @Test
     public void leafElementsArray() {
-        Object[] root = new Object[] { ImmutableMap.of( "name", "Alice", "age", 37 ),
+        final Object[] root = new Object[] { ImmutableMap.of( "name", "Alice", "age", 37 ),
                                        ImmutableMap.of( "name", "Becky", "age", 42 ) };
         assertPathWalksAre( Traversers.leafElements().apply( root ),
                             new Object[][] { { "[0].name", "Alice" },

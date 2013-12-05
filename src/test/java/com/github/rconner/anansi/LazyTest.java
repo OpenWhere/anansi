@@ -41,11 +41,11 @@ public class LazyTest {
         private final List<T> list;
         boolean hasBeenInvoked = false;
 
-        TestIterable( T... items ) {
+        TestIterable( final T... items ) {
             this.list = Lists.newArrayList( items );
         }
 
-        TestIterable( List<T> items ) {
+        TestIterable( final List<T> items ) {
             this.list = Lists.newArrayList( items );
         }
 
@@ -59,25 +59,25 @@ public class LazyTest {
     static class TestTraverser implements Traverser<String, String> {
         final TestIterable<Walk<String,String>> iterable;
 
-        TestTraverser( String... items ) {
-            List<Walk<String,String>> list = Lists.newArrayList();
-            for( String item : items ) {
+        TestTraverser( final String... items ) {
+            final List<Walk<String,String>> list = Lists.newArrayList();
+            for( final String item : items ) {
                 list.add( Walk.<String,String>empty( item ) );
             }
             iterable = new TestIterable<Walk<String, String>>( list );
         }
 
         @Override
-        public Iterable<Walk<String, String>> apply( String input ) {
+        public Iterable<Walk<String, String>> apply( final String input ) {
             return iterable;
         }
     }
 
     @Test
     public void iterator() {
-        TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
+        final TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
         assertThat( iterable.hasBeenInvoked, is( false ) );
-        Iterator<String> lazyIterator = Lazy.iterator( iterable );
+        final Iterator<String> lazyIterator = Lazy.iterator( iterable );
         assertThat( iterable.hasBeenInvoked, is( false ) );
         lazyIterator.hasNext();
         assertThat( iterable.hasBeenInvoked, is( true ) );
@@ -86,7 +86,7 @@ public class LazyTest {
 
     @Test
     public void iteratorRemove() {
-        TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
+        final TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
         Iterator<String> lazyIterator = Lazy.iterator( iterable );
         try {
             lazyIterator.remove();
@@ -105,8 +105,8 @@ public class LazyTest {
 
     @Test
     public void iteratorAlreadyLazy() {
-        TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
-        Iterable<String> lazyIterable = Lazy.iterable( iterable );
+        final TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
+        final Iterable<String> lazyIterable = Lazy.iterable( iterable );
         // There's no good way to test the result of this, but it does cover the condition/branch
         Lazy.iterator( lazyIterable );
     }
@@ -118,11 +118,11 @@ public class LazyTest {
 
     @Test
     public void iterable() {
-        TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
+        final TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
         assertThat( iterable.hasBeenInvoked, is( false ) );
-        Iterable<String> lazyIterable = Lazy.iterable( iterable );
+        final Iterable<String> lazyIterable = Lazy.iterable( iterable );
         assertThat( iterable.hasBeenInvoked, is( false ) );
-        Iterator<String> lazyIterator = lazyIterable.iterator();
+        final Iterator<String> lazyIterator = lazyIterable.iterator();
         assertThat( iterable.hasBeenInvoked, is( false ) );
         lazyIterator.hasNext();
         assertThat( iterable.hasBeenInvoked, is( true ) );
@@ -131,8 +131,8 @@ public class LazyTest {
 
     @Test
     public void iterableRemove() {
-        TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
-        Iterable<String> lazyIterable = Lazy.iterable( iterable );
+        final TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
+        final Iterable<String> lazyIterable = Lazy.iterable( iterable );
         Iterator<String> lazyIterator = lazyIterable.iterator();
         try {
             lazyIterator.remove();
@@ -151,8 +151,8 @@ public class LazyTest {
 
     @Test
     public void iterableAlreadyLazy() {
-        TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
-        Iterable<String> lazyIterable = Lazy.iterable( iterable );
+        final TestIterable<String> iterable = new TestIterable<String>( "a", "b", "c" );
+        final Iterable<String> lazyIterable = Lazy.iterable( iterable );
         assertThat( Lazy.iterable( lazyIterable ), is( lazyIterable ) );
     }
 
@@ -161,10 +161,10 @@ public class LazyTest {
         Lazy.iterable( null );
     }
 
-    private static void assertContainsWalks( Iterator<Walk<String, String>> iterator, String... vertices ) {
+    private static void assertContainsWalks( final Iterator<Walk<String, String>> iterator, final String... vertices ) {
         for( final String vertex : vertices ) {
             assertThat( iterator.hasNext(), is( true ) );
-            Walk<String, String> walk = iterator.next();
+            final Walk<String, String> walk = iterator.next();
             assertThat( walk.getFrom(), is( vertex ) );
         }
         assertThat( iterator.hasNext(), is( false ) );
@@ -178,12 +178,12 @@ public class LazyTest {
 
     @Test
     public void traverser() {
-        TestTraverser traverser = new TestTraverser( "a", "b", "c" );
-        Traverser<String,String> lazyTraverser = Lazy.traverser( traverser );
+        final TestTraverser traverser = new TestTraverser( "a", "b", "c" );
+        final Traverser<String,String> lazyTraverser = Lazy.traverser( traverser );
         assertThat( traverser.iterable.hasBeenInvoked, is( false ) );
-        Iterable<Walk<String, String>> lazyIterable = lazyTraverser.apply( "root" );
+        final Iterable<Walk<String, String>> lazyIterable = lazyTraverser.apply( "root" );
         assertThat( traverser.iterable.hasBeenInvoked, is( false ) );
-        Iterator<Walk<String,String>> lazyIterator = lazyIterable.iterator();
+        final Iterator<Walk<String,String>> lazyIterator = lazyIterable.iterator();
         assertThat( traverser.iterable.hasBeenInvoked, is( false ) );
         lazyIterator.hasNext();
         assertThat( traverser.iterable.hasBeenInvoked, is( true ) );
@@ -192,9 +192,9 @@ public class LazyTest {
 
     @Test
     public void traverserRemove() {
-        TestTraverser traverser = new TestTraverser( "a", "b", "c" );
-        Traverser<String, String> lazyTraverser = Lazy.traverser( traverser );
-        Iterable<Walk<String, String>> lazyIterable = lazyTraverser.apply( "root" );
+        final TestTraverser traverser = new TestTraverser( "a", "b", "c" );
+        final Traverser<String, String> lazyTraverser = Lazy.traverser( traverser );
+        final Iterable<Walk<String, String>> lazyIterable = lazyTraverser.apply( "root" );
         Iterator<Walk<String, String>> lazyIterator = lazyIterable.iterator();
         try {
             lazyIterator.remove();
@@ -213,8 +213,8 @@ public class LazyTest {
 
     @Test
     public void traverserAlreadyLazy() {
-        TestTraverser traverser = new TestTraverser( "a", "b", "c" );
-        Traverser<String, String> lazyTraverser = Lazy.traverser( traverser );
+        final TestTraverser traverser = new TestTraverser( "a", "b", "c" );
+        final Traverser<String, String> lazyTraverser = Lazy.traverser( traverser );
         assertThat( Lazy.traverser( lazyTraverser ), is( lazyTraverser ) );
     }
 
