@@ -32,9 +32,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * A minimal persistent list implementation, which does <strong>not</strong> implement {@link java.util.Collection}.
- * Note that it is not necessary for the contained elements to also be immutable; just remember that shared mutable
- * objects require synchronization even if they are contained in immutable data structures.
+ * A minimal persistent list implementation, behaving somewhat like a stack, which does <strong>not</strong> implement
+ * {@link java.util.Collection}. Note that it is not necessary for the contained elements to also be immutable; just
+ * remember that shared mutable objects require synchronization even if they are contained in immutable data structures.
  * <p/>
  * An {@link #add(Object)} operation returns a new list. A {@link #rest()} operation returns the list upon which {@link
  * #add(Object)} was called to add the first element. Because instances are immutable, storage can be (and is) reused. A
