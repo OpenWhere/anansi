@@ -64,11 +64,10 @@ public final class FifoQueue<E> implements Iterable<E> {
         final Node<E> node = new Node<E>( element );
         if( tail == null ) {
             head = node;
-            tail = node;
         } else {
             tail.next = node;
-            tail = node;
         }
+        tail = node;
     }
 
     public E dequeue() {
