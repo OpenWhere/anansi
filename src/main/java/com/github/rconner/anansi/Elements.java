@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  *
  * @author rconner
  */
-class Elements {
+final class Elements {
 
     /**
      * Prevent instantiation.

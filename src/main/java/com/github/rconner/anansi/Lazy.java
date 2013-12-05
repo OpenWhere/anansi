@@ -36,7 +36,7 @@ import java.util.Iterator;
  * @author rconner
  */
 @Beta
-public class Lazy {
+public final class Lazy {
 
     /**
      * Prevent instantiation.

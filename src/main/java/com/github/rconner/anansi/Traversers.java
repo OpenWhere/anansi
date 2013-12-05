@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableSet;
  * @author rconner
  */
 @Beta
-public class Traversers {
+public final class Traversers {
 
     /**
      * Prevent instantiation.
