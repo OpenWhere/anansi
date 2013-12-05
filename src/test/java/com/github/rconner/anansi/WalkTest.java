@@ -54,11 +54,11 @@ public final class WalkTest {
     }
 
     @Test
-    public void builder() {
+    public void next() {
         final Walk<Integer, String> rootWalk = Walk.empty( 11 );
         assertWalkContains( rootWalk, 11 );
 
-        final Walk<Integer, String> walkTo13 = rootWalk.append( 13, null );
+        final Walk<Integer, String> walkTo13 = rootWalk.append( 13 );
         assertWalkContains( walkTo13, 11, null, 13 );
 
         final Walk<Integer, String> subWalkTo13 = Walk.empty( 13 );
@@ -66,7 +66,7 @@ public final class WalkTest {
         final Walk<Integer, String> stillWalkTo13 = walkTo13.append( subWalkTo13 );
         assertWalkContains( stillWalkTo13, 11, null, 13 );
 
-        final Walk<Integer, String> subWalkTo15 = subWalkTo13.append( 15, null );
+        final Walk<Integer, String> subWalkTo15 = subWalkTo13.append( 15 );
         assertWalkContains( subWalkTo15, 13, null, 15 );
 
         final Walk<Integer, String> walkTo15 = stillWalkTo13.append( subWalkTo15 );
