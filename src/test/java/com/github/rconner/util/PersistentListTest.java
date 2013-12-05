@@ -93,9 +93,9 @@ public final class PersistentListTest {
     @Test
     public void stackManyElements() {
         final PersistentList<Integer> stack = PersistentList.of( 11, null, 5, 3, 2 );
-        assertStackContains( stack, 2, 3, 5, null, 11 );
-        assertStackContains( stack.add( 101 ).add( null ).add( 102 ), 102, null, 101, 2, 3, 5, null, 11 );
-        assertStackContains( stack, 2, 3, 5, null, 11 );
+        assertStackContains( stack, 11, null, 5, 3, 2 );
+        assertStackContains( stack.add( 101 ).add( null ).add( 102 ), 102, null, 101, 11, null, 5, 3, 2 );
+        assertStackContains( stack, 11, null, 5, 3, 2 );
     }
 
     @Test
