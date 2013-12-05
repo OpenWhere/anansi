@@ -102,6 +102,7 @@ public final class PersistentListTest {
     public void stackToString() {
         final PersistentList<Integer> stack = PersistentList.of();
         assertThat( stack.toString(), is( "[]" ) );
+        assertThat( stack.add( 42 ).toString(), is( "[42]" ) );
         assertThat( stack.add( 101 ).add( 102 ).toString(), is( "[102, 101]" ) );
     }
 }
