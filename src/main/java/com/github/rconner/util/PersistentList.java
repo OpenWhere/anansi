@@ -99,13 +99,14 @@ public abstract class PersistentList<E> implements Iterable<E> {
         return new SingleList<E>( element );
     }
 
+    // TODO: make this from first to last
     /**
-     * Creates a new PersistentList with the given elements, in order from bottom to top.
+     * Creates a new PersistentList with the given elements, in order from last to first.
      *
      * @param elements the elements for which to create a new PersistentList
      * @param <E> the type of element
      *
-     * @return a new PersistentList with the given elements, in order from bottom to top.
+     * @return a new PersistentList with the given elements, in order from last to first.
      */
     public static <E> PersistentList<E> of( final E... elements ) {
         PersistentList<E> list = of();
