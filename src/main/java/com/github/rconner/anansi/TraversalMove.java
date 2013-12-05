@@ -39,7 +39,7 @@ final class TraversalMove<V, E> {
     final Iterator<Walk<V, E>> iterator;
     final Walk<V, E> walk;
 
-    TraversalMove( final Iterator<Walk<V, E>> iterator, final Walk<V, E> walk ) {
+    private TraversalMove( final Iterator<Walk<V, E>> iterator, final Walk<V, E> walk ) {
         this.iterator = iterator;
         this.walk = walk;
     }

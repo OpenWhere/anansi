@@ -48,7 +48,7 @@ public final class Walk<V, E> {
      * @param from the first vertex in this Walk.
      * @param via the Steps in this Walk, in reverse order.
      */
-    Walk( final V from, final PersistentList<Step<V, E>> via ) {
+    private Walk( final V from, final PersistentList<Step<V, E>> via ) {
         this.from = from;
         this.via = via;
     }
