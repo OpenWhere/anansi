@@ -27,6 +27,10 @@ apply plugin: 'java'
 //   installs jars to local maven cache
 apply plugin: 'maven'
 
+// Task: release
+//   cuts a release of the project, prompts the user during the task
+apply plugin: 'release'
+
 // Task: cobertura
 //   builds test coverage reports
 apply plugin: 'cobertura'
@@ -57,6 +61,7 @@ buildscript {
     }
 
     dependencies {
+        classpath 'com.github.townsfolk:gradle-release:1.2'
         classpath 'net.saliman:gradle-cobertura-plugin:2.1.0'
         classpath 'com.github.goldin.plugins.gradle:duplicates:0.3.1'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.4'
