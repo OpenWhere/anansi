@@ -22,6 +22,9 @@
  */
 
 apply plugin: 'java'
+
+// Task: install
+//   installs jars to local maven cache
 apply plugin: 'maven'
 
 // Task: cobertura
