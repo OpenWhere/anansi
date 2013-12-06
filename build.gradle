@@ -28,9 +28,6 @@ apply plugin: 'maven'
 //   builds test coverage reports
 apply plugin: 'cobertura'
 
-// with jar.dependsOn clause below, automatically adds about.txt to all jars
-apply plugin: 'about'
-
 // Task: duplicates
 //   detects duplicate classes on the classpath
 apply plugin: 'duplicates'
@@ -58,7 +55,6 @@ buildscript {
 
     dependencies {
         classpath 'net.saliman:gradle-cobertura-plugin:2.1.0'
-        classpath 'com.github.goldin.plugins.gradle:about:0.3.1'
         classpath 'com.github.goldin.plugins.gradle:duplicates:0.3.1'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.4'
     }
@@ -79,20 +75,6 @@ compileTestJava {
 dependencies {
     compile 'com.google.guava:guava:15.0'
     testCompile 'junit:junit:4.11'
-}
-
-
-// configure about plugin
-
-jar {
-    dependsOn 'about'
-}
-
-about {
-    includeSystem = true
-    includeProperties = true
-    includePaths = true
-    includeDependencies = [ 'compile', 'runtime' ]
 }
 
 
