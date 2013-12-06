@@ -79,7 +79,7 @@ final class BreadthFirstTraverser<V, E> implements Traverser<V, E> {
 
         @Override
         public Walk<V, E> next() {
-            if( nextTail != null ) {
+            if( nextTail != null && nextTail.iterator.hasNext() ) {
                 moveQueue.enqueue( nextTail );
                 nextTail = null;
             }
@@ -134,10 +134,9 @@ A multi-step walk will be written as from:[->to, ->to, ...], with steps ordered 
 The state of the Iterator is the state of its move queue and the value of nextTail, which will be written as:
 
               move.iterator       move.walk.via (move.walk.from is always A)
-     |-head   [ B:->D, B:->E * ]    [->B]
-queue|        [ * C:->D, C:->F ]    [->C]
-     |-tail   [ ]                   [->D, ->B]
-nextTail      T [ ]                 [->E, ->B]
+queue|-head   [ A:->B, A:->C * ]    []
+     |-tail   [ * B:->D, B:->E ]    [->B]
+nextTail      T [ * C:->D, C:->F ]  [->C]
 
 Or as just "empty" if there are no moves in the queue. The "*" in the iterator precedes the next walk to be returned.
 
@@ -150,121 +149,103 @@ So, advance the head iterator and set nextTail to the move for its children.
 
 
 @init
-                                    [ * A:- ]             []
-                                    T null
+                                      [ * A:- ]             []
+                                      T null
 
 next()
-  enqueue nextTail if not null      no change
+  enqueue nextTail if not null/empty  no change
 
-  dequeue exhausted iterators       no change
+  dequeue exhausted iterators         no change
 
-  nextTail = next move              [ A:- * ]             []
-                                    T [ * A:->B, A:->C ]  []
+  nextTail = next move                [ A:- * ]             []
+                                      T [ * A:->B, A:->C ]  []
 
   return nextTail.walk = A:-
 
 next()
-  enqueue nextTail if not null      [ A:- * ]             []
-                                    [ * A:->B, A:->C ]    []
-                                    T null
+  enqueue nextTail if not null/empty  [ A:- * ]             []
+                                      [ * A:->B, A:->C ]    []
+                                      T null
 
-  dequeue exhausted iterators       [ * A:->B, A:->C ]    []
-                                    T null
+  dequeue exhausted iterators         [ * A:->B, A:->C ]    []
+                                      T null
 
-  nextTail = next move              [ A:->B, * A:->C ]    []
-                                    T [ * B:->D, B:->E ]  [->B]
+  nextTail = next move                [ A:->B, * A:->C ]    []
+                                      T [ * B:->D, B:->E ]  [->B]
 
   return nextTail.walk = A:[->B]
 
 next()
-  enqueue nextTail if not null      [ A:->B, * A:->C ]    []
-                                    [ * B:->D, B:->E ]    [->B]
-                                    T null
+  enqueue nextTail if not null/empty  [ A:->B, * A:->C ]    []
+                                      [ * B:->D, B:->E ]    [->B]
+                                      T null
 
-  dequeue exhausted iterators       no change
+  dequeue exhausted iterators         no change
 
-  nextTail = next move              [ A:->B, A:->C * ]    []
-                                    [ * B:->D, B:->E ]    [->B]
-                                    T [ * C:->D, C:->F ]  [->C]
+  nextTail = next move                [ A:->B, A:->C * ]    []
+                                      [ * B:->D, B:->E ]    [->B]
+                                      T [ * C:->D, C:->F ]  [->C]
 
   return nextTail.walk = A:[->C]
 
 next()
-  enqueue nextTail if not null      [ A:->B, A:->C * ]    []
-                                    [ * B:->D, B:->E ]    [->B]
-                                    [ * C:->D, C:->F ]    [->C]
-                                    T null
+  enqueue nextTail if not null/empty  [ A:->B, A:->C * ]    []
+                                      [ * B:->D, B:->E ]    [->B]
+                                      [ * C:->D, C:->F ]    [->C]
+                                      T null
 
-  dequeue exhausted iterators       [ * B:->D, B:->E ]    [->B]
-                                    [ * C:->D, C:->F ]    [->C]
-                                    T null
+  dequeue exhausted iterators         [ * B:->D, B:->E ]    [->B]
+                                      [ * C:->D, C:->F ]    [->C]
+                                      T null
 
-  nextTail = next move              [ B:->D, * B:->E ]    [->B]
-                                    [ * C:->D, C:->F ]    [->C]
-                                    T [ ]                 [->D, ->B]
+  nextTail = next move                [ B:->D, * B:->E ]    [->B]
+                                      [ * C:->D, C:->F ]    [->C]
+                                      T [ ]                 [->D, ->B]
 
   return nextTail.walk = A:[->D, ->B]
 
 next()
-  enqueue nextTail if not null      [ B:->D, * B:->E ]    [->B]
-                                    [ * C:->D, C:->F ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    T null
+  enqueue nextTail if not null/empty  [ B:->D, * B:->E ]    [->B]
+                                      [ * C:->D, C:->F ]    [->C]
+                                      T null
 
-  dequeue exhausted iterators       no change
+  dequeue exhausted iterators         no change
 
-  nextTail = next move              [ B:->D, B:->E * ]    [->B]
-                                    [ * C:->D, C:->F ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    T [ ]                 [->E, ->B]
+  nextTail = next move                [ B:->D, B:->E * ]    [->B]
+                                      [ * C:->D, C:->F ]    [->C]
+                                      T [ ]                 [->E, ->B]
 
   return nextTail.walk = A:[->E, ->B]
 
 next()
-  enqueue nextTail if not null      [ B:->D, B:->E * ]    [->B]
-                                    [ * C:->D, C:->F ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    [ ]                   [->E, ->B]
-                                    T null
+  enqueue nextTail if not null/empty  [ B:->D, B:->E * ]    [->B]
+                                      [ * C:->D, C:->F ]    [->C]
+                                      T null
 
-  dequeue exhausted iterators       [ * C:->D, C:->F ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    [ ]                   [->E, ->B]
-                                    T null
+  dequeue exhausted iterators         [ * C:->D, C:->F ]    [->C]
+                                      T null
 
-  nextTail = next move              [ C:->D, * C:->F ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    [ ]                   [->E, ->B]
-                                    T [ ]                 [->D, ->C]
+  nextTail = next move                [ C:->D, * C:->F ]    [->C]
+                                      T [ ]                 [->D, ->C]
 
   return nextTail.walk = A:[->D, ->C]
 
 next()
-  enqueue nextTail if not null      [ C:->D, * C:->F ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    [ ]                   [->E, ->B]
-                                    [ ]                   [->D, ->C]
-                                    T null
+  enqueue nextTail if not null/empty  [ C:->D, * C:->F ]    [->C]
+                                      T null
 
-  dequeue exhausted iterators       no change
+  dequeue exhausted iterators         no change
 
-  nextTail = next move              [ C:->D, C:->F * ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    [ ]                   [->E, ->B]
-                                    [ ]                   [->D, ->C]
-                                    T [ ]                 [->F, ->C]
+  nextTail = next move                [ C:->D, C:->F * ]    [->C]
+                                      T [ ]                 [->F, ->C]
 
   return nextTail.walk = A:[->F, ->C]
 
 next()
-  enqueue nextTail if not null      [ C:->D, C:->F * ]    [->C]
-                                    [ ]                   [->D, ->B]
-                                    [ ]                   [->E, ->B]
-                                    [ ]                   [->D, ->C]
-                                    [ ]                   [->F, ->C]
-                                    T null
+  enqueue nextTail if not null/empty  [ C:->D, C:->F * ]    [->C]
+                                      T null
 
-  dequeue exhausted iterators       empty
+  dequeue exhausted iterators         empty
 
   throw NoSuchElementException
 
