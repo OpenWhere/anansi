@@ -122,16 +122,52 @@ uploadArchives {
 }
 
 
+// configure some manifest entries, and use them
+// these are manifest entries I've seen elsewhere
+
+sharedManifest = manifest {
+    attributes( 'Created-By': "Gradle $gradle.gradleVersion" )
+    attributes( 'Built-By': System.getProperty( 'user.name' ) )
+    attributes( 'Build-Jdk': System.getProperty( 'java.version' ) )
+
+    attributes( 'Implementation-Title': project.name )
+    attributes( 'Implementation-Version': version )
+    attributes( 'Implementation-Vendor': 'Ray A. Conner' )
+    attributes( 'Implementation-Vendor-Id': group )
+    attributes( 'Specification-Title': project.name )
+    attributes( 'Specification-Version': version )
+    attributes( 'Specification-Vendor': 'Ray A. Conner' )
+
+    attributes( 'X-Compile-Source-JDK': sourceCompatibility )
+    attributes( 'X-Compile-Target-JDK': targetCompatibility )
+
+    attributes( 'Bundle-DocURL': 'https://github.com/rconner/anansi' )
+    attributes( 'Bundle-License': 'http://opensource.org/licenses/MIT' )
+}
+
+jar {
+    manifest {
+        from sharedManifest
+    }
+}
+
+
 // create source and javadoc jars and add them as artifacts
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
+    manifest {
+        from sharedManifest
+    }
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
+    manifest {
+        from sharedManifest
+    }
 }
 
 artifacts {
