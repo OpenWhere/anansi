@@ -125,7 +125,7 @@ uploadArchives {
 // configure some manifest entries, and use them
 // these are manifest entries I've seen elsewhere
 
-sharedManifest = manifest {
+ext.sharedManifest = manifest {
     attributes( 'Created-By': "Gradle $gradle.gradleVersion" )
     attributes( 'Built-By': System.getProperty( 'user.name' ) )
     attributes( 'Build-Jdk': System.getProperty( 'java.version' ) )
