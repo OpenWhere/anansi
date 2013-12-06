@@ -78,7 +78,7 @@ compileTestJava {
 
 dependencies {
     compile 'com.google.guava:guava:15.0'
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:4.11'
 }
 
 
