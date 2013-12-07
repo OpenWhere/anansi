@@ -146,6 +146,9 @@ ext.sharedManifest = manifest {
 }
 
 jar {
+    from( 'LICENSE.txt' ) {
+        into 'META-INF'
+    }
     manifest {
         from sharedManifest
     }
@@ -157,6 +160,9 @@ jar {
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
+    from( 'LICENSE.txt' ) {
+        into 'META-INF'
+    }
     manifest {
         from sharedManifest
     }
@@ -165,6 +171,9 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
+    from( 'LICENSE.txt' ) {
+        into 'META-INF'
+    }
     manifest {
         from sharedManifest
     }
