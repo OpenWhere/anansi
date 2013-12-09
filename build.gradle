@@ -23,13 +23,13 @@
 
 apply plugin: 'java'
 
-// Task: install
+// Task: publishToMavenLocal
 //   installs jars to local maven cache
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 // Task: release
 //   cuts a release of the project, prompts the user during the task
-apply plugin: 'release'
+//apply plugin: 'release'
 
 // Task: cobertura
 //   builds test coverage reports
@@ -101,27 +101,6 @@ cobertura {
 }
 
 
-// customize the maven pom artifact
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                url 'https://github.com/rconner/anansi'
-                description 'A Java library with traversal primitives and operations for graph-like structures.'
-                inceptionYear '2003'
-                licenses {
-                    license {
-                        name 'The MIT License (MIT)'
-                        url 'http://opensource.org/licenses/MIT'
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 // configure some manifest entries, and use them
 // these are manifest entries I've seen elsewhere
 
@@ -145,7 +124,18 @@ ext.sharedManifest = manifest {
     attributes( 'Bundle-License': 'http://opensource.org/licenses/MIT' )
 }
 
+// configure what goes in the jars
+
 jar {
+    // Hack. See:
+    //   http://forums.gradle.org/gradle/topics/how_do_i_place_the_pom_generated_from_the_maven_publish_plugin_inside_the_jar
+    //   http://issues.gradle.org/browse/GRADLE-2916
+    dependsOn 'generatePomFileForMavenJavaPublication'
+    from( 'build/publications/mavenJava/pom-default.xml' ) {
+        into "META-INF/maven/$project.group/$project.name"
+        rename '.*', 'pom.xml'
+    }
+
     from( 'LICENSE.txt' ) {
         into 'META-INF'
     }
@@ -154,11 +144,8 @@ jar {
     }
 }
 
-
-// create source and javadoc jars and add them as artifacts
-
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    classifier 'sources'
     from sourceSets.main.allSource
     from( 'LICENSE.txt' ) {
         into 'META-INF'
@@ -169,7 +156,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    classifier 'javadoc'
     from javadoc.destinationDir
     from( 'LICENSE.txt' ) {
         into 'META-INF'
@@ -179,7 +166,21 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     }
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+// maven publishing configuration
+
+publishing {
+    publications {
+        mavenJava( MavenPublication ) {
+            from components.java
+            artifacts = [ jar, sourcesJar, javadocJar ]
+            pom.withXml {
+                asNode().appendNode( 'url', 'https://github.com/rconner/anansi' )
+                asNode().appendNode( 'description', 'A Java library with traversal primitives and operations for graph-like structures.' )
+                asNode().appendNode( 'inceptionYear', '2003' )
+                def license = asNode().appendNode( 'licenses' ).appendNode( 'license' )
+                license.appendNode( 'name', 'The MIT License (MIT)' )
+                license.appendNode( 'url', 'http://opensource.org/licenses/MIT' )
+            }
+        }
+    }
 }
