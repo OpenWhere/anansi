@@ -126,18 +126,22 @@ public final class Traversers {
     }
 
     /**
-     * Returns a traverser to reachable leaves with <strong>NO</strong> cycle detection. If a cycle is present, some
+     * Returns an iterable to reachable leaves with <strong>NO</strong> cycle detection. If a cycle is present, some
      * call to next() will infinitely loop (most likely resulting in an OutOfMemoryError).
      *
      * @param adjacency the adjacency function to use
-     * @param <V> the vertex type
-     * @param <E> the edge type
+     * @param <T> the vertex type
      *
-     * @return a traverser to reachable leaves with <strong>NO</strong> cycle detection.
+     * @return an iterable to reachable leaves with <strong>NO</strong> cycle detection.
      */
-    public static <V, E> Traverser<V, E> leaves( final Traverser<V, E> adjacency ) {
+    public static <T> FluentIterable<T> leaves( final T root, final TreeTraverser<T> adjacency ) {
         Preconditions.checkNotNull( adjacency );
-        return new LeafTraverser<V, E>( Lazy.traverser( adjacency ) );
+        return new FluentIterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new LeafIterator<T>( root, Lazy.traverser( adjacency ) );
+            }
+        };
     }
 
     /**
@@ -161,7 +165,8 @@ public final class Traversers {
      * @return a {@code leaves(Traverser)} Traverser which uses {@code elements()} as an adjacency Traverser.
      */
     public static Traverser<Object, String> leafElements() {
-        return Elements.LEAF_ELEMENTS_TRAVERSER;
+        return null;
+//        return leaves( elements() );
     }
 
     /**

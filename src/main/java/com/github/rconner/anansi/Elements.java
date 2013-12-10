@@ -66,7 +66,6 @@ final class Elements {
         }
     };
 
-    static final Traverser<Object, String> LEAF_ELEMENTS_TRAVERSER = Traversers.leaves( ELEMENT_ADJACENCY );
 
     static String path( final Walk<Object, String> walk ) {
         final StringBuilder sb = new StringBuilder();
