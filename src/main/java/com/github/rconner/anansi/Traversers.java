@@ -108,17 +108,21 @@ public final class Traversers {
     }
 
     /**
-     * Returns a breadth-first traverser with <strong>NO</strong> cycle detection.
+     * Returns a breadth-first iterable with <strong>NO</strong> cycle detection.
      *
      * @param adjacency the adjacency function to use
-     * @param <V> the vertex type
-     * @param <E> the edge type
+     * @param <T> the vertex type
      *
-     * @return a breadth-first traverser with <strong>NO</strong> cycle detection.
+     * @return a breadth-first iterable with <strong>NO</strong> cycle detection.
      */
-    public static <V, E> Traverser<V, E> breadthFirst( final Traverser<V, E> adjacency ) {
+    public static <T> FluentIterable<T> breadthFirst( final T root, final TreeTraverser<T> adjacency ) {
         Preconditions.checkNotNull( adjacency );
-        return new BreadthFirstTraverser<V, E>( Lazy.traverser( adjacency ) );
+        return new FluentIterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new BreadthFirstIterator<T>( root, Lazy.traverser( adjacency ) );
+            }
+        };
     }
 
     /**
