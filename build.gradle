@@ -23,13 +23,14 @@
 
 apply plugin: 'java'
 
+// Task: release
+//   cuts a release of the project, prompts the user during the task
+// Due to some conflict, this plugin must precede the maven-publish plugin.
+apply plugin: 'release'
+
 // Task: publishToMavenLocal
 //   installs jars to local maven cache
 apply plugin: 'maven-publish'
-
-// Task: release
-//   cuts a release of the project, prompts the user during the task
-//apply plugin: 'release'
 
 // Task: cobertura
 //   builds test coverage reports
