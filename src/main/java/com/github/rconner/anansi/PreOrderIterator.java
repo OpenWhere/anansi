@@ -108,7 +108,7 @@ The iteration order will be:
 The state of the pre-order iterator is the state of its stack, which will be written as:
 
               iterator
-  bottom      [ A ]
+  bottom      [ A * ]
               [ B, * C ]
               [ D, E * ]
   top         [ ]
