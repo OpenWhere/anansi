@@ -125,7 +125,7 @@ public final class TraversersTest {
         assertTraversalContains( traverser.children( "A" ), EMPTY_EXPECTED_VERTICES );
     }
 
-    // preOrder( Traverser )
+    // preOrder( root, Traverser )
 
     @Test
     public void preOrderEmpty() {
@@ -323,168 +323,100 @@ public final class TraversersTest {
         ( (PruningIterator) iterator ).remove();
     }
 
-/*
-    // postOrder( Traverser )
+    // postOrder( root, Traverser )
 
     @Test
     public void postOrderEmpty() {
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( empty ) );
-        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" } } );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacencyFor( empty ) );
+        assertTraversalContains( traverser, "A" );
     }
 
     @Test
     public void postOrderSingleEdge() {
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( singleEdge ) );
-        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A", "A->B", "B" }, { "A" } } );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacencyFor( singleEdge ) );
+        assertTraversalContains( traverser, "B", "A" );
     }
 
     @Test
     public void postOrderTree() {
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( tree ) );
-        assertTraversalContains( traverser.apply( "A" ),
-                                 new Object[][] { { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C", "C->F", "F" },
-                                                  { "A", "A->C", "C", "C->G", "G" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A" } } );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacencyFor( tree ) );
+        assertTraversalContains( traverser, "D", "E", "B", "F", "G", "C", "A" );
     }
 
     @Test
     public void postOrderDag() {
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacencyFor( dag ) );
-        assertTraversalContains( traverser.apply( "A" ),
-                                 new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A" } } );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacencyFor( dag ) );
+        assertTraversalContains( traverser, "G", "D", "E", "B", "G", "D", "C", "A" );
     }
 
     @Test( expected = IllegalStateException.class )
     public void postOrderRemoveBeforeNext() {
-        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
+        final TreeTraverser<String> adjacency = mutableAdjacencyFor( dag );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacency );
+        final Iterator<String> iterator = traverser.iterator();
         iterator.remove();
     }
 
     @Test( expected = IllegalStateException.class )
     public void postOrderRemoveRoot() {
-        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C" },
-                                             { "A" } } );
+        final TreeTraverser<String> adjacency = mutableAdjacencyFor( dag );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacency );
+        final Iterator<String> iterator = traverser.iterator();
+        assertNextVerticesAre( iterator, "G", "D", "E", "B", "G", "D", "C", "A" );
         iterator.remove();
     }
 
     @Test
     public void postOrderRemoveB() {
-        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->B", "B" } } );
+        final TreeTraverser<String> adjacency = mutableAdjacencyFor( dag );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacency );
+        final Iterator<String> iterator = traverser.iterator();
+        assertNextVerticesAre( iterator, "G", "D", "E", "B" );
         iterator.remove();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C" },
-                                             { "A" } } );
+        assertNextVerticesAre( iterator, "G", "D", "C", "A" );
 
         // Check that data structure was actually changed
-        assertTraversalContains( Traversers.postOrder( adjacency ).apply( "A" ),
-                                 new Object[][] { { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A" } } );
+        assertTraversalContains( Traversers.postOrder( "A", adjacency ), "G", "D", "C", "A" );
     }
 
     @Test
     public void postOrderRemoveD() {
-        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->B", "B", "B->D", "D" } } );
+        final TreeTraverser<String> adjacency = mutableAdjacencyFor( dag );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacency );
+        final Iterator<String> iterator = traverser.iterator();
+        assertNextVerticesAre( iterator, "G", "D" );
         iterator.remove();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C" },
-                                             { "A" } } );
+        assertNextVerticesAre( iterator, "E", "B", "G", "D", "C", "A" );
 
         // Check that data structure was actually changed
-        assertTraversalContains( Traversers.postOrder( adjacency ).apply( "A" ),
-                                 new Object[][] { { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A" } } );
+        assertTraversalContains( Traversers.postOrder( "A", adjacency ), "E", "B", "G", "D", "C", "A" );
     }
 
     @Test
     public void postOrderRemoveE() {
-        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" } } );
+        final TreeTraverser<String> adjacency = mutableAdjacencyFor( dag );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacency );
+        final Iterator<String> iterator = traverser.iterator();
+        assertNextVerticesAre( iterator, "G", "D", "E" );
         iterator.remove();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C" },
-                                             { "A" } } );
+        assertNextVerticesAre( iterator, "B", "G", "D", "C", "A" );
 
         // Check that data structure was actually changed
-        assertTraversalContains( Traversers.postOrder( adjacency ).apply( "A" ),
-                                 new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A" } } );
+        assertTraversalContains( Traversers.postOrder( "A", adjacency ), "G", "D", "B", "G", "D", "C", "A" );
     }
 
     @Test( expected = IllegalStateException.class )
     public void postOrderRemoveTwice() {
-        final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
-        final Traverser<String, String> traverser = Traversers.postOrder( adjacency );
-        final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->B", "B" } } );
+        final TreeTraverser<String> adjacency = mutableAdjacencyFor( dag );
+        final Iterable<String> traverser = Traversers.postOrder( "A", adjacency );
+        final Iterator<String> iterator = traverser.iterator();
+        assertNextVerticesAre( iterator, "G", "D", "E", "B" );
         iterator.remove();
         iterator.remove();
     }
 
-    // breadthFirst( Traverser )
+/*
+    // breadthFirst( root, Traverser )
 
     @Test
     public void breadthFirstEmpty() {
@@ -495,7 +427,7 @@ public final class TraversersTest {
     @Test
     public void breadthFirstSingleEdge() {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( singleEdge ) );
-        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertTraversalContains( traverser.apply( "A" ), new Object[][] { { "A" }, { "A", "B" } } );
     }
 
     @Test
@@ -503,9 +435,9 @@ public final class TraversersTest {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( loop ) );
         assertTraversalBegins( traverser.apply( "A" ),
                                new Object[][] { { "A" },
-                                                { "A", "A->A", "A" },
-                                                { "A", "A->A", "A", "A->A", "A" },
-                                                { "A", "A->A", "A", "A->A", "A", "A->A", "A" } } );
+                                                { "A", "A" },
+                                                { "A", "A", "A" },
+                                                { "A", "A", "A", "A" } } );
     }
 
     @Test
@@ -513,10 +445,10 @@ public final class TraversersTest {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( cycle ) );
         assertTraversalBegins( traverser.apply( "A" ),
                                new Object[][] { { "A" },
-                                                { "A", "A->B", "B" },
-                                                { "A", "A->B", "B", "B->C", "C" },
-                                                { "A", "A->B", "B", "B->C", "C", "C->A", "A" },
-                                                { "A", "A->B", "B", "B->C", "C", "C->A", "A", "A->B", "B" } } );
+                                                { "A", "B" },
+                                                { "A", "B", "C" },
+                                                { "A", "B", "C", "A" },
+                                                { "A", "B", "C", "A", "B" } } );
     }
 
     @Test
@@ -524,24 +456,24 @@ public final class TraversersTest {
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacencyFor( tree ) );
         assertTraversalContains( traverser.apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->C", "C", "C->F", "F" },
-                                                  { "A", "A->C", "C", "C->G", "G" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "C", "F" },
+                                                  { "A", "C", "C->G", "G" } } );
     }
 
     private static void assertBreadthFirstFullDag( final Iterable<Walk<String, String>> traversal ) {
         assertTraversalContains( traversal,
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "C", "D" },
+                                                  { "A", "B", "D", "G" },
+                                                  { "A", "C", "D", "G" } } );
     }
 
     @Test
@@ -571,39 +503,39 @@ public final class TraversersTest {
     public void breadthFirstRemoveB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" } } );
         iterator.remove();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->C", "C" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "C" },
+                                             { "A", "C", "D" },
+                                             { "A", "C", "D", "G" } } );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                                                  { "A", "C" },
+                                                  { "A", "C", "D" },
+                                                  { "A", "C", "D", "G" } } );
     }
 
     @Test
     public void breadthFirstRemoveC() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" }, { "A", "A->C", "C" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" }, { "A", "C" } } );
         iterator.remove();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "B", "D", "G" } } );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+                                                  { "A", "B" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "B", "D", "G" } } );
     }
 
     @Test
@@ -612,23 +544,23 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" } } );
         iterator.remove();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "B", "E" },
+                                             { "A", "C", "D" },
+                                             { "A", "C", "D", "G" } } );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "C", "D" },
+                                                  { "A", "C", "D", "G" } } );
     }
 
     @Test
@@ -637,25 +569,25 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" } } );
         iterator.remove();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "C", "D" },
+                                             { "A", "B", "D", "G" },
+                                             { "A", "C", "D", "G" } } );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->C", "C", "C->D", "D" },
-                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                                  { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "C", "D" },
+                                                  { "A", "B", "D", "G" },
+                                                  { "A", "C", "D", "G" } } );
     }
 
     @Test
@@ -664,22 +596,22 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "C", "D" } } );
         iterator.remove();
-        assertNextVerticesAre( iterator, new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A", "B", "D", "G" } } );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "B", "D", "G" } } );
     }
 
     @Test
@@ -688,23 +620,23 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "C", "D" },
+                                             { "A", "B", "D", "G" } } );
         iterator.remove();
         assertNextVerticesAre( iterator, EMPTY_EXPECTED_VERTICES );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->C", "C", "C->D", "D" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "C", "D" } } );
     }
 
     @Test
@@ -713,31 +645,31 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "C", "D" },
+                                             { "A", "B", "D", "G" },
+                                             { "A", "C", "D", "G" } } );
         iterator.remove();
         assertNextVerticesAre( iterator, EMPTY_EXPECTED_VERTICES );
 
         // Check that data structure was actually changed
         assertTraversalContains( Traversers.breadthFirst( adjacency ).apply( "A" ),
                                  new Object[][] { { "A" },
-                                                  { "A", "A->B", "B" },
-                                                  { "A", "A->C", "C" },
-                                                  { "A", "A->B", "B", "B->D", "D" },
-                                                  { "A", "A->B", "B", "B->E", "E" },
-                                                  { "A", "A->C", "C", "C->D", "D" } } );
+                                                  { "A", "B" },
+                                                  { "A", "C" },
+                                                  { "A", "B", "D" },
+                                                  { "A", "B", "E" },
+                                                  { "A", "C", "D" } } );
     }
 
     @Test( expected = IllegalStateException.class )
     public void breadthFirstRemoveTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" } } );
         iterator.remove();
         iterator.remove();
     }
@@ -767,12 +699,12 @@ public final class TraversersTest {
     public void breadthFirstPruneB() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->C", "C" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "C" },
+                                             { "A", "C", "D" },
+                                             { "A", "C", "D", "G" } } );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -782,12 +714,12 @@ public final class TraversersTest {
     public void breadthFirstPruneC() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" }, { "A", "A->C", "C" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" }, { "A", "C" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "B", "D", "G" } } );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -799,14 +731,14 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "B", "E" },
+                                             { "A", "C", "D" },
+                                             { "A", "C", "D", "G" } } );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -818,15 +750,15 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextVerticesAre( iterator,
-                            new Object[][] { { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                            new Object[][] { { "A", "C", "D" },
+                                             { "A", "B", "D", "G" },
+                                             { "A", "C", "D", "G" } } );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -838,13 +770,13 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "C", "D" } } );
         ( (PruningIterator) iterator ).prune();
-        assertNextVerticesAre( iterator, new Object[][] { { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A", "B", "D", "G" } } );
 
         // Check that data structure is unchanged
         assertBreadthFirstFullDag( Traversers.breadthFirst( adjacency ).apply( "A" ) );
@@ -856,12 +788,12 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "C", "D" },
+                                             { "A", "B", "D", "G" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextVerticesAre( iterator, EMPTY_EXPECTED_VERTICES );
 
@@ -875,13 +807,13 @@ public final class TraversersTest {
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
         assertNextVerticesAre( iterator,
                             new Object[][] { { "A" },
-                                             { "A", "A->B", "B" },
-                                             { "A", "A->C", "C" },
-                                             { "A", "A->B", "B", "B->D", "D" },
-                                             { "A", "A->B", "B", "B->E", "E" },
-                                             { "A", "A->C", "C", "C->D", "D" },
-                                             { "A", "A->B", "B", "B->D", "D", "D->G", "G" },
-                                             { "A", "A->C", "C", "C->D", "D", "D->G", "G" } } );
+                                             { "A", "B" },
+                                             { "A", "C" },
+                                             { "A", "B", "D" },
+                                             { "A", "B", "E" },
+                                             { "A", "C", "D" },
+                                             { "A", "B", "D", "G" },
+                                             { "A", "C", "D", "G" } } );
         ( (PruningIterator) iterator ).prune();
         assertNextVerticesAre( iterator, EMPTY_EXPECTED_VERTICES );
 
@@ -893,7 +825,7 @@ public final class TraversersTest {
     public void breadthFirstPruneTwice() {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Iterator<Walk<String, String>> iterator = Traversers.breadthFirst( adjacency ).apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" } } );
         ( (PruningIterator) iterator ).prune();
         ( (PruningIterator) iterator ).prune();
     }
@@ -903,7 +835,7 @@ public final class TraversersTest {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
         final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" } } );
         ( (PruningIterator) iterator ).remove();
         ( (PruningIterator) iterator ).prune();
     }
@@ -913,7 +845,7 @@ public final class TraversersTest {
         final Traverser<String, String> adjacency = mutableAdjacencyFor( dag );
         final Traverser<String, String> traverser = Traversers.breadthFirst( adjacency );
         final Iterator<Walk<String, String>> iterator = traverser.apply( "A" ).iterator();
-        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "A->B", "B" } } );
+        assertNextVerticesAre( iterator, new Object[][] { { "A" }, { "A", "B" } } );
         ( (PruningIterator) iterator ).prune();
         ( (PruningIterator) iterator ).remove();
     }

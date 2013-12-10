@@ -89,18 +89,22 @@ public final class Traversers {
     }
 
     /**
-     * Returns a post-order traverser with <strong>NO</strong> cycle detection. If a cycle is present, some call to
+     * Returns a post-order iterable with <strong>NO</strong> cycle detection. If a cycle is present, some call to
      * next() will infinitely loop (most likely resulting in an OutOfMemoryError).
      *
      * @param adjacency the adjacency function to use
-     * @param <V> the vertex type
-     * @param <E> the edge type
+     * @param <T> the vertex type
      *
-     * @return a post-order traverser with <strong>NO</strong> cycle detection.
+     * @return a post-order iterable with <strong>NO</strong> cycle detection.
      */
-    public static <V, E> Traverser<V, E> postOrder( final Traverser<V, E> adjacency ) {
+    public static <T> FluentIterable<T> postOrder( final T root, final TreeTraverser<T> adjacency ) {
         Preconditions.checkNotNull( adjacency );
-        return new PostOrderTraverser<V, E>( Lazy.traverser( adjacency ) );
+        return new FluentIterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new PostOrderIterator<T>( root, Lazy.traverser( adjacency ) );
+            }
+        };
     }
 
     /**
