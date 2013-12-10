@@ -26,7 +26,11 @@ package com.github.rconner.anansi;
 import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.TreeTraverser;
+
+import java.util.Iterator;
 
 /**
  * Static factory methods for building Traversers.
@@ -65,18 +69,24 @@ public final class Traversers {
         }
     }
 
+    // TODO: Document how these are different from Gauva's implementations.
+
     /**
-     * Returns a pre-order traverser with <strong>NO</strong> cycle detection.
+     * Returns a pre-order iterable with <strong>NO</strong> cycle detection.
      *
      * @param adjacency the adjacency function to use
-     * @param <V> the vertex type
-     * @param <E> the edge type
+     * @param <T> the vertex type
      *
-     * @return a pre-order traverser with <strong>NO</strong> cycle detection.
+     * @return a pre-order iterable with <strong>NO</strong> cycle detection.
      */
-    public static <V, E> Traverser<V, E> preOrder( final Traverser<V, E> adjacency ) {
+    public static <T> FluentIterable<T> preOrder( final T root, final TreeTraverser<T> adjacency ) {
         Preconditions.checkNotNull( adjacency );
-        return new PreOrderTraverser<V, E>( Lazy.traverser( adjacency ) );
+        return new FluentIterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new PreOrderIterator<T>( root, Lazy.traverser( adjacency ) );
+            }
+        };
     }
 
     /**

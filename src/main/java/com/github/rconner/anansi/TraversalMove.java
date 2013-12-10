@@ -71,7 +71,10 @@ final class TraversalMove<V, E> {
         return new TraversalMove<V, E>( adjacency.apply( nextWalk.getTo() ).iterator(), this.walk.append( nextWalk ) );
     }
 
-    private static <T> Iterator<T> rootIterator( final T value ) {
+    /**
+     * Just like Iterators.singletonIterator(value), except remove() throws an IllegalStateException.
+     */
+    static <T> Iterator<T> rootIterator( final T value ) {
         return new Iterator<T>() {
             boolean done;
 
