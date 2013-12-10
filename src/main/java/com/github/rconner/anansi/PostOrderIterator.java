@@ -57,9 +57,9 @@ final class PostOrderIterator<T> implements Iterator<T> {
             final T vertex = stack.first().iterator.next();
             stack = stack.add( new Move<T>( vertex, adjacency.children( vertex ).iterator() ) );
         }
-        final Move<T> move = stack.first();
+        final T vertex = stack.first().vertex;
         stack = stack.rest();
-        return move.vertex;
+        return vertex;
     }
 
     @Override
