@@ -27,6 +27,7 @@ import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.TreeTraverser;
 
 import java.util.Iterator;
 
@@ -67,6 +68,14 @@ public final class Lazy {
             return ( Traverser<V, E> ) traverser;
         }
         return new LazyTraverser<V, E>( traverser );
+    }
+
+    public static <T> TreeTraverser<T> traverser( final TreeTraverser<T> traverser ) {
+        Preconditions.checkNotNull( traverser );
+        if( traverser instanceof LazyTreeTraverser ) {
+            return traverser;
+        }
+        return new LazyTreeTraverser<T>( traverser );
     }
 
 
@@ -133,4 +142,21 @@ public final class Lazy {
         }
     }
 
+    private static final class LazyTreeTraverser<T> extends TreeTraverser<T> {
+        private final TreeTraverser<T> delegate;
+
+        LazyTreeTraverser( final TreeTraverser<T> delegate ) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Iterable<T> children( final T root ) {
+            return new Iterable<T>() {
+                @Override
+                public Iterator<T> iterator() {
+                    return Lazy.iterator( delegate.children( root ) );
+                }
+            };
+        }
+    }
 }

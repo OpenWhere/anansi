@@ -220,6 +220,6 @@ public class LazyTest {
 
     @Test( expected = NullPointerException.class )
     public void traverserNull() {
-        Lazy.traverser( null );
+        Lazy.traverser( (Traverser<Object, Object>) null );
     }
 }
