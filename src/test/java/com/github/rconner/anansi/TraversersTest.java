@@ -119,11 +119,11 @@ public final class TraversersTest {
 
     // empty()
 
-//    @Test
-//    public void empty() {
-//        final TreeTraverser<String> traverser = Traversers.empty();
-//        assertTraversalContains( traverser.children( "A" ), EMPTY_EXPECTED_VERTICES );
-//    }
+    @Test
+    public void empty() {
+        final TreeTraverser<String> traverser = Traversers.empty();
+        assertTraversalContains( traverser.children( "A" ), EMPTY_EXPECTED_VERTICES );
+    }
 
     // preOrder( Traverser )
 

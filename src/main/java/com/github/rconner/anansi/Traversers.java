@@ -48,23 +48,22 @@ public final class Traversers {
     }
 
     /**
-     * Returns a Traverser that returns an empty Iterable for all inputs.
+     * Returns a TreeTraverser that returns an empty Iterable for all inputs.
      *
-     * @param <V> the vertex type
-     * @param <E> the edge type
+     * @param <T> the vertex type
      *
-     * @return a Traverser that returns an empty Iterable for all inputs.
+     * @return a TreeTraverser that returns an empty Iterable for all inputs.
      */
     @SuppressWarnings( "unchecked" )
-    public static <V, E> Traverser<V, E> empty() {
-        return (Traverser<V, E>) EmptyTraverser.INSTANCE;
+    public static <T> TreeTraverser<T> empty() {
+        return (TreeTraverser<T>) EmptyTraverser.INSTANCE;
     }
 
-    private enum EmptyTraverser implements Traverser<Object, Object> {
-        INSTANCE;
+    private static class EmptyTraverser extends TreeTraverser<Object> {
+        private static final TreeTraverser<Object> INSTANCE = new EmptyTraverser();
 
         @Override
-        public Iterable<Walk<Object, Object>> apply( final Object vertex ) {
+        public Iterable<Object> children( final Object root ) {
             return ImmutableSet.of();
         }
     }
