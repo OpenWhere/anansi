@@ -23,14 +23,14 @@
 
 package com.github.rconner.anansi;
 
-import com.github.rconner.util.IterableTest;
 import com.google.common.collect.Lists;
+import com.google.common.collect.TreeTraverser;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
+import static com.github.rconner.util.IterableTest.assertIteratorContains;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -45,10 +45,6 @@ public class LazyTest {
             this.list = Lists.newArrayList( items );
         }
 
-        TestIterable( final List<T> items ) {
-            this.list = Lists.newArrayList( items );
-        }
-
         @Override
         public Iterator<T> iterator() {
             hasBeenInvoked = true;
@@ -56,19 +52,15 @@ public class LazyTest {
         }
     }
 
-    static class TestTraverser implements Traverser<String, String> {
-        final TestIterable<Walk<String,String>> iterable;
+    static class TestTraverser extends TreeTraverser<String> {
+        final TestIterable<String> iterable;
 
         TestTraverser( final String... items ) {
-            final List<Walk<String,String>> list = Lists.newArrayList();
-            for( final String item : items ) {
-                list.add( Walk.<String,String>empty( item ) );
-            }
-            iterable = new TestIterable<Walk<String, String>>( list );
+            iterable = new TestIterable<String>( items );
         }
 
         @Override
-        public Iterable<Walk<String, String>> apply( final String input ) {
+        public Iterable<String> children( final String root ) {
             return iterable;
         }
     }
@@ -81,7 +73,7 @@ public class LazyTest {
         assertThat( iterable.hasBeenInvoked, is( false ) );
         lazyIterator.hasNext();
         assertThat( iterable.hasBeenInvoked, is( true ) );
-        IterableTest.assertIteratorContains( lazyIterator, "a", "b", "c" );
+        assertIteratorContains( lazyIterator, "a", "b", "c" );
     }
 
     @Test
@@ -94,13 +86,13 @@ public class LazyTest {
         } catch( IllegalStateException e ) {
             // ignored
         }
-        IterableTest.assertIteratorContains( lazyIterator, "a", "b", "c" );
+        assertIteratorContains( lazyIterator, "a", "b", "c" );
 
         lazyIterator = Lazy.iterator( iterable );
         lazyIterator.next();
         lazyIterator.next();
         lazyIterator.remove();
-        IterableTest.assertIteratorContains( Lazy.iterator( iterable ), "a", "c" );
+        assertIteratorContains( Lazy.iterator( iterable ), "a", "c" );
     }
 
     @Test
@@ -126,7 +118,7 @@ public class LazyTest {
         assertThat( iterable.hasBeenInvoked, is( false ) );
         lazyIterator.hasNext();
         assertThat( iterable.hasBeenInvoked, is( true ) );
-        IterableTest.assertIteratorContains( lazyIterator, "a", "b", "c" );
+        assertIteratorContains( lazyIterator, "a", "b", "c" );
     }
 
     @Test
@@ -140,13 +132,13 @@ public class LazyTest {
         } catch( IllegalStateException e ) {
             // ignored
         }
-        IterableTest.assertIteratorContains( lazyIterator, "a", "b", "c" );
+        assertIteratorContains( lazyIterator, "a", "b", "c" );
 
         lazyIterator = Lazy.iterable( iterable ).iterator();
         lazyIterator.next();
         lazyIterator.next();
         lazyIterator.remove();
-        IterableTest.assertIteratorContains( Lazy.iterable( iterable ).iterator(), "a", "c" );
+        assertIteratorContains( Lazy.iterable( iterable ).iterator(), "a", "c" );
     }
 
     @Test
@@ -161,65 +153,50 @@ public class LazyTest {
         Lazy.iterable( null );
     }
 
-    private static void assertContainsWalks( final Iterator<Walk<String, String>> iterator, final String... vertices ) {
-        for( final String vertex : vertices ) {
-            assertThat( iterator.hasNext(), is( true ) );
-            final Walk<String, String> walk = iterator.next();
-            assertThat( walk.getFrom(), is( vertex ) );
-        }
-        assertThat( iterator.hasNext(), is( false ) );
-        try {
-            iterator.next();
-            fail( "Should throw NoSuchElementException." );
-        } catch( NoSuchElementException ignored ) {
-            // expected
-        }
-    }
-
     @Test
     public void traverser() {
         final TestTraverser traverser = new TestTraverser( "a", "b", "c" );
-        final Traverser<String,String> lazyTraverser = Lazy.traverser( traverser );
+        final TreeTraverser<String> lazyTraverser = Lazy.traverser( traverser );
         assertThat( traverser.iterable.hasBeenInvoked, is( false ) );
-        final Iterable<Walk<String, String>> lazyIterable = lazyTraverser.apply( "root" );
+        final Iterable<String> lazyIterable = lazyTraverser.children( "root" );
         assertThat( traverser.iterable.hasBeenInvoked, is( false ) );
-        final Iterator<Walk<String,String>> lazyIterator = lazyIterable.iterator();
+        final Iterator<String> lazyIterator = lazyIterable.iterator();
         assertThat( traverser.iterable.hasBeenInvoked, is( false ) );
         lazyIterator.hasNext();
         assertThat( traverser.iterable.hasBeenInvoked, is( true ) );
-        assertContainsWalks( lazyIterator, "a", "b", "c" );
+        assertIteratorContains( lazyIterator, "a", "b", "c" );
     }
 
     @Test
     public void traverserRemove() {
         final TestTraverser traverser = new TestTraverser( "a", "b", "c" );
-        final Traverser<String, String> lazyTraverser = Lazy.traverser( traverser );
-        final Iterable<Walk<String, String>> lazyIterable = lazyTraverser.apply( "root" );
-        Iterator<Walk<String, String>> lazyIterator = lazyIterable.iterator();
+        final TreeTraverser<String> lazyTraverser = Lazy.traverser( traverser );
+        final Iterable<String> lazyIterable = lazyTraverser.children( "root" );
+        Iterator<String> lazyIterator = lazyIterable.iterator();
         try {
             lazyIterator.remove();
             fail( "Should throw IllegalStateException" );
         } catch( IllegalStateException e ) {
             // ignored
         }
-        assertContainsWalks( lazyIterator, "a", "b", "c" );
+        assertIteratorContains( lazyIterator, "a", "b", "c" );
 
-        lazyIterator = Lazy.traverser( traverser ).apply( "root" ).iterator();
+        lazyIterator = Lazy.traverser( traverser ).children( "root" ).iterator();
         lazyIterator.next();
         lazyIterator.next();
         lazyIterator.remove();
-        assertContainsWalks( Lazy.traverser( traverser ).apply( "root" ).iterator(), "a", "c" );
+        assertIteratorContains( Lazy.traverser( traverser ).children( "root" ).iterator(), "a", "c" );
     }
 
     @Test
     public void traverserAlreadyLazy() {
         final TestTraverser traverser = new TestTraverser( "a", "b", "c" );
-        final Traverser<String, String> lazyTraverser = Lazy.traverser( traverser );
+        final TreeTraverser<String> lazyTraverser = Lazy.traverser( traverser );
         assertThat( Lazy.traverser( lazyTraverser ), is( lazyTraverser ) );
     }
 
     @Test( expected = NullPointerException.class )
     public void traverserNull() {
-        Lazy.traverser( (Traverser<Object, Object>) null );
+        Lazy.traverser( null );
     }
 }

@@ -25,7 +25,6 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.TreeTraverser;
 
@@ -62,20 +61,12 @@ public final class Lazy {
         return new LazyIterable<T>( iterable );
     }
 
-    public static <V, E> Traverser<V, E> traverser( final Function<V, Iterable<Walk<V, E>>> traverser ) {
-        Preconditions.checkNotNull( traverser );
-        if( traverser instanceof LazyTraverser ) {
-            return ( Traverser<V, E> ) traverser;
-        }
-        return new LazyTraverser<V, E>( traverser );
-    }
-
     public static <T> TreeTraverser<T> traverser( final TreeTraverser<T> traverser ) {
         Preconditions.checkNotNull( traverser );
-        if( traverser instanceof LazyTreeTraverser ) {
+        if( traverser instanceof LazyTraverser ) {
             return traverser;
         }
-        return new LazyTreeTraverser<T>( traverser );
+        return new LazyTraverser<T>( traverser );
     }
 
 
@@ -124,28 +115,10 @@ public final class Lazy {
         }
     }
 
-    private static final class LazyTraverser<V, E> implements Traverser<V, E> {
-        private final Function<V, Iterable<Walk<V, E>>> delegate;
-
-        LazyTraverser( final Function<V, Iterable<Walk<V, E>>> delegate ) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public Iterable<Walk<V, E>> apply( final V from ) {
-            return new Iterable<Walk<V, E>>() {
-                @Override
-                public Iterator<Walk<V, E>> iterator() {
-                    return Lazy.iterator( delegate.apply( from ) );
-                }
-            };
-        }
-    }
-
-    private static final class LazyTreeTraverser<T> extends TreeTraverser<T> {
+    private static final class LazyTraverser<T> extends TreeTraverser<T> {
         private final TreeTraverser<T> delegate;
 
-        LazyTreeTraverser( final TreeTraverser<T> delegate ) {
+        LazyTraverser( final TreeTraverser<T> delegate ) {
             this.delegate = delegate;
         }
 
