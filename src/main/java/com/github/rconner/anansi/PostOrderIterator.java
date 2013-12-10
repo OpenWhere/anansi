@@ -81,7 +81,7 @@ final class PostOrderIterator<T> implements Iterator<T> {
 
 /*
 
-This is a step-by-step example of iterating with this traverser. The example graph is below, child order is alphabetic.
+This is a step-by-step example of iterating with this Iterator. The example graph is below, child order is alphabetic.
 
           A
          / \
