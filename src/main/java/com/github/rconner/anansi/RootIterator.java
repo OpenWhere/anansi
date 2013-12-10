@@ -23,26 +23,40 @@
 
 package com.github.rconner.anansi;
 
-import org.junit.Test;
-
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class TraversalMoveTest {
+/**
+ * Just like Iterators.singletonIterator(value), except remove() throws an IllegalStateException.
+ *
+ * @param <T> the element type
+ *
+ * @author rconner
+ */
+final class RootIterator<T> implements Iterator<T> {
+    private final T value;
+    private boolean done;
 
-    // This test class is exercising TraversalMove.rootIterator(T).next() when the iterator is exhausted.
-    // The classes which use the package-private TraversalMove never call next() without having tested hasNext()
-    // first, so this logic is not otherwise executed.
-
-    @Test
-    public void rootIteratorNotExhausted() {
-        final TraversalMove<String, String> move = TraversalMove.start( "A" );
-        move.iterator.next();
+    RootIterator( final T value ) {
+        this.value = value;
     }
 
-    @Test( expected = NoSuchElementException.class )
-    public void rootIteratorExhausted() {
-        final TraversalMove<String, String> move = TraversalMove.start( "A" );
-        move.iterator.next();
-        move.iterator.next();
+    @Override
+    public boolean hasNext() {
+        return !done;
+    }
+
+    @Override
+    public T next() {
+        if( done ) {
+            throw new NoSuchElementException();
+        }
+        done = true;
+        return value;
+    }
+
+    @Override
+    public void remove() {
+        throw new IllegalStateException();
     }
 }

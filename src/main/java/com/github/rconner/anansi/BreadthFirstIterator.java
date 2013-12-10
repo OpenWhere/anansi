@@ -44,7 +44,7 @@ final class BreadthFirstIterator<T> implements PruningIterator<T> {
 
     BreadthFirstIterator( final T root, final TreeTraverser<T> adjacency ) {
         this.adjacency = adjacency;
-        queue.enqueue( TraversalMove.rootIterator( root ) );
+        queue.enqueue( new RootIterator<T>( root ) );
     }
 
     @Override

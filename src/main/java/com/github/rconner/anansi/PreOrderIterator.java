@@ -44,7 +44,7 @@ final class PreOrderIterator<T> implements PruningIterator<T> {
 
     PreOrderIterator( final T root, final TreeTraverser<T> adjacency ) {
         this.adjacency = adjacency;
-        stack = PersistentList.of( TraversalMove.rootIterator( root ) );
+        stack = PersistentList.of( (Iterator<T>) new RootIterator<T>( root ) );
     }
 
     @Override
