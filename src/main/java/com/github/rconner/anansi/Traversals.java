@@ -46,10 +46,11 @@ public final class Traversals {
     private Traversals() {
     }
 
-    // TODO: Document how these are different from Gauva's implementations.
-
     /**
-     * Returns a pre-order iterable with <strong>NO</strong> cycle detection.
+     * Returns a pre-order iterable with <strong>NO</strong> cycle detection. This differs from {@link
+     * TreeTraverser#preOrderTraversal(Object)} in that the created Iterators implement {@link PruningIterator} and
+     * support the remove() operation if the Iterators produced by the argument adjacency TreeTraverser do. The root
+     * vertex of the traversal cannot be removed.
      *
      * @param adjacency the adjacency function to use
      * @param <T> the vertex type
@@ -68,7 +69,10 @@ public final class Traversals {
 
     /**
      * Returns a post-order iterable with <strong>NO</strong> cycle detection. If a cycle is present, some call to
-     * next() will infinitely loop (most likely resulting in an OutOfMemoryError).
+     * next() will infinitely loop (most likely resulting in an OutOfMemoryError). This differs from {@link
+     * TreeTraverser#postOrderTraversal(Object)} in that the created Iterators support the remove() operation if the
+     * Iterators produced by the argument adjacency TreeTraverser do. The root vertex of the traversal cannot be
+     * removed.
      *
      * @param adjacency the adjacency function to use
      * @param <T> the vertex type
@@ -86,7 +90,10 @@ public final class Traversals {
     }
 
     /**
-     * Returns a breadth-first iterable with <strong>NO</strong> cycle detection.
+     * Returns a breadth-first iterable with <strong>NO</strong> cycle detection. This differs from {@link
+     * TreeTraverser#breadthFirstTraversal(Object)}  in that the created Iterators implement {@link PruningIterator} and
+     * support the remove() operation if the Iterators produced by the argument adjacency TreeTraverser do. The root
+     * vertex of the traversal cannot be removed.
      *
      * @param adjacency the adjacency function to use
      * @param <T> the vertex type
