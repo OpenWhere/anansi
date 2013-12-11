@@ -29,7 +29,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeTraverser;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -704,9 +703,7 @@ public final class TraversersTest {
 
     // leaves( Traverser )
 
-    // TODO - this test fails!
     @Test
-    @Ignore
     public void leavesEmpty() {
         final Iterable<String> traverser = Traversers.leaves( "A", adjacencyFor( empty ) );
         assertTraversalContains( traverser, "A" );
@@ -904,35 +901,30 @@ public final class TraversersTest {
 
     // Note that an empty map/iterable/array *is* a leaf.
 
-    @Ignore
     @Test
     public void leafElementsNull() {
         final Object root = null;
         assertPathWalksAre( Traversers.leafElements( root ), new Object[][] { { "", root } } );
     }
 
-    @Ignore
     @Test
     public void leafElementsString() {
         final Object root = "abc";
         assertPathWalksAre( Traversers.leafElements( root ), new Object[][] { { "", root } } );
     }
 
-    @Ignore
     @Test
     public void leafElementsEmptyMap() {
         final Object root = Collections.emptyMap();
         assertPathWalksAre( Traversers.leafElements( root ), new Object[][] { { "", root } } );
     }
 
-    @Ignore
     @Test
     public void leafElementsEmptyList() {
         final Object root = Collections.emptyList();
         assertPathWalksAre( Traversers.leafElements( root ), new Object[][] { { "", root } } );
     }
 
-    @Ignore
     @Test
     public void leafElementsEmptyArray() {
         final Object root = EMPTY_INT_ARRAY;

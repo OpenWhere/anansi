@@ -41,11 +41,9 @@ final class LeafIterator<T> implements Iterator<T> {
     private final TreeTraverser<T> adjacency;
     private PersistentList<Move<T>> stack;
 
-    // TODO: Does not work on a singleton graph
-
     LeafIterator( final T root, final TreeTraverser<T> adjacency) {
         this.adjacency = adjacency;
-        stack = PersistentList.of( new Move<T>( root, adjacency.children( root ).iterator() ) );
+        stack = PersistentList.of( new Move<T>( root, new RootIterator<T>( root ) ) );
     }
 
     @Override
@@ -123,16 +121,18 @@ So, advance the top iterator and push a move for its children.
 
 
 @init
-                                           A  [ * B, C ]
+                                           A  [ * A ]
 
 next()
   pop exhausted iterators                  no change
 
-  while( top.iterator not exhausted ) {    A  [ B, * C ]
-    advance top and push next              B  [ D, * E ]
-  }                                        D  [ ]
+  while( top.iterator not exhausted ) {    A  [ A * ]
+    advance top and push next              A  [ B, * C ]
+  }                                        B  [ D, * E ]
+                                           D  [ ]
 
-  pop stack                                A  [ B, * C ]
+  pop stack                                A  [ A * ]
+                                           A  [ B, * C ]
                                            B  [ D, * E ]
 
   return popped move.vertex = D
@@ -140,23 +140,28 @@ next()
 next()
   pop exhausted iterators                  no change
 
-  while( top.iterator not exhausted ) {    A  [ B, * C ]
-    advance top and push next              B  [ D, E * ]
-  }                                        E  [ ]
+  while( top.iterator not exhausted ) {    A  [ A * ]
+    advance top and push next              A  [ B, * C ]
+  }                                        B  [ D, E * ]
+                                           E  [ ]
 
-  pop stack                                A  [ B, * C ]
+  pop stack                                A  [ A * ]
+                                           A  [ B, * C ]
                                            B  [ D, E * ]
 
   return popped move.vertex = E
 
 next()
-  pop exhausted iterators                  A  [ B, * C ]
+  pop exhausted iterators                  A  [ A * ]
+                                           A  [ B, * C ]
 
-  while( top.iterator not exhausted ) {    A  [ B, C * ]
-    advance top and push next              C  [ D, * F ]
-  }                                        D  [ ]
+  while( top.iterator not exhausted ) {    A  [ A * ]
+    advance top and push next              A  [ B, C * ]
+  }                                        C  [ D, * F ]
+                                           D  [ ]
 
-  pop stack                                A  [ B, C * ]
+  pop stack                                A  [ A * ]
+                                           A  [ B, C * ]
                                            C  [ D, * F ]
 
   return popped move.vertex = D
@@ -164,12 +169,14 @@ next()
 next()
   pop exhausted iterators                  no change
 
-  while( top.iterator not exhausted ) {    A  [ B, C * ]
-    advance top and push next              C  [ D, F * ]
-  }                                        F  [ ]
+  while( top.iterator not exhausted ) {    A  [ A * ]
+    advance top and push next              A  [ B, C * ]
+  }                                        C  [ D, F * ]
+                                           F  [ ]
 
-  pop stack                                A [ B, C * ]
-                                           C [ D, F * ]
+  pop stack                                A  [ A * ]
+                                           A  [ B, C * ]
+                                           C  [ D, F * ]
 
   return popped move.vertex = F
 
