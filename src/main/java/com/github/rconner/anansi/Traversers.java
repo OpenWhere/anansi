@@ -25,20 +25,16 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.TreeTraverser;
 
-import java.util.Iterator;
-
 /**
- * Static factory methods for building Traversers.
+ * Static factory methods for building traversers.
  *
  * @author rconner
  */
 @Beta
-public final class Traversers {
+public class Traversers {
 
     /**
      * Prevent instantiation.
@@ -68,82 +64,6 @@ public final class Traversers {
         }
     }
 
-    // TODO: Document how these are different from Gauva's implementations.
-
-    /**
-     * Returns a pre-order iterable with <strong>NO</strong> cycle detection.
-     *
-     * @param adjacency the adjacency function to use
-     * @param <T> the vertex type
-     *
-     * @return a pre-order iterable with <strong>NO</strong> cycle detection.
-     */
-    public static <T> FluentIterable<T> preOrder( final T root, final TreeTraverser<T> adjacency ) {
-        Preconditions.checkNotNull( adjacency );
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new PreOrderIterator<T>( root, Lazy.traverser( adjacency ) );
-            }
-        };
-    }
-
-    /**
-     * Returns a post-order iterable with <strong>NO</strong> cycle detection. If a cycle is present, some call to
-     * next() will infinitely loop (most likely resulting in an OutOfMemoryError).
-     *
-     * @param adjacency the adjacency function to use
-     * @param <T> the vertex type
-     *
-     * @return a post-order iterable with <strong>NO</strong> cycle detection.
-     */
-    public static <T> FluentIterable<T> postOrder( final T root, final TreeTraverser<T> adjacency ) {
-        Preconditions.checkNotNull( adjacency );
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new PostOrderIterator<T>( root, Lazy.traverser( adjacency ) );
-            }
-        };
-    }
-
-    /**
-     * Returns a breadth-first iterable with <strong>NO</strong> cycle detection.
-     *
-     * @param adjacency the adjacency function to use
-     * @param <T> the vertex type
-     *
-     * @return a breadth-first iterable with <strong>NO</strong> cycle detection.
-     */
-    public static <T> FluentIterable<T> breadthFirst( final T root, final TreeTraverser<T> adjacency ) {
-        Preconditions.checkNotNull( adjacency );
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new BreadthFirstIterator<T>( root, Lazy.traverser( adjacency ) );
-            }
-        };
-    }
-
-    /**
-     * Returns an iterable to reachable leaves with <strong>NO</strong> cycle detection. If a cycle is present, some
-     * call to next() will infinitely loop (most likely resulting in an OutOfMemoryError).
-     *
-     * @param adjacency the adjacency function to use
-     * @param <T> the vertex type
-     *
-     * @return an iterable to reachable leaves with <strong>NO</strong> cycle detection.
-     */
-    public static <T> FluentIterable<T> leaves( final T root, final TreeTraverser<T> adjacency ) {
-        Preconditions.checkNotNull( adjacency );
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new LeafIterator<T>( root, Lazy.traverser( adjacency ) );
-            }
-        };
-    }
-
     /**
      * Returns a TreeTraverser which will return the (adjacency Walks to) immediate Iterable elements, array elements,
      * or Map values for any such non-empty value of Walk.getTo(). If the input is an empty Iterable, array, or Map, an
@@ -153,31 +73,9 @@ public final class Traversers {
      * with preceding backslashes if they appear as Map keys.
      *
      * @return a TreeTraverser which will return the (adjacency Walks to) immediate Iterable elements, array elements,
-     * or Map values for any such non-empty value of Walk.getTo().
+     *         or Map values for any such non-empty value of Walk.getTo().
      */
     public static TreeTraverser<Walk<Object, String>> elements() {
         return Elements.ELEMENT_ADJACENCY;
-    }
-
-    /**
-     * Returns a {@link #leaves(Object, TreeTraverser)} Iterable which uses {@link #elements()} as an adjacency
-     * TreeTraverser.
-     *
-     * @return a {@code #leaves(Object, TreeTraverser)} Iterable which uses {@link #elements()} as an adjacency
-     * TreeTraverser.
-     */
-    public static FluentIterable<Walk<Object, String>> leafElements( final Object root ) {
-        return leaves( Walk.<Object, String>empty( root ), elements() );
-    }
-
-    /**
-     * Returns an idiomatic String path for the given Walk produced by {@link #leafElements(Object)}.
-     *
-     * @param walk the Walk for which to return the idiomatic String path.
-     *
-     * @return an idiomatic String path for the given Walk produced by {@code leafElements(Object)}.
-     */
-    public static String elementPath( final Walk<Object, String> walk ) {
-        return Elements.path( walk );
     }
 }

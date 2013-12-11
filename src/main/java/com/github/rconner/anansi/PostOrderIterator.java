@@ -30,7 +30,7 @@ import com.google.common.collect.TreeTraverser;
 import java.util.Iterator;
 
 /**
- * Package implementation of the Iterator returned by {@link Traversers#postOrder(Object, TreeTraverser)}.
+ * Package implementation of the Iterator returned by {@link Traversals#postOrder(Object, TreeTraverser)}.
  *
  * @param <T> the vertex type
  *

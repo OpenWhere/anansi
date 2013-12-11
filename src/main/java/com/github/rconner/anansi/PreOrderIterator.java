@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Package implementation of the Iterator returned by {@link Traversers#preOrder(Object, TreeTraverser)}.
+ * Package implementation of the Iterator returned by {@link Traversals#preOrder(Object, TreeTraverser)}.
  *
  * @param <T> the vertex type
  *

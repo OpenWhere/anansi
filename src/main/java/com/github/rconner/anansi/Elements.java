@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 /**
  * Package implementations of Traverser returned by {@link Traversers#elements()} and the implementation of {@link
- * Traversers#elementPath(Walk)}.
+ * Traversals#elementPath(Walk)}.
  *
  * @author rconner
  */
