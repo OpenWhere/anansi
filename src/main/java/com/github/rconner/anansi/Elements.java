@@ -25,6 +25,7 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.TreeTraverser;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.lang.reflect.Array;
@@ -34,8 +35,8 @@ import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 /**
- * Package implementations of Traversers returned by {@link Traversers#elements()} and {@link
- * Traversers#leafElements()}.
+ * Package implementations of Traverser returned by {@link Traversers#elements()} and the implementation of {@link
+ * Traversers#elementPath(Walk)}.
  *
  * @author rconner
  */
@@ -48,24 +49,23 @@ final class Elements {
     private Elements() {
     }
 
-    @SuppressWarnings( "unchecked" )
-    static final Traverser<Object, String> ELEMENT_ADJACENCY = new Traverser<Object, String>() {
+    static final TreeTraverser<Walk<Object, String>> ELEMENT_ADJACENCY = new TreeTraverser<Walk<Object, String>>() {
         @Override
-        public Iterable<Walk<Object, String>> apply( final Object object ) {
-            if( object == null ) {
+        public Iterable<Walk<Object, String>> children( final Walk<Object, String> root ) {
+            final Object vertex = root.getTo();
+            if( vertex == null ) {
                 return ImmutableSet.of();
-            } else if( object.getClass().isArray() ) {
-                return arrayWalker( object );
+            } else if( vertex.getClass().isArray() ) {
+                return arrayWalker( root );
                 // Put Map before Iterable just in case someone declared an iterable map.
-            } else if( object instanceof Map ) {
-                return mapWalker( ( Map<String, Object> ) object );
-            } else if( object instanceof Iterable ) {
-                return iterableWalker( ( Iterable<?> ) object );
+            } else if( vertex instanceof Map ) {
+                return mapWalker( root );
+            } else if( vertex instanceof Iterable ) {
+                return iterableWalker( root );
             }
             return ImmutableSet.of();
         }
     };
-
 
     static String path( final Walk<Object, String> walk ) {
         final StringBuilder sb = new StringBuilder();
@@ -78,7 +78,9 @@ final class Elements {
         return sb.toString();
     }
 
-    private static Iterable<Walk<Object, String>> arrayWalker( final Object array ) {
+
+    private static Iterable<Walk<Object, String>> arrayWalker( final Walk<Object, String> root ) {
+        final Object array = root.getTo();
         final int size = Array.getLength( array );
         return new Iterable<Walk<Object, String>>() {
             @Override
@@ -97,14 +99,15 @@ final class Elements {
                             throw new NoSuchElementException();
                         }
                         final String over = "[" + index + "]";
-                        return Walk.single( array, Array.get( array, index++ ), over );
+                        return root.append( Array.get( array, index++ ), over );
                     }
                 };
             }
         };
     }
 
-    private static Iterable<Walk<Object, String>> iterableWalker( final Iterable<?> iterable ) {
+    private static Iterable<Walk<Object, String>> iterableWalker( final Walk<Object, String> root ) {
+        final Iterable<?> iterable = (Iterable<?>) root.getTo();
         return new Iterable<Walk<Object, String>>() {
             @Override
             public Iterator<Walk<Object, String>> iterator() {
@@ -121,7 +124,7 @@ final class Elements {
                     public Walk<Object, String> next() {
                         final Object element = delegate.next();
                         final String over = "[" + index++ + "]";
-                        return Walk.single( iterable, element, over );
+                        return root.append( element, over );
                     }
                 };
             }
@@ -130,7 +133,9 @@ final class Elements {
 
     private static final Pattern DELIMITER_PATTERN = Pattern.compile( "(\\.|\\[|\\])" );
 
-    private static Iterable<Walk<Object, String>> mapWalker( final Map<String, Object> map ) {
+    private static Iterable<Walk<Object, String>> mapWalker( final Walk<Object, String> root ) {
+        @SuppressWarnings( "unchecked" )
+        final Map<String, Object> map = (Map<String, Object>) root.getTo();
         return new Iterable<Walk<Object, String>>() {
             @Override
             public Iterator<Walk<Object, String>> iterator() {
@@ -146,7 +151,7 @@ final class Elements {
                     public Walk<Object, String> next() {
                         final Map.Entry<String, ?> entry = delegate.next();
                         final String over = DELIMITER_PATTERN.matcher( entry.getKey() ).replaceAll( "\\\\$0" );
-                        return Walk.single( map, entry.getValue(), '.' + over );
+                        return root.append( entry.getValue(), '.' + over );
                     }
                 };
             }

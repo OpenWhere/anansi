@@ -145,36 +145,37 @@ public final class Traversers {
     }
 
     /**
-     * Returns a Traverser which will return the (adjacency Walks to) immediate Iterable elements, array elements, or
-     * Map values for any such non-empty input. If the input is an empty Iterable, array, or Map, an empty Iterable will
-     * be returned. If the input is not an Iterable, array, or Map, an empty Iterable will be returned. The values of
-     * {@link Walk.Step#getOver()} are strings representing the path in normal idiomatic usage. Because they are used as
-     * path separators, periods (property reference) and brackets (array indexing) are escaped with preceding
-     * backslashes if they appear as Map keys.
+     * Returns a TreeTraverser which will return the (adjacency Walks to) immediate Iterable elements, array elements,
+     * or Map values for any such non-empty value of Walk.getTo(). If the input is an empty Iterable, array, or Map, an
+     * empty Iterable will be returned. If the input is not an Iterable, array, or Map, an empty Iterable will be
+     * returned. The values of {@link Walk.Step#getOver()} are strings representing the path in normal idiomatic usage.
+     * Because they are used as path separators, periods (property reference) and brackets (array indexing) are escaped
+     * with preceding backslashes if they appear as Map keys.
      *
-     * @return a Traverser which will return the (adjacency Walks to) immediate Iterable elements, array elements, or
-     * Map values for any such non-empty input.
+     * @return a TreeTraverser which will return the (adjacency Walks to) immediate Iterable elements, array elements,
+     * or Map values for any such non-empty value of Walk.getTo().
      */
-    public static Traverser<Object, String> elements() {
+    public static TreeTraverser<Walk<Object, String>> elements() {
         return Elements.ELEMENT_ADJACENCY;
     }
 
     /**
-     * Returns a {@link #leaves(Traverser)} Traverser which uses {@link #elements()} as an adjacency Traverser.
+     * Returns a {@link #leaves(Object, TreeTraverser)} Iterable which uses {@link #elements()} as an adjacency
+     * TreeTraverser.
      *
-     * @return a {@code leaves(Traverser)} Traverser which uses {@code elements()} as an adjacency Traverser.
+     * @return a {@code #leaves(Object, TreeTraverser)} Iterable which uses {@link #elements()} as an adjacency
+     * TreeTraverser.
      */
-    public static Traverser<Object, String> leafElements() {
-        return null;
-//        return leaves( elements() );
+    public static FluentIterable<Walk<Object, String>> leafElements( final Object root ) {
+        return leaves( Walk.<Object, String>empty( root ), elements() );
     }
 
     /**
-     * Returns an idiomatic String path for the given Walk produced by {@link #leafElements()}.
+     * Returns an idiomatic String path for the given Walk produced by {@link #leafElements(Object)}.
      *
      * @param walk the Walk for which to return the idiomatic String path.
      *
-     * @return an idiomatic String path for the given Walk produced by {@code leafElements()}.
+     * @return an idiomatic String path for the given Walk produced by {@code leafElements(Object)}.
      */
     public static String elementPath( final Walk<Object, String> walk ) {
         return Elements.path( walk );
