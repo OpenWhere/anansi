@@ -34,7 +34,7 @@ import com.google.common.collect.TreeTraverser;
  * @author rconner
  */
 @Beta
-public class Traversers {
+public final class Traversers {
 
     /**
      * Prevent instantiation.
