@@ -43,7 +43,7 @@ public final class Walk<V, E> {
     private final PersistentList<Step<V, E>> via;
 
     /**
-     * The only Walk constructor, package-private to prevent direct instantiation by clients.
+     * The only Walk constructor, private to prevent direct instantiation by clients.
      *
      * @param from the first vertex in this Walk.
      * @param via the Steps in this Walk, in reverse order.
