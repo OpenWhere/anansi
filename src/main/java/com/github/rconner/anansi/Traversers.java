@@ -25,8 +25,11 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.TreeTraverser;
+
+import java.util.Iterator;
 
 /**
  * Static factory methods for building traversers.
@@ -77,5 +80,60 @@ public final class Traversers {
      */
     public static TreeTraverser<Walk<Object, String>> elements() {
         return Elements.ELEMENT_ADJACENCY;
+    }
+
+    /**
+     * Creates a {@link TreeTraverser} of {@link WeightedWalk WeightedWalks} given a {@code TreeTraverser} of {@link
+     * Walk Walks} and an edge weight {@link Function}. Edge weights are assumed to be additive along a walk.
+     *
+     * @param traverser the TreeTraverser of Walks.
+     * @param weightFunction the edge weight Function.
+     * @param <V> the vertex type
+     * @param <E> the edge type
+     *
+     * @return a {@code TreeTraverser} of {@code WeightedWalks} given a {@code TreeTraverser} of {@code Walks} and an
+     * edge weight {@code Function}.
+     */
+    public static <V, E> TreeTraverser<WeightedWalk<V, E>> weighted( final TreeTraverser<Walk<V, E>> traverser,
+                                                                     final Function<E, Double> weightFunction ) {
+        return new WeightedTraverser<V, E>( traverser, weightFunction );
+    }
+
+    private static class WeightedTraverser<V, E> extends TreeTraverser<WeightedWalk<V, E>> {
+        private final TreeTraverser<Walk<V, E>> delegate;
+        private final Function<E, Double> weightFunction;
+
+        private WeightedTraverser( final TreeTraverser<Walk<V, E>> delegate, final Function<E, Double> weightFunction ) {
+            this.delegate = delegate;
+            this.weightFunction = weightFunction;
+        }
+
+        @Override
+        public Iterable<WeightedWalk<V, E>> children( final WeightedWalk<V, E> weightedWalk ) {
+            return new Iterable<WeightedWalk<V, E>>() {
+                @Override
+                public Iterator<WeightedWalk<V, E>> iterator() {
+                    final Iterator<Walk<V, E>> iterator = Lazy.iterator( delegate.children( weightedWalk.getWalk() ) );
+                    return new Iterator<WeightedWalk<V, E>>() {
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public WeightedWalk<V, E> next() {
+                            final Walk<V, E> walk = iterator.next();
+                            final double stepWeight = weightFunction.apply( walk.getVia().first().getOver() );
+                            return WeightedWalk.newInstance( walk, weightedWalk.getWeight() + stepWeight );
+                        }
+
+                        @Override
+                        public void remove() {
+                            iterator.remove();
+                        }
+                    };
+                }
+            };
+        }
     }
 }
