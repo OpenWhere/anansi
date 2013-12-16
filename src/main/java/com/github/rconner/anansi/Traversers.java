@@ -25,11 +25,8 @@ package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
 import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.TreeTraverser;
-
-import java.util.Iterator;
 
 /**
  * Static factory methods for building traversers.
