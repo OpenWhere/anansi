@@ -57,6 +57,12 @@ public final class PersistentListTest {
                 // expected
             }
             try {
+                stack.last();
+                fail( "Should throw NoSuchElementException." );
+            } catch( NoSuchElementException ignored ) {
+                // expected
+            }
+            try {
                 stack.rest();
                 fail( "Should throw NoSuchElementException." );
             } catch( NoSuchElementException ignored ) {
@@ -65,6 +71,7 @@ public final class PersistentListTest {
         } else {
             assertThat( stack.isEmpty(), is( false ) );
             assertThat( stack.first(), is( elements[ 0 ] ) );
+            assertThat( stack.last(), is( elements[ elements.length - 1 ] ) );
             assertStackContains( stack.rest(), Arrays.copyOfRange( elements, 1, elements.length ) );
         }
 

@@ -56,6 +56,8 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
     public abstract E first();
 
+    public abstract E last();
+
     public abstract PersistentList<E> rest();
 
     public abstract PersistentList<E> add( E element );
@@ -127,6 +129,11 @@ public abstract class PersistentList<E> implements Iterable<E> {
         }
 
         @Override
+        public Object last() {
+            throw new NoSuchElementException();
+        }
+
+        @Override
         public PersistentList<Object> rest() {
             throw new NoSuchElementException();
         }
@@ -169,6 +176,11 @@ public abstract class PersistentList<E> implements Iterable<E> {
             return element;
         }
 
+        @Override
+        public E last() {
+            return element;
+        }
+
         @SuppressWarnings( "unchecked" )
         @Override
         public PersistentList<E> rest() {
@@ -207,6 +219,7 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
     private static final class List<E> extends PersistentList<E> {
         private final E first;
+        private final E last;
         private final PersistentList<E> rest;
         // Must be volatile to be used by the double-check locking idiom in reverse()
         private volatile PersistentList<E> reverse;
@@ -214,11 +227,17 @@ public abstract class PersistentList<E> implements Iterable<E> {
         List( final E first, final PersistentList<E> rest ) {
             this.first = first;
             this.rest = rest;
+            this.last = rest.last();
         }
 
         @Override
         public E first() {
             return first;
+        }
+
+        @Override
+        public E last() {
+            return last;
         }
 
         @Override
