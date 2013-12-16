@@ -42,6 +42,7 @@ public final class PersistentListTest {
 
         assertIteratorContains( stack.iterator(), elements );
         assertIteratorContains( stack.iterator(), elements );
+        assertThat( stack.size(), is( elements.length ) );
 
         final Iterable<E> reverse = stack.reverse();
         final Object[] expectedReverse = Lists.reverse( Lists.newArrayList( elements ) ).toArray();
@@ -79,6 +80,7 @@ public final class PersistentListTest {
 
         assertIteratorContains( stack.iterator(), elements );
         assertIteratorContains( stack.reverse().iterator(), expectedReverse );
+        assertThat( stack.size(), is( elements.length ) );
 
         // Check that x.reverse().reverse() == x
         assertThat( stack.reverse().reverse(), is( stack ) );

@@ -72,6 +72,8 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
     public abstract boolean isEmpty();
 
+    public abstract int size();
+
     @Override
     public abstract Iterator<E> iterator();
 
@@ -149,6 +151,11 @@ public abstract class PersistentList<E> implements Iterable<E> {
         }
 
         @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
         public Iterator<Object> iterator() {
             return Iterators.emptyIterator();
         }
@@ -198,6 +205,11 @@ public abstract class PersistentList<E> implements Iterable<E> {
         }
 
         @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
         public Iterator<E> iterator() {
             return Iterators.singletonIterator( element );
         }
@@ -219,8 +231,9 @@ public abstract class PersistentList<E> implements Iterable<E> {
 
     private static final class List<E> extends PersistentList<E> {
         private final E first;
-        private final E last;
         private final PersistentList<E> rest;
+        private final E last;
+        private final int size;
         // Must be volatile to be used by the double-check locking idiom in reverse()
         private volatile PersistentList<E> reverse;
 
@@ -228,6 +241,7 @@ public abstract class PersistentList<E> implements Iterable<E> {
             this.first = first;
             this.rest = rest;
             this.last = rest.last();
+            this.size = rest.size() + 1;
         }
 
         @Override
@@ -253,6 +267,11 @@ public abstract class PersistentList<E> implements Iterable<E> {
         @Override
         public boolean isEmpty() {
             return false;
+        }
+
+        @Override
+        public int size() {
+            return size;
         }
 
         @Override
