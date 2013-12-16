@@ -92,29 +92,6 @@ public final class Walk<V, E> {
         return builder.toString();
     }
 
-    public static final class Step<V, E> {
-        private final V to;
-        private final E over;
-
-        Step( final V to, final E over ) {
-            this.to = to;
-            this.over = over;
-        }
-
-        public V getTo() {
-            return to;
-        }
-
-        public E getOver() {
-            return over;
-        }
-
-        @Override
-        public String toString() {
-            return "to (" + to + ") over (" + over + ')';
-        }
-    }
-
     /**
      * Creates a new empty Walk. This should only be used when a Walk literally has travelled over no edges, the Walk to
      * the root of a breadth- or depth-first traversal for example.
@@ -141,7 +118,7 @@ public final class Walk<V, E> {
      * @return a new Walk with a single Step.
      */
     public static <V, E> Walk<V, E> single( final V from, final V to, final E over ) {
-        return new Walk<V, E>( from, PersistentList.of( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, PersistentList.of( Step.newInstance( to, over ) ) );
     }
 
     /**
@@ -167,7 +144,7 @@ public final class Walk<V, E> {
      * @return a new Walk starting with this Walk and appending a single Step.
      */
     public Walk<V, E> append( final V to, final E over ) {
-        return new Walk<V, E>( from, via.add( new Step<V, E>( to, over ) ) );
+        return new Walk<V, E>( from, via.add( Step.newInstance( to, over ) ) );
     }
 
     /**

@@ -36,7 +36,7 @@ public final class WalkTest {
         assertThat( actual.getTo(), is( expected[ expected.length - 1 ] ) );
         assertThat( Iterables.size( actual.getVia() ), is( ( expected.length - 1 ) / 2 ) );
         int i = expected.length - 2;
-        for( final Walk.Step<V, E> step : actual.getVia() ) {
+        for( final Step<V, E> step : actual.getVia() ) {
             assertThat( step.getOver(), is( expected[ i ] ) );
             assertThat( step.getTo(), is( expected[ i + 1 ] ) );
             i -= 2;
