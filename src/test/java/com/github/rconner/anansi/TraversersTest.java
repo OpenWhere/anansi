@@ -23,13 +23,8 @@
 
 package com.github.rconner.anansi;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableListMultimap;
+import com.github.rconner.util.PersistentList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeTraverser;
 import org.junit.Test;
 
@@ -57,14 +52,14 @@ public final class TraversersTest {
 
     private static final Object[][] EMPTY_EXPECTED_WALKS = new Object[][] { };
 
-    private static void assertPathWalksAre( final Iterable<Walk<Object, String>> traversal,
+    private static void assertPathWalksAre( final Iterable<PersistentList<Step<Object, String>>> traversal,
                                             final Object[][] expectedElements ) {
-        final Iterator<Walk<Object, String>> iterator = traversal.iterator();
+        final Iterator<PersistentList<Step<Object, String>>> iterator = traversal.iterator();
         for( final Object[] element : expectedElements ) {
             assertThat( iterator.hasNext(), is( true ) );
-            final Walk<Object, String> walk = iterator.next();
+            final PersistentList<Step<Object, String>> walk = iterator.next();
             assertThat( Traversals.elementPath( walk ), is( element[ 0 ] ) );
-            assertThat( walk.getTo(), is( element[ 1 ] ) );
+            assertThat( walk.first().getTo(), is( element[ 1 ] ) );
         }
         assertIteratorEmpty( iterator );
     }
@@ -72,25 +67,25 @@ public final class TraversersTest {
     @Test
     public void elementsNull() {
         final Object root = null;
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ), EMPTY_EXPECTED_WALKS );
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsString() {
         final Object root = "abc";
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ), EMPTY_EXPECTED_WALKS );
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsEmptyMap() {
         final Object root = Collections.emptyMap();
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ), EMPTY_EXPECTED_WALKS );
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsEmptyList() {
         final Object root = Collections.emptyList();
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ), EMPTY_EXPECTED_WALKS );
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ), EMPTY_EXPECTED_WALKS );
     }
 
     private static final int[] EMPTY_INT_ARRAY = new int[ 0 ];
@@ -98,27 +93,27 @@ public final class TraversersTest {
     @Test
     public void elementsEmptyArray() {
         final Object root = EMPTY_INT_ARRAY;
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ), EMPTY_EXPECTED_WALKS );
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ), EMPTY_EXPECTED_WALKS );
     }
 
     @Test
     public void elementsSimpleMap() {
         final Object root = ImmutableMap.of( "name", "Alice", "age", 37, "deceased", false );
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ),
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ),
                             new Object[][] { { "name", "Alice" }, { "age", 37 }, { "deceased", false } } );
     }
 
     @Test
     public void elementsSimpleList() {
         final Object root = Arrays.<Object>asList( "Alice", 37, false );
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ),
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ),
                             new Object[][] { { "[0]", "Alice" }, { "[1]", 37 }, { "[2]", false } } );
     }
 
     @Test
     public void elementsSimpleArray() {
         final Object root = new int[] { 42, 99, 256 };
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ),
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ),
                             new Object[][] { { "[0]", 42 }, { "[1]", 99 }, { "[2]", 256 } } );
     }
 
@@ -126,7 +121,7 @@ public final class TraversersTest {
     public void elementsMap() {
         final Map<String, Object> root = ImmutableMap.<String, Object>of( "names", Arrays.asList( "Alice", "Becky", "Carol" ),
                                                                           "ages", Arrays.asList( 37, 42, 32 ) );
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ),
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ),
                             new Object[][] { { "names", root.get( "names" ) },
                                              { "ages", root.get( "ages" ) } } );
     }
@@ -136,7 +131,7 @@ public final class TraversersTest {
     public void elementsList() {
         final List<Object> root = Arrays.<Object>asList( ImmutableMap.of( "name", "Alice", "age", 37 ),
                                                          ImmutableMap.of( "name", "Becky", "age", 42 ) );
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ),
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ),
                             new Object[][] { { "[0]", root.get( 0 ) },
                                              { "[1]", root.get( 1 ) } } );
     }
@@ -145,7 +140,7 @@ public final class TraversersTest {
     public void elementsArray() {
         final Object[] root = new Object[] { ImmutableMap.of( "name", "Alice", "age", 37 ),
                                              ImmutableMap.of( "name", "Becky", "age", 42 ) };
-        assertPathWalksAre( Traversers.elements().children( Walk.<Object, String>empty( root ) ),
+        assertPathWalksAre( Traversers.elements().children( PersistentList.of( Step.<Object, String>empty( root ) ) ),
                             new Object[][] { { "[0]", root[ 0 ] },
                                              { "[1]", root[ 1 ] } } );
     }

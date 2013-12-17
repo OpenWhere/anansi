@@ -24,6 +24,7 @@
 package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
+import com.github.rconner.util.PersistentList;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
@@ -136,18 +137,18 @@ public final class Traversals {
      * @return a {@code #leaves(Object, TreeTraverser)} Iterable which uses {@link Traversers#elements()} as an
      * adjacency TreeTraverser.
      */
-    public static FluentIterable<Walk<Object, String>> leafElements( final Object root ) {
-        return leaves( Walk.<Object, String>empty( root ), Traversers.elements() );
+    public static FluentIterable<PersistentList<Step<Object, String>>> leafElements( final Object root ) {
+        return leaves( PersistentList.of( Step.<Object, String>empty( root ) ), Traversers.elements() );
     }
 
     /**
-     * Returns an idiomatic String path for the given Walk produced by {@link #leafElements(Object)}.
+     * Returns an idiomatic String path for the given walk produced by {@link #leafElements(Object)}.
      *
-     * @param walk the Walk for which to return the idiomatic String path.
+     * @param walk the walk for which to return the idiomatic String path.
      *
-     * @return an idiomatic String path for the given Walk produced by {@code leafElements(Object)}.
+     * @return an idiomatic String path for the given walk produced by {@code leafElements(Object)}.
      */
-    public static String elementPath( final Walk<Object, String> walk ) {
+    public static String elementPath( final PersistentList<Step<Object, String>> walk ) {
         return Elements.path( walk );
     }
 }

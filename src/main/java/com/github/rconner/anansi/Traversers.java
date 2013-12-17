@@ -24,6 +24,7 @@
 package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
+import com.github.rconner.util.PersistentList;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.TreeTraverser;
@@ -65,17 +66,17 @@ public final class Traversers {
     }
 
     /**
-     * Returns a TreeTraverser which will return the (adjacency Walks to) immediate Iterable elements, array elements,
-     * or Map values for any such non-empty value of Walk.getTo(). If the input is an empty Iterable, array, or Map, an
-     * empty Iterable will be returned. If the input is not an Iterable, array, or Map, an empty Iterable will be
-     * returned. The values of {@link Step#getOver()} are strings representing the path in normal idiomatic usage.
-     * Because they are used as path separators, periods (property reference) and brackets (array indexing) are escaped
-     * with preceding backslashes if they appear as Map keys.
+     * Returns a TreeTraverser which will return the (adjacency walks to) immediate Iterable elements, array elements,
+     * or Map values for any such non-empty value. If the input is an empty Iterable, array, or Map, an empty Iterable
+     * will be returned. If the input is not an Iterable, array, or Map, an empty Iterable will be returned. The values
+     * of {@link Step#getOver()} are strings representing the path in normal idiomatic usage. Because they are used as
+     * path separators, periods (property reference) and brackets (array indexing) are escaped with preceding
+     * backslashes if they appear as Map keys.
      *
-     * @return a TreeTraverser which will return the (adjacency Walks to) immediate Iterable elements, array elements,
-     *         or Map values for any such non-empty value of Walk.getTo().
+     * @return a TreeTraverser which will return the (walks to) immediate Iterable elements, array elements, or Map
+     *         values for any such non-empty value.
      */
-    public static TreeTraverser<Walk<Object, String>> elements() {
+    public static TreeTraverser<PersistentList<Step<Object, String>>> elements() {
         return Elements.ELEMENT_ADJACENCY;
     }
 }

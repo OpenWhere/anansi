@@ -24,6 +24,7 @@
 package com.github.rconner.anansi;
 
 import com.github.rconner.util.NoCoverage;
+import com.github.rconner.util.PersistentList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.TreeTraverser;
 import com.google.common.collect.UnmodifiableIterator;
@@ -36,7 +37,7 @@ import java.util.regex.Pattern;
 
 /**
  * Package implementations of Traverser returned by {@link Traversers#elements()} and the implementation of {@link
- * Traversals#elementPath(Walk)}.
+ * Traversals#elementPath(PersistentList)}.
  *
  * @author rconner
  */
@@ -49,27 +50,28 @@ final class Elements {
     private Elements() {
     }
 
-    static final TreeTraverser<Walk<Object, String>> ELEMENT_ADJACENCY = new TreeTraverser<Walk<Object, String>>() {
+    static final TreeTraverser<PersistentList<Step<Object, String>>> ELEMENT_ADJACENCY = new TreeTraverser<PersistentList<Step<Object, String>>>() {
         @Override
-        public Iterable<Walk<Object, String>> children( final Walk<Object, String> root ) {
-            final Object vertex = root.getTo();
+        public Iterable<PersistentList<Step<Object, String>>> children( final PersistentList<Step<Object, String>> walk ) {
+            final Object vertex = walk.first().getTo();
             if( vertex == null ) {
                 return ImmutableSet.of();
             } else if( vertex.getClass().isArray() ) {
-                return arrayWalker( root );
+                return arrayWalker( walk );
                 // Put Map before Iterable just in case someone declared an iterable map.
             } else if( vertex instanceof Map ) {
-                return mapWalker( root );
+                return mapWalker( walk );
             } else if( vertex instanceof Iterable ) {
-                return iterableWalker( root );
+                return iterableWalker( walk );
             }
             return ImmutableSet.of();
         }
     };
 
-    static String path( final Walk<Object, String> walk ) {
+    static String path( final PersistentList<Step<Object, String>> walk ) {
         final StringBuilder sb = new StringBuilder();
-        for( final Step<Object, String> step : walk.getVia().reverse() ) {
+        // Skip the root of the walk, since its over will be null.
+        for( final Step<Object, String> step : walk.reverse().rest() ) {
             sb.append( step.getOver() );
         }
         if( sb.length() > 0 && sb.charAt( 0 ) == '.' ) {
@@ -79,13 +81,13 @@ final class Elements {
     }
 
 
-    private static Iterable<Walk<Object, String>> arrayWalker( final Walk<Object, String> root ) {
-        final Object array = root.getTo();
+    private static Iterable<PersistentList<Step<Object, String>>> arrayWalker( final PersistentList<Step<Object, String>> walk ) {
+        final Object array = walk.first().getTo();
         final int size = Array.getLength( array );
-        return new Iterable<Walk<Object, String>>() {
+        return new Iterable<PersistentList<Step<Object, String>>>() {
             @Override
-            public Iterator<Walk<Object, String>> iterator() {
-                return new UnmodifiableIterator<Walk<Object, String>>() {
+            public Iterator<PersistentList<Step<Object, String>>> iterator() {
+                return new UnmodifiableIterator<PersistentList<Step<Object, String>>>() {
                     private int index;
 
                     @Override
@@ -94,24 +96,24 @@ final class Elements {
                     }
 
                     @Override
-                    public Walk<Object, String> next() {
+                    public PersistentList<Step<Object, String>> next() {
                         if( index >= size ) {
                             throw new NoSuchElementException();
                         }
                         final String over = "[" + index + "]";
-                        return root.append( Array.get( array, index++ ), over );
+                        return walk.add( Step.newInstance( Array.get( array, index++ ), over ) );
                     }
                 };
             }
         };
     }
 
-    private static Iterable<Walk<Object, String>> iterableWalker( final Walk<Object, String> root ) {
-        final Iterable<?> iterable = (Iterable<?>) root.getTo();
-        return new Iterable<Walk<Object, String>>() {
+    private static Iterable<PersistentList<Step<Object, String>>> iterableWalker( final PersistentList<Step<Object, String>> walk ) {
+        final Iterable<?> iterable = (Iterable<?>) walk.first().getTo();
+        return new Iterable<PersistentList<Step<Object, String>>>() {
             @Override
-            public Iterator<Walk<Object, String>> iterator() {
-                return new UnmodifiableIterator<Walk<Object, String>>() {
+            public Iterator<PersistentList<Step<Object, String>>> iterator() {
+                return new UnmodifiableIterator<PersistentList<Step<Object, String>>>() {
                     private final Iterator<?> delegate = iterable.iterator();
                     private int index;
 
@@ -121,10 +123,10 @@ final class Elements {
                     }
 
                     @Override
-                    public Walk<Object, String> next() {
+                    public PersistentList<Step<Object, String>> next() {
                         final Object element = delegate.next();
                         final String over = "[" + index++ + "]";
-                        return root.append( element, over );
+                        return walk.add( Step.newInstance( element, over ) );
                     }
                 };
             }
@@ -133,13 +135,13 @@ final class Elements {
 
     private static final Pattern DELIMITER_PATTERN = Pattern.compile( "(\\.|\\[|\\])" );
 
-    private static Iterable<Walk<Object, String>> mapWalker( final Walk<Object, String> root ) {
+    private static Iterable<PersistentList<Step<Object, String>>> mapWalker( final PersistentList<Step<Object, String>> walk ) {
         @SuppressWarnings( "unchecked" )
-        final Map<String, Object> map = (Map<String, Object>) root.getTo();
-        return new Iterable<Walk<Object, String>>() {
+        final Map<String, Object> map = (Map<String, Object>) walk.first().getTo();
+        return new Iterable<PersistentList<Step<Object, String>>>() {
             @Override
-            public Iterator<Walk<Object, String>> iterator() {
-                return new UnmodifiableIterator<Walk<Object, String>>() {
+            public Iterator<PersistentList<Step<Object, String>>> iterator() {
+                return new UnmodifiableIterator<PersistentList<Step<Object, String>>>() {
                     private final Iterator<Map.Entry<String, Object>> delegate = map.entrySet().iterator();
 
                     @Override
@@ -148,10 +150,10 @@ final class Elements {
                     }
 
                     @Override
-                    public Walk<Object, String> next() {
+                    public PersistentList<Step<Object, String>> next() {
                         final Map.Entry<String, ?> entry = delegate.next();
                         final String over = DELIMITER_PATTERN.matcher( entry.getKey() ).replaceAll( "\\\\$0" );
-                        return root.append( entry.getValue(), '.' + over );
+                        return walk.add( Step.newInstance( entry.getValue(), '.' + over ) );
                     }
                 };
             }

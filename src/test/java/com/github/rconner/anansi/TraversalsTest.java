@@ -23,6 +23,7 @@
 
 package com.github.rconner.anansi;
 
+import com.github.rconner.util.PersistentList;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -796,14 +797,14 @@ public final class TraversalsTest {
 
     // Note that an empty map/iterable/array *is* a leaf.
 
-    private static void assertPathWalksAre( final Iterable<Walk<Object, String>> traversal,
+    private static void assertPathWalksAre( final Iterable<PersistentList<Step<Object, String>>> traversal,
                                             final Object[][] expectedElements ) {
-        final Iterator<Walk<Object, String>> iterator = traversal.iterator();
+        final Iterator<PersistentList<Step<Object, String>>> iterator = traversal.iterator();
         for( final Object[] element : expectedElements ) {
             assertThat( iterator.hasNext(), is( true ) );
-            final Walk<Object, String> walk = iterator.next();
+            final PersistentList<Step<Object, String>> walk = iterator.next();
             assertThat( Traversals.elementPath( walk ), is( element[ 0 ] ) );
-            assertThat( walk.getTo(), is( element[ 1 ] ) );
+            assertThat( walk.first().getTo(), is( element[ 1 ] ) );
         }
         assertIteratorEmpty( iterator );
     }
