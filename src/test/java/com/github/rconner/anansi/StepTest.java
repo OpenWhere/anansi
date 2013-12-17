@@ -41,10 +41,19 @@ public final class StepTest {
     }
 
     @Test
-    public void newInstance() {
+    public void newInstanceVertexEdge() {
         final Step<String, String> step = Step.newInstance( "abc", "xyz" );
         assertThat( step.getTo(), is( "abc" ) );
         assertThat( step.getOver(), is( "xyz" ) );
+        assertThat( step.isEmpty(), is( false ) );
+        step.toString();
+    }
+
+    @Test
+    public void newInstanceVertex() {
+        final Step<String, String> step = Step.newInstance( "abc" );
+        assertThat( step.getTo(), is( "abc" ) );
+        assertThat( step.getOver(), is( nullValue() ) );
         assertThat( step.isEmpty(), is( false ) );
         step.toString();
     }

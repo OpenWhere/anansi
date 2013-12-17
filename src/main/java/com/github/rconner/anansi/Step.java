@@ -84,7 +84,7 @@ public abstract class Step<V, E> {
 
             @Override
             public String toString() {
-                return "to (" + vertex + ')';
+                return "to (" + vertex + ")";
             }
         };
     }
@@ -118,7 +118,40 @@ public abstract class Step<V, E> {
 
             @Override
             public String toString() {
-                return "to (" + vertex + ") over (" + over + ')';
+                return "to (" + vertex + ") over (" + over + ")";
+            }
+        };
+    }
+
+    /**
+     * Creates a new empty {@code Step} to the given vertex over an edge of null.
+     *
+     * @param vertex the vertex to which the new {@code Step} is taken.
+     * @param <V> the vertex type
+     * @param <E> the edge type
+     *
+     * @return a new empty {@code Step} to the given vertex over an edge of null.
+     */
+    public static <V, E> Step<V, E> newInstance( final V vertex ) {
+        return new Step<V, E>() {
+            @Override
+            public V getTo() {
+                return vertex;
+            }
+
+            @Override
+            public E getOver() {
+                return null;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public String toString() {
+                return "to (" + vertex + ")";
             }
         };
     }
