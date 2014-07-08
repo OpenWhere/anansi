@@ -41,7 +41,7 @@ import java.util.NoSuchElementException;
  * single list instance can have many independent elements added to it, with each add resulting in a new list instance
  * sharing the storage for all the elements beyond the first one.
  * <p/>
- * Instances of this class do not implement {@link #equals(Object)} or {@link #hashCode()}.
+ * Instances of this class inherit {@link #equals(Object)} and {@link #hashCode()} from {@link Object}.
  *
  * @author rconner
  */
