@@ -82,235 +82,134 @@ structure from how one traverses it. Just that single method is sufficiently exp
 complex traversals, which is the half of the problem this library seeks to address.
 
 
-## Overview
+## Update
 
-See the above history discussion for the reasoning behind all this. See below for the reasoning behind the choice of
-Walk/Step design.
+Since this project started, Google Guava has added an abstract [TreeTraverser]
+(http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/TreeTraverser.html)
+class, which is essentially the previously described interface without the Walk semantics:
 
-This library does not have any classes or interfaces representing a _vertex_ or _edge_. The type variables `V` and `E`
-denoting these things are provided by clients of the library, and can be anything. Here, the `E` type variable typically
-represents the _content_ of the edge (weight, e.g.), and does not necessarily have any information about the vertices
-upon which it is incident, although nothing prevents a client from including that information.
+    public abstract Iterable<T> children( T root );
 
-These are the essential classes/interfaces involved:
+The class and method name have a definite connotation of "tree", but nothing in the implementation mandates that. As for
+the desired Walk/Step capability, Guava's Louis Wasserman was kind enough to suggest an alternative way to handle that
+with the simpler interface, documented [here](https://code.google.com/p/guava-libraries/issues/detail?id=174#c44).
 
-    Step<V,E> {
-        V to;
-        E over;
+Anansi now uses Guava's `TreeTraverser` to define an adjacency function. The `PersistentList` class is used to represent
+a Walk. If you need to track the vertex paths from the root of the traversal, define a
+`TreeTraverser<PersistentList<V>>`, and if you need to track both vertices and edges, define a
+`TreeTraverser<PersistentList<Step<V,E>>>`.
+
+
+## Simple examples
+
+Assume we have a traverser for this graph, with children always alphabetical:
+
+          A
+         / \
+        B   C
+       / \ /
+      E   D
+          |
+          F
+
+Using the TreeTraverser methods provided by Guava:
+
+    assertThat( Lists.newArrayList( treeTraverser.preOrderTraversal( "A" ) ),
+                is( Arrays.asList( "A", "B", "D", "F", "E", "C", "D", "F" ) ) );
+
+    assertThat( Lists.newArrayList( treeTraverser.postOrderTraversal( "A" ) ),
+                is( Arrays.asList( "F", "D", "E", "B", "F", "D", "C", "A" ) ) );
+
+    assertThat( Lists.newArrayList( treeTraverser.breadthFirstTraversal( "A" ) ),
+                is( Arrays.asList( "A", "B", "C", "D", "E", "D", "F", "F" ) ) );
+
+Using the equivalent methods in anansi. Note that anansi's Iterators support prune (pre-order and breadth-first only)
+and Iterator.remove() (if the value returned by TreeTraverser.children() supports it). If you are performing a basic
+traversal and don't need pruning or Iterator.remove(), you should probably use the Guava methods instead.
+
+    assertThat( Lists.newArrayList( Traversals.preOrder( "A", treeTraverser ) ),
+                is( Arrays.asList( "A", "B", "D", "F", "E", "C", "D", "F" ) ) );
+
+    assertThat( Lists.newArrayList( Traversals.postOrder( "A", treeTraverser ) ),
+                is( Arrays.asList( "F", "D", "E", "B", "F", "D", "C", "A" ) ) );
+
+    assertThat( Lists.newArrayList( Traversals.breadthFirst( "A", treeTraverser ) ),
+                is( Arrays.asList( "A", "B", "C", "D", "E", "D", "F", "F" ) ) );
+
+Other anansi traversals:
+
+    assertThat( Lists.newArrayList( Traversals.leaves( "A", treeTraverser ) ),
+                is( Arrays.asList( "F", "E", "F" ) ) );
+
+Pruning traversals (Yes, it's ugly. I know!):
+
+    PruningIterator<String> iter = (PruningIterator<String>) Traversals.preOrder( "A", treeTraverser ).iterator();
+    List<String> results = Lists.newArrayList();
+    while( iter.hasNext() ) {
+        String s = iter.next();
+        results.add( s );
+        if( s.equals( "D" ) ) {
+            iter.prune();
+        }
+    }
+    assertThat( results,
+                is( Arrays.asList( "A", "B", "D", "E", "C", "D" ) ) );
+
+    iter = (PruningIterator<String>) Traversals.breadthFirst( "A", treeTraverser ).iterator();
+    results = Lists.newArrayList();
+    while( iter.hasNext() ) {
+        String s = iter.next();
+        results.add( s );
+        if( s.equals( "D" ) ) {
+            iter.prune();
+        }
+    }
+    assertThat( results,
+                is( Arrays.asList( "A", "B", "C", "D", "E", "D" ) ) );
+
+
+## Traversing Data Structure Leaves
+
+Assume we have this JSON, already read into a data structure implemented with Maps and Lists (or arrays):
+
+    {
+        "name" : {
+            "first" : "Alex",
+            "last" : "Anderson"
+        },
+        "aliases" : [
+            {
+                "first" : "Bob",
+                "last" : "Barnes"
+            },
+            {
+                "first" : "Carl",
+                "last" : "Cooper"
+            },
+            {
+                "first" : "Dan",
+                "last" : "Davis"
+            }
+        ]
     }
 
-    Walk<V,E> {
-        V from;
-        V to;  // convenience, same as via.top.to
-        Stack<Step<V,E>> via; // steps in reverse order, the top is the last step
+Then we can get the leaf elements and their json paths like this:
+
+    // Just for verification by the assert, putting both paths and leaves in the same list is a bad idea
+    List<Object> results = Lists.newArrayList();
+    for( final PersistentList<Step<Object, String>> walk : Traversals.leafElements( jsonObject ) ) {
+        final String path = Traversals.elementPath( walk );
+        final Object leaf = walk.first().getTo();
+        results.add( path );
+        results.add( leaf );
     }
-
-    Traverser<V,E> {
-        Iterable<Walk<V,E>> apply( V vertex );
-    }
-
-There is some implementation-specific way of creating Traversers that answer the question "Given V, what is adjacent to
-it?". Using that (or any Traverser created by this library), you can construct more complex Traversers for performing
-things like a pre-order traversal.
-
-Repeating this for emphasis: An adjacency function is a Traverser; give it a vertex and it will return an Iterable of
-(short) Walks to adjacent vertices. A depth-first search is also a Traverser; give it a vertex and it will return an
-Iterable of (non-trivial) Walks to reachable vertices.
-
-
-## Reasoning about options for implementing Walk/Step
-
-Technically, a graph-theory Walk is a sequence
-v<sub>0</sub>, e<sub>1</sub>, v<sub>1</sub>, e<sub>2</sub>, v<sub>2</sub>, ..., e<sub>n</sub>, v<sub>n</sub>;
-where each e<sub>i</sub> is an "edge" from v<sub>i-1</sub> to v<sub>i</sub>. _Edge_ is in quotes because this library
-doesn't really have edges in the same sense as graph theory. Here, the `E` type variable represents the _content_ of the
-edge (weight, e.g.), and is generally supplied by the client for adjacency traversals. There is no actual edge object in
-this library.
-
-Regardless, OOP languages don't particularly like lists to contain things of wildly different types, and an alternating
-sequence of vertices and edges would be difficult for client iterators to handle. Separate lists for vertices and edges
-would be an option, but that's not very OO either, and would require clients to iterate over two lists simultaneously,
-ugh. Note also that there is one more vertex than edge in the sequence.
-
-All of that is the easy reasoning, and leads to roughly this model (pseudo-code, don't compile this):
-
-    Step<V,E> {
-        V to;
-        E over;
-    }
-
-    Walk<V,E> {
-        V from;
-        V to;  // convenience, same as via.top.to
-        Stack<Step<V,E>> via; // steps in reverse order, the top is the last step
-    }
-
-Where this gets difficult is that we also want to:
-
-- Model an adjacency as essentially a one-step Walk.
-- Referencing the parts (from/to/over) of a one-step adjacency walk should be simple getters.
-- Model an empty Walk. For example, the first Walk in a pre-order traversal is just the start vertex, no edge having
-  been followed yet.
-- Model a self-loop, which must be different than an empty Walk.
-- Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc.
-- Keep track of nested compound traversals.
-
-
-### Option 1
-
-Stick with the above interfaces. We sacrifice:
-
-- Referencing the parts (from/to/over) of a one-step adjacency walk should be simple getters.
-- Distinguish between a one-step Walk being an adjacency Walk, or produced by BFS/DFS/etc.
-- Keep track of nested compound traversals.
-
-But we gain some simplicity from that. All Walks are the modeled the same way, and there is no if/then code for testing
-adjacency vs. compound, because they are exactly the same.
-
-
-### Option 2
-
-Provide a way to distinguish one-step adjacency and compound Walks.
-
-Not having children is not a sufficient criterion, since an empty walk is composite, but has no Steps. Therefore, there
-either has to be method to distinguish the two, or they must be different public classes/interfaces. Having a method is
-a bit cleaner.
-
-After having done that, it's relatively simple to allow referencing the `over` of an adjacency Walk.
-
-    Step<V,E> {
-        V to;
-        E over;
-    }
-
-    Walk<V,E> {
-        V from;
-        V to;
-        E over;               // only if trivial is true
-        [ Step<V,E> ] via;
-        boolean trivial;      // or "primitive", "leaf", ...
-    }
-
-The one capability we now don't have is to keep track of nested compound traversals. If you chain together two compound
-walks `[A -> B -> ... -> M]` and `[M -> N -> ... -> Z]`, you get a flattened walk `[A -> ... -> Z ]`. Note that this
-might actaully be a good thing.
-
-
-### Option 3
-
-Implement a composite pattern, to keep track of nested compound traversals. Otherwise, you'll end up declaring things
-like `Walk< V, Step< V, Step< V,E > > >`. While that might describe the structure accurately, it's not good code.
-
-That leads you to this:
-
-    Step<V,E> {
-        V to;
-        E over;               // only if trivial is true
-        [ Step<V,E> ] children;
-        boolean trivial;      // or "primitive", "leaf", ...
-    }
-
-    Walk<V,E> {
-        V from;
-        V to;
-        E over;               // only if trivial is true
-        [ Step<V,E> ] via;
-        boolean trivial;      // or "primitive", "leaf", ...
-    }
-
-At this point, it hardly seems worthwhile to have a distinct Step at all. Removing that, we can repurpose the term for
-the boolean trivial/composite property. Now we have this:
-
-    Walk<V,E> {
-        V from;
-        V to;
-        E over;             // only if step is true, throws an exception otherwise
-        [ Walk<V,E> ] via;  // only if step is false, throws an exception otherwise, or maybe returns []?
-        boolean step;
-    }
-
-This is essentially the same as the previous option, except replacing `[Step] via` with `[Walk] via`. So we lose the
-semantic difference between a Walk and a Step.
-
-
-### Examples
-
-Let's work through an example. The adjacency graph will be as follows, with `x` being arbitrary. No choice of `x`
-results in ambiguity because the `over` and `via` are stored in different fields.
-
-    A --> B (over x)
-    B --> C (over x)
-    A --> A (over x)
-
-A pre-order traversal from A would yield the following walks:
-
-    A  // visting the root node
-    A --> B
-    A --> B --> C
-    A --> A  // self-loop
-
-The adjacency walks will be denoted as `{AB}`, `{BC}`, and `{AA}` respectively.
-
-The pre-order traversal walks will be denoted as `[A]`, `[AB]`, `[ABC]`, and `[AA]` respectively.
-
-A step will be written as `-> B over x`. An Option 1 walk will be written as `A -> B via [ ... ]`. An Option 2 or 3
-trivial walk will be written as `A - > B over x`. An Option 2 or 3 compound walk will be written as
-`A - > B via [ ... ]`.
-
-<BR/>
-
-<table>
-    <tr>
-        <th></th>
-        <th>Option 1</th>
-        <th>Option 2</th>
-        <th>Option 3</th>
-    </tr>
-    <tr>
-        <th>{AB}</th>
-        <td>A -> B via [ -> B over x ]</td>
-        <td>A -> B over x</td>
-        <td>A -> B over x</td>
-    </tr>
-    <tr>
-        <th>{AA}</th>
-        <td>A -> A via [ -> A over x ]</td>
-        <td>A -> A over x</td>
-        <td>A -> A over x</td>
-    </tr>
-    <tr>
-        <th>[A]</th>
-        <td>A -> A via []</td>
-        <td>A -> A via []</td>
-        <td>A -> A via []</td>
-    </tr>
-    <tr>
-        <th>[AB]</th>
-        <td>A -> B via [ -> B over x ]</td>
-        <td>A -> B via [ -> B over x ]</td>
-        <td>A -> B via [ A -> B over x ]</td>
-    </tr>
-    <tr>
-        <th>[ABC]</th>
-        <td>A -> B via [ -> B over x, -> C over x ]</td>
-        <td>A -> B via [ -> B over x, -> C over x ]</td>
-        <td>A -> B via [ A -> B over x, B -> C over x ]</td>
-    </tr>
-    <tr>
-        <th>[AA]</th>
-        <td>A -> A via [ -> A over x ]</td>
-        <td>A -> A via [ -> A over x ]</td>
-        <td>A -> A via [ A -> A over x ]</td>
-    </tr>
-</table>
-
-Besides the obvious differences, it should be noted that with Options 1 and 3, a compound traversal can reuse
-Steps/Walks from the adjacency traversal to build the compound walks. Option 2 requires that the compound traversal
-create new Step instances.
-
-
-### Resolution
-
-Until requirements force anansi to take a different direction (it is being used, by me), it will be using Option 1.
-That option is the simplest of the three, and may be sufficient. Simpler is always better as long as you meet
-requirements.
+    assertThat( results,
+                is( Arrays.<Object>asList(
+                        "name.first", "Alex",
+                        "name.last", "Anderson",
+                        "aliases[0].first", "Bob",
+                        "aliases[0].last", "Barnes",
+                        "aliases[1].first", "Carl",
+                        "aliases[1].last", "Cooper",
+                        "aliases[2].first", "Dan",
+                        "aliases[2].last", "Davis" ) ) );
