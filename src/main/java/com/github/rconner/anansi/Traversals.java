@@ -92,7 +92,7 @@ public final class Traversals {
 
     /**
      * Returns a breadth-first iterable with <strong>NO</strong> cycle detection. This differs from {@link
-     * TreeTraverser#breadthFirstTraversal(Object)}  in that the created Iterators implement {@link PruningIterator} and
+     * TreeTraverser#breadthFirstTraversal(Object)} in that the created Iterators implement {@link PruningIterator} and
      * support the remove() operation if the Iterators produced by the argument adjacency TreeTraverser do. The root
      * vertex of the traversal cannot be removed.
      *
